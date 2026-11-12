@@ -1,0 +1,345 @@
+<title>Pre-Flight Pairings</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+/* Layout: a tournament hall. The dark band is a playmat with faint card zones; the next 5 are a printed pairings sheet pinned to it; below, a day-by-day agenda of tear-off match slips with a sticky filter bar. Single light look by spec. */
+:root{
+  --bg:#FFFFFF; --bg2:#F8FAFC; --ink:#1F2933; --ink2:#2B3742; --muted:#5B6875; --line:#E1E7ED; --red:#E63946; --amber:#F6C453; --board-fg:#E9EEF3;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --text:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --ppf-bg:var(--bg); --ppf-fg:var(--ink); --ppf-muted:var(--muted); --ppf-line:var(--line); --ppf-soft:var(--bg2); --ppf-accent:var(--red);
+  --ppf-font:var(--text); --ppf-display:var(--display); --ppf-radius:14px;
+}
+*{box-sizing:border-box}
+body{background:var(--bg2);color:var(--ink);font-family:var(--text);font-size:15px;line-height:1.45}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* band */
+.band{background:radial-gradient(120% 90% at 20% 0%,#2A3641 0%,var(--ink) 55%,#182028 100%);color:var(--board-fg);position:relative;overflow:hidden}
+.band::before,.band::after{content:"";position:absolute;border:1.5px dashed rgba(255,255,255,.07);border-radius:12px;pointer-events:none}
+.band::before{width:120px;height:168px;left:-30px;bottom:-40px;transform:rotate(-8deg)}
+.band::after{width:120px;height:168px;right:6%;top:30px;transform:rotate(6deg)}
+.band>.wrap{position:relative;z-index:1}
+.decide{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.zones{display:grid;grid-template-columns:repeat(3,26px);gap:5px}
+.zlbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;color:rgba(255,255,255,.4);text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg)}
+.coinwrap{display:flex;align-items:center;gap:10px;color:#A9B4BF;font-size:.85rem;line-height:1.3}
+.coin{width:58px;height:58px;border:0;padding:0;background:none;cursor:pointer;perspective:400px;flex:none}
+.coin .in{position:relative;display:block;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.coin .f{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;font-family:var(--display);font-weight:800;font-size:1rem;letter-spacing:.04em;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),inset 0 -4px 0 rgba(0,0,0,.2)}
+.coin .h{background:var(--red);color:#fff}
+.coin .t{background:#E9EEF3;color:var(--ink);transform:rotateY(180deg)}
+.coinwrap b{color:#fff}
+.zones span{width:26px;height:36px;border:1.5px dashed rgba(255,255,255,.18);border-radius:5px;display:grid;place-items:center;font-family:var(--mono);font-size:.5rem;letter-spacing:.04em;color:rgba(255,255,255,.35)}
+.zones span.on{border-style:solid;border-color:var(--red);color:var(--red)}
+.nav{display:flex;justify-content:space-between;align-items:center;height:50px;gap:10px}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;letter-spacing:.06em;text-transform:uppercase;color:#fff;text-decoration:none;display:flex;gap:6px;align-items:center}
+.brand svg{flex:none}
+.nav-r{display:flex;gap:6px;align-items:center}
+.lnk{border:0;background:none;color:var(--board-fg);font-weight:600;font-size:.88rem;padding:8px 10px;border-radius:8px;cursor:pointer}
+.lnk.red{background:var(--red);color:#fff}
+.lnk:hover{background:rgba(255,255,255,.08)}
+.lnk.red:hover{background:var(--red)}
+.hero-grid{display:grid;gap:22px;padding-block:14px 26px}
+@media (min-width:900px){.hero-grid{grid-template-columns:5fr 7fr;align-items:center;padding-block:30px 40px}}
+.hero h1{font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(2.4rem,10vw,4.2rem);line-height:.92;margin:0;color:#fff;letter-spacing:.01em}
+.hero p{margin:10px 0 0}
+.hero .q{font-size:1.15rem;color:#fff}
+.hero .q b{color:var(--red)}
+.hero .s{color:#A9B4BF;font-size:.9rem;max-width:44ch}
+
+.board{position:relative;background:#FBFBF8;color:var(--ink);border-radius:4px;padding:16px 14px 10px;font-family:var(--mono);box-shadow:0 14px 30px rgba(0,0,0,.35),0 1px 0 rgba(0,0,0,.2);transform:rotate(-.8deg)}
+.board::before{content:"";position:absolute;top:-7px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FF7A85,var(--red) 55%,#9E1F2A);box-shadow:0 3px 4px rgba(0,0,0,.35)}
+.board-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 2px 8px;border-bottom:2px solid var(--ink);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.board-h span:first-child{font-family:var(--display);font-size:1.15rem;letter-spacing:.06em;font-weight:800}
+.board-h span:last-child{color:var(--muted);font-size:.66rem}
+.board-cols{display:grid;grid-template-columns:4.6em 1fr auto;gap:12px;padding:6px 6px 2px;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.brow{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;padding:9px 6px;border-top:1px dashed #CDD4DB}
+.brow:nth-child(odd){background:rgba(31,41,51,.03)}
+.brow .t{font-size:.74rem;color:var(--muted);line-height:1.25;font-variant-numeric:tabular-nums;width:4.6em}
+.brow .t b{display:block;font-size:.98rem;color:var(--ink);font-weight:600}
+.brow .t.live b{color:var(--red)}
+.brow .e{min-width:0;font-family:var(--text);line-height:1.25}
+.brow .e strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brow .e span{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.04em}
+.brow .c{display:flex;align-items:center;gap:10px}
+.brow .n{font-size:1.25rem;font-weight:600;color:var(--red);min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+.bgo{height:32px;padding:0 10px;border-radius:6px;border:1.5px solid var(--red);background:var(--red);color:#fff;font-family:var(--text);font-weight:700;font-size:.8rem;cursor:pointer;white-space:nowrap}
+.bgo.on{background:transparent;color:var(--red)}
+.board-f{padding:8px 4px 0;font-size:.62rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;border-top:2px solid var(--ink);margin-top:4px}
+
+/* filter bar */
+.fbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:rgba(248,250,252,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.fbar .wrap{display:flex;gap:8px;align-items:center;padding-block:10px;overflow-x:auto;scrollbar-width:none}
+.fbar .wrap::-webkit-scrollbar{display:none}
+.fbtn{flex:none;height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;font-weight:600;font-size:.88rem;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.fbtn .n{background:var(--red);border-radius:999px;padding:0 7px;font-size:.75rem}
+.achip{flex:none;height:32px;padding:0 10px 0 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg);font-size:.82rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.achip::after{content:"×";font-size:1rem;color:var(--muted)}
+.wbtn{flex:none;height:36px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink);background:var(--bg);font-weight:600;font-size:.88rem;cursor:pointer;white-space:nowrap}
+.achip.date{border-color:var(--ink)}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pgrid .tbtn{font-weight:600;font-size:.9rem}
+.fcount{flex:none;margin-left:auto;color:var(--muted);font-size:.82rem;padding-left:8px;white-space:nowrap}
+
+/* agenda */
+main{padding-block:10px 20px}
+.agenda{max-width:760px}
+@media (min-width:900px){.agenda{margin-inline:auto}}
+.day{display:grid;gap:10px;padding-top:18px}
+@media (min-width:700px){.day{grid-template-columns:120px 1fr;gap:16px}}
+.dayh span{font-family:var(--text)}
+.dayh{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.04em;line-height:1;border-left:5px solid var(--red);padding-left:10px}
+.dayh b{font-size:1.5rem;display:inline}
+.dayh span{color:var(--muted);font-size:.95rem;margin-left:6px}
+@media (min-width:700px){.dayh{position:sticky;top:70px;align-self:start}.dayh b{display:block;font-size:2rem}.dayh span{margin:0}}
+.passes{display:flex;flex-direction:column;gap:10px;min-width:0}
+.pass{display:grid;grid-template-columns:1fr 104px;background:var(--bg);border:1px solid var(--line);border-top:4px solid var(--ink);border-radius:6px;overflow:hidden;position:relative;box-shadow:0 1px 0 var(--line)}
+.pass .slip{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.pass .main{padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pass .top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.pass .shop{font-weight:700;font-size:1.05rem;line-height:1.2}
+.pass .row{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--muted)}
+.pass .row b{color:var(--ink);font-weight:600}
+.type{display:inline-block;font-family:var(--display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem;padding:1px 8px;border-radius:4px;border:1.5px solid var(--ink);color:var(--ink)}
+.type.Cup{background:var(--ink);color:#fff}
+.ball{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none}
+.tl{display:inline-flex;align-items:center;gap:5px}
+.type .ball{margin:-2px 4px 0 -3px}
+.brow .e span .ball{width:12px;height:12px;vertical-align:-2px;margin-right:4px}
+.tbtn .ball{width:20px;height:20px;margin-right:6px;vertical-align:-5px}
+.legend{max-width:760px;margin:16px auto 0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;padding:10px 12px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.legend .ranks{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.82rem;font-weight:600;align-items:center}
+.legend .ranks .ball{width:20px;height:20px}
+.legend .ranks i{font-style:normal;color:var(--muted);font-weight:400}
+.iseg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px;font-size:.8rem}
+.iseg span{padding:5px 4px 5px 8px;color:var(--muted);font-weight:600}
+.iseg button{border:0;background:none;padding:5px 10px;border-radius:999px;font-weight:700;cursor:pointer}
+.iseg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.live{color:var(--red);font-weight:600}
+.stub{border-left:2px dashed #C9D1D9;background:repeating-linear-gradient(0deg,transparent 0 21px,#EEF2F5 21px 22px)!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;position:relative;background:var(--bg)}
+.stub::before,.stub::after{content:"";position:absolute;left:-7px;width:12px;height:12px;border-radius:50%;background:var(--bg2);border:1px solid var(--line)}
+.stub::before{top:-7px}.stub::after{bottom:-7px}
+.stub .n{font-family:var(--display);font-weight:800;font-size:2.1rem;line-height:.9;color:var(--red);font-variant-numeric:tabular-nums}
+.stub small{background:var(--bg);padding:0 4px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.sgo{width:100%;height:36px;border-radius:9px;border:1.5px solid var(--red);background:var(--red);color:#fff;font-weight:700;font-size:.82rem;cursor:pointer}
+.sgo.on{background:var(--bg);color:var(--red)}
+.mine{font-size:.78rem;color:var(--red);font-weight:600}
+.empty{padding:40px 16px;text-align:center;color:var(--muted)}
+.disc{max-width:760px;margin:22px auto 0;padding:12px 14px;border-radius:12px;background:#FFF5F5;color:var(--ink);font-size:.85rem;border:1px solid #F7D4D7}
+footer{color:var(--muted);font-size:.8rem;padding-block:24px 40px}
+footer p{max-width:760px;margin:0 auto 6px}
+
+/* filter sheet */
+.fsec{display:flex;flex-direction:column;gap:8px}
+.fsec h4{margin:0;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tbtn{height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);font-weight:700;cursor:pointer}
+.tbtn[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+.slist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.slist label{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--line);cursor:pointer}
+.slist label:first-child{border-top:0}
+.slist input{width:18px;height:18px;accent-color:var(--red)}
+.slist small{margin-left:auto;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <clipPath id="ballTop"><path d="M1 12a11 11 0 0 1 22 0z"/></clipPath>
+    <symbol id="cl-Friendly" viewBox="0 0 24 24"><path d="M1 12a11 11 0 0 1 22 0z" fill="#E3350D"/><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/></symbol>
+    <symbol id="cl-League" viewBox="0 0 24 24"><path d="M1 12a11 11 0 0 1 22 0z" fill="#2F6BD8"/><g clip-path="url(#ballTop)" fill="#E3350D"><ellipse cx="5.6" cy="6.4" rx="4" ry="1.9" transform="rotate(-38 5.6 6.4)"/><ellipse cx="18.4" cy="6.4" rx="4" ry="1.9" transform="rotate(38 18.4 6.4)"/></g><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/></symbol>
+    <symbol id="cl-Challenge" viewBox="0 0 24 24"><path d="M1 12a11 11 0 0 1 22 0z" fill="#222"/><g clip-path="url(#ballTop)" fill="#F5C518"><rect x="3.2" y="0" width="3.4" height="12"/><rect x="17.4" y="0" width="3.4" height="12"/><rect x="3.2" y="6.2" width="17.6" height="2"/></g><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/></symbol>
+    <symbol id="cl-Cup" viewBox="0 0 24 24"><path d="M1 12a11 11 0 0 1 22 0z" fill="#7B3FA0"/><circle cx="6.3" cy="7.6" r="2.1" fill="#EC5FA6"/><circle cx="17.7" cy="7.6" r="2.1" fill="#EC5FA6"/><path d="M9.2 9V4.4l2.8 2.9 2.8-2.9V9" fill="none" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/></symbol>
+    <symbol id="si-Friendly" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#fff" stroke="#1F2933" stroke-width="2"/><path d="M1.5 12h7m7 0h7" stroke="#1F2933" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="#1F2933" stroke-width="2"/></symbol>
+    <symbol id="si-League" viewBox="0 0 24 24"><path d="M1.5 12a10.5 10.5 0 0 1 21 0z" fill="#1F2933"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="#1F2933" stroke-width="2"/><path d="M1.5 12h7m7 0h7" stroke="#1F2933" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#fff" stroke="#1F2933" stroke-width="2"/></symbol>
+    <symbol id="si-Challenge" viewBox="0 0 24 24"><path d="M1.5 12a10.5 10.5 0 0 1 21 0z" fill="#E63946"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="#1F2933" stroke-width="2"/><path d="M1.5 12h7m7 0h7" stroke="#1F2933" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#fff" stroke="#1F2933" stroke-width="2"/></symbol>
+    <symbol id="si-Cup" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10.5" fill="#1F2933"/><path d="M1.5 12a10.5 10.5 0 0 1 21 0z" fill="#E63946"/><circle cx="12" cy="12" r="10.5" fill="none" stroke="#1F2933" stroke-width="2"/><path d="M1.5 12h7m7 0h7" stroke="#fff" stroke-width="2"/><path d="M12 3.2l1.1 2.2 2.4.3-1.8 1.6.5 2.4-2.2-1.2-2.2 1.2.5-2.4-1.8-1.6 2.4-.3z" fill="#fff"/><circle cx="12" cy="12" r="3" fill="#fff" stroke="#1F2933" stroke-width="2"/></symbol>
+  </defs>
+</svg>
+<div class="band">
+  <div class="wrap">
+    <header class="nav">
+      <a class="brand" href="#"><svg width="24" height="22" viewBox="0 0 24 22" aria-hidden="true"><rect x="2" y="4" width="11" height="15" rx="2" transform="rotate(-14 7 12)" fill="none" stroke="#8B97A3" stroke-width="1.6"/><rect x="7" y="3" width="11" height="15" rx="2" fill="#1F2933" stroke="#fff" stroke-width="1.6"/><rect x="11" y="4" width="11" height="15" rx="2" transform="rotate(14 16 12)" fill="#E63946"/></svg>Pre-Flight</a>
+      <div class="nav-r" id="nav"></div>
+    </header>
+    <div class="hero-grid">
+      <div class="hero">
+        <h1>Pokémon<br>Pre-Flight</h1>
+        <p class="q">Should I go or should I <b>stay at home?</b></p>
+        <p class="s">See how many players are heading to each Play! Pokémon tournament in Portugal before you sleeve up. Independent fan project.</p>
+        <div class="decide">
+          <span class="zlbl" aria-hidden="true">Prizes</span>
+          <div class="zones" aria-hidden="true"><span></span><span></span><span class="on">GO</span><span></span><span></span><span></span></div>
+          <div class="coinwrap"><button class="coin" id="coin" type="button" aria-label="Flip a coin: heads go, tails stay"><span class="in"><span class="f h">GO</span><span class="f t">STAY</span></span></button><span id="coinmsg">Still can't decide?<br><b>Flip for it.</b> Heads you go.</span></div>
+        </div>
+      </div>
+      <div class="board" aria-label="Next 5 events">
+        <div class="board-h"><span>Up next</span><span id="clock"></span></div>
+        <div class="board-cols" aria-hidden="true"><span>When</span><span>Event</span><span>Trainers</span></div>
+        <div id="board"></div>
+        <div class="board-f">Headcount, not registration · Register at the shop</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fbar"><div class="wrap" id="fbar"></div></div>
+
+<main class="wrap">
+  <div class="legend" id="legend"></div>
+  <div class="agenda" id="agenda"></div>
+  <p class="disc"><strong>A headcount, not a registration.</strong> Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual.</p>
+</main>
+<footer class="wrap">
+  <p>Not affiliated with, endorsed or sponsored by Nintendo, The Pokémon Company or Play! Pokémon.</p>
+  <p>Prototype with invented shops and events. Sign-in and profiles are simulated in your browser.</p>
+</footer>
+
+<script>window.PPF_KEY='p4';</script>
+<script src="app.js"></script>
+<script>
+(function(){
+  const P=window.PPF,{fmt,esc}=P;
+  const F={types:new Set(),shops:new Set(),range:{p:'any',from:'',to:''}};
+  const DAYMS=86400000;
+  const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const day0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);};
+  const PRESETS=[['any','Any time'],['week','This week'],['weekend','This weekend'],['7','Next 7 days'],['30','Next 30 days'],['custom','Pick dates']];
+  // returns [fromMs,toMs) or null for any time
+  function bounds(R){
+    const t=day0(new Date());
+    if(R.p==='any')return null;
+    if(R.p==='7')return[t.getTime(),t.getTime()+7*DAYMS];
+    if(R.p==='30')return[t.getTime(),t.getTime()+30*DAYMS];
+    if(R.p==='week'){const toSun=(7-t.getDay())%7;return[t.getTime(),t.getTime()+(toSun+1)*DAYMS];}
+    if(R.p==='weekend'){const wd=t.getDay();const sat=wd===0?t.getTime()-DAYMS:t.getTime()+((6-wd+7)%7)*DAYMS;return[Math.max(sat,t.getTime()),sat+2*DAYMS];}
+    const a=R.from?parse(R.from).getTime():t.getTime(), b=R.to?parse(R.to).getTime()+DAYMS:Infinity;
+    return[a,b];
+  }
+  const inRange=(e,R)=>{const b=bounds(R);return !b||(e.end.getTime()>b[0]&&e.start.getTime()<b[1]);};
+  function rangeLabel(R){
+    if(R.p!=='custom')return PRESETS.find(x=>x[0]===R.p)[1];
+    const f=d=>{const x=parse(d);return `${x.getDate()} ${fmt.mon(x)}`;};
+    if(R.from&&R.to)return `${f(R.from)} – ${f(R.to)}`;
+    if(R.from)return `From ${f(R.from)}`;
+    if(R.to)return `Until ${f(R.to)}`;
+    return 'Any time';
+  }
+  const rangeOn=R=>R.p!=='any'&&!(R.p==='custom'&&!R.from&&!R.to);
+  const mineN=e=>P.goingFor(e).length;
+  let BALL='classic';try{BALL=localStorage.getItem('ppf-p4-balls')||'classic';}catch(e){}
+  const ball=t=>`<svg class="ball" viewBox="0 0 24 24" aria-hidden="true"><use href="#${BALL==='classic'?'cl':'si'}-${t}"/></svg>`;
+  function renderLegend(){
+    document.getElementById('legend').innerHTML=`<div class="ranks"><i>Common</i>${['Friendly','League','Challenge','Cup'].map(t=>`<span class="tl">${ball(t)}${t}</span>`).join('')}<i>Rare</i></div>
+      <div class="iseg" role="group" aria-label="Ball icon style"><span>Icons</span><button type="button" data-ball="classic" aria-pressed="${BALL==='classic'}">Classic</button><button type="button" data-ball="simple" aria-pressed="${BALL==='simple'}">Our own</button></div>`;
+  }
+  const label=e=>{const n=mineN(e),st=P.state();if(!n)return"I'm going";return st.user.profiles.length>1?`Going (${n})`:'Going ✓';};
+
+  function renderNav(){
+    const st=P.state(),el=document.getElementById('nav');
+    if(!st.user){
+      el.innerHTML=`<button class="lnk" id="si" type="button">Sign in</button><button class="lnk red" id="su" type="button">Sign up</button>`;
+      el.querySelector('#si').onclick=()=>P.signIn();el.querySelector('#su').onclick=()=>P.signIn(null,'up');return;
+    }
+    el.innerHTML=`<button class="lnk" id="mp" type="button">Profiles (${st.user.profiles.length})</button><button class="lnk" id="so" type="button">Sign out</button>`;
+    el.querySelector('#mp').onclick=()=>P.manageProfiles();el.querySelector('#so').onclick=()=>P.signOut();
+  }
+
+  function renderBoard(){
+    const now=new Date();document.getElementById('clock').textContent='Posted '+fmt.time(now);
+    document.getElementById('board').innerHTML=P.upcoming().slice(0,5).map(e=>{
+      const live=P.isOngoing(e);
+      return `<div class="brow">
+        <div class="t ${live?'live':''}">${live?'NOW':fmt.wd(e.start).toUpperCase()+' '+fmt.day(e.start)}<b>${live?'LIVE':fmt.time(e.start)}</b></div>
+        <div class="e"><strong>${esc(e.shop.name)}</strong><span>${ball(e.type)}${e.type.toUpperCase()} · ${esc(e.shop.city.toUpperCase())}</span></div>
+        <div class="c"><span class="n" aria-label="${P.count(e)} trainers going">${P.count(e)}</span><button class="bgo ${mineN(e)?'on':''}" data-go="${e.id}" type="button">${label(e)}</button></div>
+      </div>`;}).join('');
+  }
+
+  const match=(e,T,Sh,R)=>(!T.size||T.has(e.type))&&(!Sh.size||Sh.has(e.shop.id))&&inRange(e,R);
+  const filtered=()=>{const all=P.upcoming();const hits=all.filter(e=>match(e,F.types,F.shops,F.range));return{all,hits,list:hits.slice(0,25)};};
+
+  function renderBar(){
+    const {all,hits,list}=filtered(),n=F.types.size+F.shops.size+(rangeOn(F.range)?1:0);
+    const chips=(rangeOn(F.range)?`<button class="achip date" data-rr type="button" aria-label="Remove date filter">${esc(rangeLabel(F.range))}</button>`:'')+[...F.types].map(t=>`<button class="achip" data-rt="${t}" type="button" aria-label="Remove ${t} filter">${ball(t)}${t}</button>`).join('')+
+      [...F.shops].map(id=>`<button class="achip" data-rs="${id}" type="button" aria-label="Remove shop filter">${esc(P.SHOPS.find(s=>s.id===id).name)}</button>`).join('');
+    document.getElementById('fbar').innerHTML=`<button class="fbtn" id="fopen" type="button">Filters${n?` <span class="n">${n}</span>`:''}</button>${rangeOn(F.range)?'':'<button class="wbtn" id="wopen" type="button">Any time ▾</button>'}${chips}<span class="fcount">${hits.length>25?'First 25 of '+hits.length:list.length+' of '+all.length} events</span>`;
+  }
+
+  function renderAgenda(){
+    const {list}=filtered(),el=document.getElementById('agenda');
+    if(!list.length){el.innerHTML=`<div class="empty">Nothing matches these filters. <button class="lnk" style="color:var(--red)" data-clear type="button">Clear filters</button></div>`;return;}
+    const groups=[];list.forEach(e=>{const k=e.start.toDateString();let g=groups.find(x=>x.k===k);if(!g)groups.push(g={k,d:e.start,items:[]});g.items.push(e);});
+    const st=P.state();
+    el.innerHTML=groups.map(g=>{
+      const rel=P.fmt.rel(g.items[0]);
+      return `<section class="day"><div class="dayh"><b>${fmt.wd(g.d)} ${fmt.day(g.d)} ${fmt.mon(g.d)}</b><span>${rel==='Happening now'?'Today':rel}</span></div>
+      <div class="passes">${g.items.map(e=>{
+        const live=P.isOngoing(e),mine=P.goingFor(e);
+        const who=st.user&&st.user.profiles.length>1&&mine.length?`<span class="mine">You: ${mine.map(id=>esc(st.user.profiles.find(p=>p.id===id).name.split(' ')[0])).join(', ')}</span>`:'';
+        return `<article class="pass">
+          <div class="main">
+            <div class="top"><span style="white-space:nowrap">ID ${e.tid}</span><span class="type ${e.type}">${ball(e.type)}${e.type}</span></div>
+            <div class="shop">${esc(e.shop.name)}</div>
+            <div class="row"><span>${esc(e.shop.city)}</span><span>${live?'<span class="live">● Happening now</span>':'Starts <b>'+fmt.time(e.start)+'</b>'}</span><span>${P.TYPE_LONG[e.type]}</span></div>
+            ${who}
+          </div>
+          <div class="stub"><span class="n">${P.count(e)}</span><small>trainers</small><button class="sgo ${mine.length?'on':''}" data-go="${e.id}" type="button">${label(e)}</button></div>
+        </article>`;}).join('')}</div></section>`;}).join('');
+  }
+
+  let focusWhen=false;
+  function filterSheet(){
+    const T=new Set(F.types),Sh=new Set(F.shops),R=Object.assign({},F.range);
+    const sh=P.sheet('');
+    const all=P.upcoming();
+    const minD=iso(new Date());
+    function r(){
+      const n=Math.min(25,all.filter(e=>match(e,T,Sh,R)).length);
+      const cnt={};all.forEach(e=>cnt[e.shop.id]=(cnt[e.shop.id]||0)+1);
+      sh.set(`<h3>Filters</h3>
+        <div class="fsec" id="f-when"><h4>When</h4><div class="pgrid">${PRESETS.map(([k,l])=>`<button class="tbtn" type="button" data-p="${k}" aria-pressed="${R.p===k}">${l}</button>`).join('')}</div>
+          ${R.p==='custom'?`<div class="ppf-two"><div><label class="ppf-label" for="f-from">From</label><input class="ppf-input" type="date" id="f-from" min="${minD}" value="${R.from}"></div><div><label class="ppf-label" for="f-to">To</label><input class="ppf-input" type="date" id="f-to" min="${R.from||minD}" value="${R.to}"></div></div>`:''}</div>
+        <div class="fsec"><h4>Type</h4><div class="tgrid">${['Friendly','League','Challenge','Cup'].map(t=>`<button class="tbtn" type="button" data-t="${t}" aria-pressed="${T.has(t)}">${ball(t)}${t}</button>`).join('')}</div></div>
+        <div class="fsec"><h4>Host shop</h4><div class="slist">${P.SHOPS.filter(s=>cnt[s.id]).map(s=>`<label><input type="checkbox" id="f-${s.id}" value="${s.id}" ${Sh.has(s.id)?'checked':''}><span>${esc(s.name)} <span class="ppf-note">· ${esc(s.city)}</span></span><small>${cnt[s.id]}</small></label>`).join('')}</div></div>
+        <div class="ppf-two"><button class="ppf-btn ghost" id="f-clr" type="button">Clear all</button><button class="ppf-btn primary" id="f-ok" type="button">Show ${n} event${n===1?'':'s'}</button></div>`);
+      sh.el.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{R.p=b.dataset.p;r();});
+      const fi=sh.el.querySelector('#f-from'),ti=sh.el.querySelector('#f-to');
+      if(fi)fi.onchange=()=>{R.from=fi.value;if(R.to&&R.to<R.from)R.to=R.from;r();};
+      if(ti)ti.onchange=()=>{R.to=ti.value;if(R.from&&R.to<R.from)R.from=R.to;r();};
+      sh.el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{T.has(b.dataset.t)?T.delete(b.dataset.t):T.add(b.dataset.t);r();});
+      sh.el.querySelectorAll('.slist input').forEach(i=>i.onchange=()=>{i.checked?Sh.add(i.value):Sh.delete(i.value);r();});
+      sh.el.querySelector('#f-clr').onclick=()=>{T.clear();Sh.clear();R.p='any';R.from='';R.to='';r();};
+      sh.el.querySelector('#f-ok').onclick=()=>{F.types=T;F.shops=Sh;F.range=R;sh.close();renderBar();renderAgenda();};
+      if(focusWhen){focusWhen=false;}
+    }
+    r();
+  }
+
+  let rot=0;
+  document.getElementById('coin').onclick=()=>{
+    const heads=Math.random()<.5;
+    rot+=1440+((rot/180)%2===0?(heads?0:180):(heads?180:0));
+    document.querySelector('#coin .in').style.transform=`rotateY(${rot}deg)`;
+    const m=document.getElementById('coinmsg');m.innerHTML='Flipping…';
+    setTimeout(()=>{m.innerHTML=heads?'<b>Heads!</b> Pack your deck.<br>Pick an event below.':'<b>Tails.</b> Stay home and<br>test some new lists.';},1100);
+  };
+  function render(){renderLegend();renderNav();renderBoard();renderBar();renderAgenda();}
+  document.addEventListener('click',ev=>{
+    const g=ev.target.closest('[data-go]');if(g){P.quickGoing(P.EVENTS.find(x=>x.id===g.dataset.go));return;}
+    if(ev.target.closest('#fopen')||ev.target.closest('#wopen')){filterSheet();return;}
+    if(ev.target.closest('[data-rr]')){F.range={p:'any',from:'',to:''};renderBar();renderAgenda();return;}
+    const bl=ev.target.closest('[data-ball]');if(bl){BALL=bl.dataset.ball;try{localStorage.setItem('ppf-p4-balls',BALL);}catch(e){}render();return;}
+    const rt=ev.target.closest('[data-rt]');if(rt){F.types.delete(rt.dataset.rt);renderBar();renderAgenda();return;}
+    const rs=ev.target.closest('[data-rs]');if(rs){F.shops.delete(rs.dataset.rs);renderBar();renderAgenda();return;}
+    if(ev.target.closest('[data-clear]')){F.types.clear();F.shops.clear();F.range={p:'any',from:'',to:''};renderBar();renderAgenda();}
+  });
+  document.addEventListener('ppf:change',render);
+  render();
+})();
+</script>
