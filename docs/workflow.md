@@ -49,7 +49,7 @@ Why this order: the importer depends on real response fields we have not seen ye
 - **The privacy test**: seeds profiles with distinctive names and Player IDs, hits every public route as a guest and as another user, and asserts none of those strings appear in the response. Every new public route is added to its dataset.
 - **Browser tests** (Pest browser plugin, which runs Playwright) for the few flows that only work in a real browser: the quick "I'm going" button signed out, the profile picker, filters on a phone viewport. Keep them few; they are slow.
 - **Fixtures, not live calls.** The importer is tested against recorded pokedata.ovh responses in `tests/Fixtures/pokedata/`. Tests never hit the network (`Http::preventStrayRequests()`).
-- **Larastan** at level 6 to start, raised when the code is clean.
+- **Larastan** at level 7 (the kit default), raised when the code is clean. Never lowered.
 
 A test that fails because the spec changed is updated in the same commit as the spec change, with the reason in the commit message.
 
@@ -70,7 +70,7 @@ Do not use subagents to implement parts of the same milestone in parallel. They 
 ## Hooks, commands and settings in this kit
 
 - `.claude/settings.json`: allows the safe, frequent commands (tests, Pint, Larastan, npm scripts, read-only git) so Claude is not asking every minute; asks before installing packages or pushing; denies reading `.env` and force-pushing.
-- **PostToolUse hook** `format.sh`: formats every PHP file Claude edits with Pint and every TS/TSX/CSS file with Prettier, so style never shows up in reviews.
+- **PostToolUse hook** `format.sh`: formats every PHP file Claude edits with Pint and every TS/TSX/CSS file with `vp fmt` (Oxfmt, from the kit), so style never shows up in reviews.
 - **PreToolUse hook** `protect-files.sh`: blocks edits to `.env*`, `vendor/`, `node_modules/`, lock files and already-merged migrations. A merged migration is changed with a new migration.
 - **Commands**: `/start-milestone`, `/verify`, `/review`, `/ui-check`, `/wrap-up`.
 - **Subagents**: `code-reviewer`, `privacy-guard`, `ui-reviewer`.
