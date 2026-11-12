@@ -4,15 +4,15 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: none started. Next: M01.
-- **Branch**: main
+- **Milestone**: M01 · Scaffold, tooling and CI (in progress)
+- **Branch**: m01-scaffold
 - **State**: dev kit copied in, Laravel app scaffolded by Bruno (see README).
 
 ## Milestones
 
 | # | Milestone | Status | Notes |
 | --- | --- | --- | --- |
-| M01 | Scaffold, tooling and CI | todo | |
+| M01 | Scaffold, tooling and CI | in progress | |
 | M02 | Design tokens and layout shell | todo | |
 | M03 | pokedata.ovh spike | todo | |
 | M04 | Domain schema and seed data | todo | |
