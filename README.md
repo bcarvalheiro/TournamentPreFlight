@@ -27,7 +27,7 @@ design/prototype/             the chosen "Pre-Flight Pairings" prototype (open p
 
 1. **Install** PHP 8.4, Composer, Node 22+, MySQL 8.4 (Laravel Herd + DBngin is easiest on Mac/Windows), the Laravel installer (`composer global require laravel/installer`) and Claude Code.
 2. **Scaffold the app**: `laravel new pre-flight`. Choose the **React** starter kit, Laravel's built-in authentication, **Pest**, and **MySQL**. If it offers **Laravel Boost**, say yes and pick Claude Code (it gives Claude version-correct Laravel docs).
-3. **Create two databases**: `preflight` and `preflight_test`.
+3. **Create two databases**: `tournament_preflight` and `tournament_preflight_test`.
 4. **Copy this kit into the app root**, including the hidden `.claude` folder:
    `cp -R dev-kit/. pre-flight/`
    If Boost already wrote a `CLAUDE.md`, keep ours at the top and its generated section below.

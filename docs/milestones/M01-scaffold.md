@@ -6,8 +6,8 @@
 A clean Laravel 13 + React starter kit app with every guardrail in place, so later milestones only add features.
 
 ## Scope
-- Confirm the scaffold Bruno created: Laravel 13, PHP 8.4, React starter kit, Pest, MySQL. Record the Inertia, React, Tailwind and Pest versions in `decisions.md`.
-- `.env.example` for MySQL `preflight` and a `preflight_test` database; `phpunit.xml` uses the test database. `APP_TIMEZONE=UTC`, `APP_LOCALE=en`.
+- Confirm the scaffold Bruno created: Laravel 13, PHP 8.4, React starter kit, Pest, MySQL. Record the Inertia, React, Bootstrap 5 and Pest versions in `decisions.md`.
+- `.env.example` for MySQL `tournament_preflight` and a `tournament_preflight_test` database; `phpunit.xml` uses the test database. `APP_TIMEZONE=UTC`, `APP_LOCALE=en`.
 - Larastan at level 6 (`phpstan.neon`), Pint (Laravel preset), ESLint and Prettier from the kit.
 - `composer verify` script: `pint --test`, `phpstan analyse`, `pest --parallel`, `npm run types` (tsc --noEmit), `npm run lint`, `npm run build`. Add the npm scripts if the kit lacks them.
 - Pest 4 browser plugin installed and one smoke browser test that loads `/`.

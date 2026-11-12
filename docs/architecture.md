@@ -5,7 +5,7 @@
 | Layer | Choice | Notes |
 | --- | --- | --- |
 | Framework | Laravel 13, PHP 8.4 | Laravel 14 expected Q1 2027 and needs PHP 8.4, so no PHP upgrade then |
-| Database | MySQL 8.4 LTS | Tests run on MySQL too (a `preflight_test` database), not SQLite, so JSON and date behaviour match production |
+| Database | MySQL 8.4 LTS | Tests run on MySQL too (a `tournament_preflight_test` database), not SQLite, so JSON and date behaviour match production |
 | Frontend | Official React starter kit: Inertia, React 19, TypeScript, Tailwind 4, shadcn/ui | Check the installed Inertia version on day one and record it in `decisions.md` |
 | Routes in TS | Whatever the starter kit ships (Wayfinder or Ziggy) | Don't add a second one |
 | Auth | Starter kit auth (Fortify) for sessions; Socialite for Google; Socialite Providers for Apple and Discord; own magic-link flow | Password login and registration are removed |
@@ -54,7 +54,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **events**: venue_id, source (pokedata, player), source_event_id (nullable), official_guid (nullable, unique), official_url (nullable, unique), display_id (official tournament ID, nullable), type (friendly, league, challenge, cup, other), title, starts_at, ends_at, ends_at_estimated (bool), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Unique (source, source_event_id). Index (status, ends_at, starts_at).
 
-**attendances**: event_id, player_profile_id, status (going, maybe), confirmed_at (nullable), anonymised_at (nullable). Unique (event_id, player_profile_id). Removing an answer deletes the row. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs). Index (event_id, status).
+**attendances**: event_id, player_profile_id, status, confirmed_at (nullable), anonymised_at (nullable). Unique (event_id, player_profile_id). Removing an answer deletes the row. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs). Index (event_id, status). If there's a record, it's because it's atending.
 
 **event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
 
