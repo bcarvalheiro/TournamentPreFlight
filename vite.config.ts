@@ -44,6 +44,7 @@ export default defineConfig({
             'vendor/**',
             'node_modules/**',
             'public/**',
+            'design/**',
             'bootstrap/ssr/**',
             'tailwind.config.js',
             'resources/js/actions/**',
@@ -66,6 +67,8 @@ export default defineConfig({
         ignorePatterns: [
             '.github/**',
             'composer.json',
+            'design/**',
+            '**/*.md',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],
