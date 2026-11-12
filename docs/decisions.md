@@ -30,6 +30,10 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-12 | M01: Larastan stays at level 7 (kit default) instead of the planned 6 | Stricter is fine; the level is never lowered |
 | 2026-11-12 | M01: JS/TS lint and format with the kit's Vite+ (`vp check`: Oxlint + Oxfmt) instead of ESLint + Prettier | Avoids two linters and two formatters |
 | 2026-11-12 | M01: CI runs PHP 8.4 (production target) even though local PHP is 8.5 | Match production |
+| 2026-11-12 | M01: `composer.json` `conflict` keeps `brianium/paratest` below 7.28 | Paratest 7.28 changed `SuiteLoader::$tests` to nested arrays and breaks `pest --parallel` on Pest 5.3.5. Remove the conflict once a Pest release supports it |
+| 2026-11-12 | M01: `phpunit.xml` carries a test-only `APP_KEY` | Tests never depend on a developer's `.env`; a fresh clone passes without `key:generate`. Never use it outside tests |
+| 2026-11-12 | M01: `composer verify` runs `npm run build` before types, lint and Pest | The build generates Wayfinder TS files (needed by `tsc`) and the Vite manifest (needed by the browser test) |
+| 2026-11-12 | M01: Markdown and `design/**` are excluded from `vp fmt` and `vp lint` | Docs are hand-written; the prototype is a reference, not app code |
 
 ## Open questions
 
