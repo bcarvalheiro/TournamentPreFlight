@@ -10,15 +10,16 @@ Each milestone is small enough to finish in one Claude Code session, and it live
 
 ```
 /clear  →  /start-milestone M05  →  plan (approve)  →  tests first  →  implement
-        →  /verify  →  /review  →  Bruno checks in browser  →  /wrap-up  →  merge
+        →  /verify  →  /rethink-tests  →  /review  →  Bruno checks in browser  →  /wrap-up  →  merge
 ```
 
 1. **Start clean.** Run `/clear` (or open a new session). Old context costs tokens and causes drift.
 2. **`/start-milestone M05`.** Claude reads `CLAUDE.md`, `docs/progress.md` and the milestone file, creates the branch `m05-home-page`, and presents a plan. It writes no code yet.
 3. **Approve the plan.** Bruno reads it. Push back now: a wrong plan is cheap to fix, wrong code is not. Using plan mode (Shift+Tab until "plan mode") for this step is a good habit.
-4. **Tests first.** Claude turns each acceptance criterion into a Pest test and runs them to watch them fail. This proves the tests test something.
+4. **Tests first.** Claude turns each acceptance criterion into a Pest test and runs them to watch them fail. This proves the tests test something. Before running each test, Claude explains it in plain words: what it protects, how it works, and what failure we expect to see. Slow down here; Bruno is studying the tests.
 5. **Implement** until the tests pass. Commit in small steps.
 6. **`/verify`.** Runs the full gate and fixes failures. Never skip a test to get green.
+6b. **`/rethink-tests`.** Now that the code exists, Claude and Bruno look at the tests again, one by one: does each still make sense, does it test behaviour rather than implementation, is it too weak or too brittle, and which tests are missing (edge cases, failure paths, rules from `CLAUDE.md` the milestone touches). Claude proposes; Bruno decides. Agreed changes are made and `/verify` runs again. This is a conversation, not a checklist to rush.
 7. **`/review`.** Starts the `code-reviewer` subagent (and `privacy-guard` when public data changed, `ui-reviewer` when UI changed) with fresh context on the branch diff. Claude fixes what is agreed.
 8. **Bruno checks it in the browser**, on a phone-sized window too. Anything wrong goes back to step 5.
 9. **`/wrap-up`.** Claude updates `docs/progress.md` and `docs/decisions.md`, commits, and writes the pull request text.
@@ -72,7 +73,7 @@ Do not use subagents to implement parts of the same milestone in parallel. They 
 - `.claude/settings.json`: allows the safe, frequent commands (tests, Pint, Larastan, npm scripts, read-only git) so Claude is not asking every minute; asks before installing packages or pushing; denies reading `.env` and force-pushing.
 - **PostToolUse hook** `format.sh`: formats every PHP file Claude edits with Pint and every TS/TSX/CSS file with `vp fmt` (Oxfmt, from the kit), so style never shows up in reviews.
 - **PreToolUse hook** `protect-files.sh`: blocks edits to `.env*`, `vendor/`, `node_modules/`, lock files and already-merged migrations. A merged migration is changed with a new migration.
-- **Commands**: `/start-milestone`, `/verify`, `/review`, `/ui-check`, `/wrap-up`.
+- **Commands**: `/start-milestone`, `/verify`, `/rethink-tests`, `/review`, `/ui-check`, `/wrap-up`.
 - **Subagents**: `code-reviewer`, `privacy-guard`, `ui-reviewer`.
 
 ## Rules for Claude during a session

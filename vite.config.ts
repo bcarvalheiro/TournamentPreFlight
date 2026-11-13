@@ -69,6 +69,7 @@ export default defineConfig({
             'composer.json',
             'design/**',
             '**/*.md',
+            '.claude/**',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],

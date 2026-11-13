@@ -38,6 +38,5 @@ Status values: todo, in progress, review, done.
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
-- **`.claude/` is gitignored** (Boost's `.gitignore` line `/.claude`), so the kit's agents, commands, hooks and settings are not versioned. Bruno to decide; suggested fix: track `.claude/` and ignore only `.claude/settings.local.json`. (M01 follow-up)
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
-- **Summary agent / richer `/wrap-up`**: Bruno asked for a way to get a full write-up of what each session did. (later, tooling)
+- ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.

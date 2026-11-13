@@ -41,6 +41,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 - When a decision is made that the docs don't cover, add it to `docs/decisions.md`.
 - Bruno is learning Tailwind. When you write or change UI, briefly explain the Tailwind classes and patterns that are new to him, and compare them to Bootstrap where that helps.
 - When you finish an implementation explain everything you did as it was ready to be documented.
+- Bruno is studying the tests. Go slowly on them: before running a test, explain what it protects, how it works and what failure you expect. After implementation, run `/rethink-tests` before `/review`.
 
 ===
 

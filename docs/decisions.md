@@ -34,6 +34,10 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-12 | M01: `phpunit.xml` carries a test-only `APP_KEY` | Tests never depend on a developer's `.env`; a fresh clone passes without `key:generate`. Never use it outside tests |
 | 2026-11-12 | M01: `composer verify` runs `npm run build` before types, lint and Pest | The build generates Wayfinder TS files (needed by `tsc`) and the Vite manifest (needed by the browser test) |
 | 2026-11-12 | M01: Markdown and `design/**` are excluded from `vp fmt` and `vp lint` | Docs are hand-written; the prototype is a reference, not app code |
+| 2026-11-13 | M01: `.claude/` is tracked in git (agents, commands, hooks, settings, Boost skills); only `.claude/settings.local.json` is ignored | Boost's `.gitignore` had hidden the whole kit, so a fresh clone lost it |
+| 2026-11-13 | **Every milestone gets a `/rethink-tests` step** after `/verify` and before `/review`; Claude explains tests slowly, before running them | Bruno's decision: he is studying the tests and wants them re-examined once the code exists |
+| 2026-11-13 | M01: Inertia SSR is switched off in tests (`INERTIA_SSR_ENABLED=false` in `phpunit.xml`; `config/inertia.php` reads the env, default `true`) | With `composer dev` running, Inertia posts every page to the Vite dev server for SSR; the stray-request guard blocked it and 12 tests failed only when a dev server was up. Feature tests assert Inertia props, not SSR HTML |
+| 2026-11-13 | No separate "summary" agent; `/wrap-up` writes the full, documentation-ready session summary to `progress.md` and the PR | The implementing session has the context; a fresh agent would have to rebuild it from the diff |
 
 ## Open questions
 
