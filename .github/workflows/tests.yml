@@ -1,11 +1,20 @@
 name: tests
 
+# Standard triggers: check every PR before merge, and main after merge.
+# Docs-only changes have nothing to test, so they skip CI.
 on:
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   push:
     branches:
-      - '**'
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
 
-# A PR shows the checks of its latest pushed commit, so no separate pull_request run is needed.
+# A newer push to the same PR or branch cancels the run still in progress.
 concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
