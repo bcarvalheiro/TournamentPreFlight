@@ -35,6 +35,12 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-12 | M01: `composer verify` runs `npm run build` before types, lint and Pest | The build generates Wayfinder TS files (needed by `tsc`) and the Vite manifest (needed by the browser test) |
 | 2026-11-12 | M01: Markdown and `design/**` are excluded from `vp fmt` and `vp lint` | Docs are hand-written; the prototype is a reference, not app code |
 | 2026-11-13 | M01: `.claude/` is tracked in git (agents, commands, hooks, settings, Boost skills); only `.claude/settings.local.json` is ignored | Boost's `.gitignore` had hidden the whole kit, so a fresh clone lost it |
+| 2026-11-13 | M01: **no `APP_KEY` in `phpunit.xml`.** Tests use the key from each developer's `.env` (`php artisan key:generate`, run by `composer setup`); CI generates its own. Supersedes the 2026-11-12 test-key entry. AC1 now reads "after `composer setup`" | Bruno's decision: a committed key, even test-only, was flagged by GitGuardian |
+| 2026-11-13 | M01: CI runs on `push` to any branch only (no separate `pull_request` run), with `concurrency` cancelling superseded runs | Every commit is checked before a PR exists; the PR shows the push checks, so the `pull_request` run was a duplicate |
+| 2026-11-13 | M01: CI triggers are `pull_request` and `push` to `main` only, skipping docs-only changes (`**/*.md`, `docs/**`); `concurrency` cancels superseded runs. Supersedes the "push to any branch" entry above | Bruno: CI runs only when needed, as standards demand. PRs are checked before merge, `main` after; locally `composer verify` gates every commit |
+| 2026-11-13 | M01: `APP_TIMEZONE` stays an env setting (Laravel convention) but must always be `UTC`; noted in `.env.example` and `architecture.md` | Bruno's decision: keep Laravel's way, stay coherent with rule 4 |
+| 2026-11-13 | M01: scripts trimmed to one name per job. Composer: `setup`, `dev`, `lint` (Pint fix), `verify`. npm: kit names `build`, `dev`, `check`, `check:fix`, `types:check`. Removed duplicates `composer test`/`ci:check`/`types:check`/`lint:check` and npm `types`/`lint` | `composer verify` is the only gate; fewer names, no clashes |
+| 2026-11-13 | M01 `/rethink-tests`: debug calls are also banned in `routes/`, `config/`, `bootstrap/` and Blade views (text scan); the smoke test asserts the page title; a test enforces UTC; the kit's placeholder unit test is removed | `arch()` only inspects classes, and `assertNoSmoke()` alone passed on a 500 page (both shown by experiment) |
 | 2026-11-13 | **Every milestone gets a `/rethink-tests` step** after `/verify` and before `/review`; Claude explains tests slowly, before running them | Bruno's decision: he is studying the tests and wants them re-examined once the code exists |
 | 2026-11-13 | M01: Inertia SSR is switched off in tests (`INERTIA_SSR_ENABLED=false` in `phpunit.xml`; `config/inertia.php` reads the env, default `true`) | With `composer dev` running, Inertia posts every page to the Vite dev server for SSR; the stray-request guard blocked it and 12 tests failed only when a dev server was up. Feature tests assert Inertia props, not SSR HTML |
 | 2026-11-13 | No separate "summary" agent; `/wrap-up` writes the full, documentation-ready session summary to `progress.md` and the PR | The implementing session has the context; a fresh agent would have to rebuild it from the diff |
@@ -53,7 +59,7 @@ To verify before relying on them:
 - [ ] pokedata.ovh response fields and refresh behaviour; write to its author about this use. (Spike M03.)
 - [ ] 2027 division birth years against official Play! Pokémon rules (source so far: playnews.gg).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
-- [ ] Whether Laravel 13 lists MySQL 8.4 as supported.
+- [x] ~~Whether Laravel 13 lists MySQL 8.4 as supported~~: yes, the Laravel 13 docs list MySQL 5.7+; M01 runs on 8.4.7 locally and 8.4 in CI.
 - [x] ~~Inertia version shipped by the starter kit~~: Inertia 3 (recorded M01).
 - [ ] Terms of use covering the official Event Locator.
 - [ ] Text of Lei 58/2019 art. 16 in the Diário da República (only summaries read).

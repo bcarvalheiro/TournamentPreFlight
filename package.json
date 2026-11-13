@@ -8,9 +8,7 @@
         "dev": "vp dev",
         "check": "vp check",
         "check:fix": "vp check --fix",
-        "types:check": "tsc --noEmit",
-        "types": "tsc --noEmit",
-        "lint": "vp check"
+        "types:check": "tsc --noEmit"
     },
     "dependencies": {
         "@inertiajs/react": "^3.0.0",

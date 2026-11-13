@@ -17,9 +17,9 @@ docs/
 design/prototype/             the chosen "Pre-Flight Pairings" prototype (open pairings.html)
 .claude/
   settings.json               permissions + hooks
-  hooks/format.sh             auto-format edited files (Pint, Prettier)
+  hooks/format.sh             auto-format edited files (Pint, vp fmt)
   hooks/protect-files.sh      block edits to .env, vendor, lock files, merged migrations
-  commands/                   /start-milestone /verify /review /ui-check /wrap-up
+  commands/                   /start-milestone /verify /rethink-tests /review /ui-check /wrap-up
   agents/                     code-reviewer, privacy-guard, ui-reviewer
 ```
 
@@ -36,6 +36,17 @@ design/prototype/             the chosen "Pre-Flight Pairings" prototype (open p
 
 The hooks need `php` on your PATH (already true after step 1).
 
+## Working on an existing clone
+
+```
+composer setup     installs PHP and JS packages, copies .env.example to .env,
+                   generates APP_KEY, migrates, builds the frontend
+composer verify    the full gate; must pass before any commit
+composer dev       app, queue, logs and Vite together
+```
+
+Create the `tournament_preflight` and `tournament_preflight_test` databases first. Tests read `APP_KEY` from your `.env`, so `php artisan key:generate` (done by `composer setup`) is required before `composer verify`.
+
 ## How a session goes
 
 ```
@@ -43,7 +54,8 @@ The hooks need `php` on your PATH (already true after step 1).
 /start-milestone M05     Claude reads context, creates the branch, shows a plan
 (you approve or push back)
                          Claude writes failing tests, then the code
-/verify                  full gate: Pint, Larastan, Pest, TypeScript, ESLint, build
+/verify                  full gate: Pint, Larastan, build, TypeScript, vp check, Pest
+/rethink-tests           look at the tests again together, before review
 /review                  fresh-context subagents review the diff
 (you look at it in the browser, at phone width too)
 /wrap-up                 progress + decisions updated, commit, PR text
