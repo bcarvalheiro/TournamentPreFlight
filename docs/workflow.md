@@ -19,11 +19,11 @@ Each milestone is small enough to finish in one Claude Code session, and it live
 4. **Tests first.** Claude turns each acceptance criterion into a Pest test and runs them to watch them fail. This proves the tests test something. Before running each test, Claude explains it in plain words: what it protects, how it works, and what failure we expect to see. Slow down here; Bruno is studying the tests.
 5. **Implement** until the tests pass. Commit in small steps.
 6. **`/verify`.** Runs the full gate and fixes failures. Never skip a test to get green.
-6b. **`/rethink-tests`.** Now that the code exists, Claude and Bruno look at the tests again, one by one: does each still make sense, does it test behaviour rather than implementation, is it too weak or too brittle, and which tests are missing (edge cases, failure paths, rules from `CLAUDE.md` the milestone touches). Claude proposes; Bruno decides. Agreed changes are made and `/verify` runs again. This is a conversation, not a checklist to rush.
-7. **`/review`.** Starts the `code-reviewer` subagent (and `privacy-guard` when public data changed, `ui-reviewer` when UI changed) with fresh context on the branch diff. Claude fixes what is agreed.
-8. **Bruno checks it in the browser**, on a phone-sized window too. Anything wrong goes back to step 5.
-9. **`/wrap-up`.** Claude updates `docs/progress.md` and `docs/decisions.md`, commits, and writes the pull request text.
-10. **Merge** to `main` (PR on GitHub, CI green). Then `/clear` and start the next one.
+7. **`/rethink-tests`.** Now that the code exists, Claude and Bruno look at the tests again, one by one: does each still make sense, does it test behaviour rather than implementation, is it too weak or too brittle, and which tests are missing (edge cases, failure paths, rules from `CLAUDE.md` the milestone touches). Claude proposes; Bruno decides. Agreed changes are made and `/verify` runs again. This is a conversation, not a checklist to rush.
+8. **`/review`.** Starts the `code-reviewer` subagent (and `privacy-guard` when public data changed, `ui-reviewer` when UI changed) with fresh context on the branch diff. Claude fixes what is agreed.
+9. **Bruno checks it in the browser**, on a phone-sized window too. Anything wrong goes back to step 5.
+10. **`/wrap-up`.** Claude updates `docs/progress.md` and `docs/decisions.md`, commits, and writes the pull request text.
+11. **Merge** to `main` (PR on GitHub, CI green). Then `/clear` and start the next one.
 
 If a session runs long, finish a coherent slice, `/wrap-up` with the milestone marked "in progress" and notes on what is left, and continue in a new session. Prefer that over `/compact`, because the files carry state better than a summary.
 

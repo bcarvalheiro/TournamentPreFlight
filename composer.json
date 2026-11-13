@@ -61,32 +61,14 @@
         "lint": [
             "pint --parallel"
         ],
-        "lint:check": [
-            "pint --parallel --test"
-        ],
-        "ci:check": [
-            "Composer\\Config::disableProcessTimeout",
-            "npm run check",
-            "npm run types:check",
-            "@test"
-        ],
-        "types:check": [
-            "phpstan analyse"
-        ],
-        "test": [
-            "@php artisan config:clear --ansi",
-            "@lint:check",
-            "@types:check",
-            "@php artisan test"
-        ],
         "verify": [
             "Composer\\Config::disableProcessTimeout",
             "@php artisan config:clear --ansi",
             "pint --parallel --test",
             "phpstan analyse --memory-limit=1G",
             "npm run build",
-            "npm run types",
-            "npm run lint",
+            "npm run types:check",
+            "npm run check",
             "pest --parallel"
         ],
         "post-autoload-dump": [

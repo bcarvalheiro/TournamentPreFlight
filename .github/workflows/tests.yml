@@ -2,7 +2,13 @@ name: tests
 
 on:
   push:
-  pull_request:
+    branches:
+      - '**'
+
+# A PR shows the checks of its latest pushed commit, so no separate pull_request run is needed.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

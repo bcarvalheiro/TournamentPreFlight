@@ -77,7 +77,7 @@ Computed with `withCount` filtered by status and joined to profiles for division
 
 ## Time
 
-`APP_TIMEZONE=UTC`. Database in UTC. Imported local times are parsed as `Europe/Lisbon` then converted (note Madeira and Azores: if pokedata gives a venue in those regions, use `Atlantic/Madeira` / `Atlantic/Azores`; record this in the spike). The frontend formats every date through `resources/js/lib/time.ts` with `timeZone: 'Europe/Lisbon'` and `en-GB` style ("Sat 15 Nov, 10:00"). Date filter presets are computed in Lisbon time on the server.
+`APP_TIMEZONE=UTC` (read by `config/app.php`; never change it per environment). Database in UTC. Imported local times are parsed as `Europe/Lisbon` then converted (note Madeira and Azores: if pokedata gives a venue in those regions, use `Atlantic/Madeira` / `Atlantic/Azores`; record this in the spike). The frontend formats every date through `resources/js/lib/time.ts` with `timeZone: 'Europe/Lisbon'` and `en-GB` style ("Sat 15 Nov, 10:00"). Date filter presets are computed in Lisbon time on the server.
 
 ## Event import
 
@@ -122,7 +122,7 @@ Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submission
 
 ## Environments and CI
 
-- Local: Laravel Herd or Sail, MySQL 8.4, Mailpit.
+- Local: Laravel Herd (PHP), DBngin (MySQL 8.4), Mailpit.
 - CI: GitHub Actions with a MySQL 8.4 service runs `composer verify` on every push and PR.
 - Production: hosting is an open decision. Needs PHP 8.4, MySQL 8.4, a cron for the scheduler, one queue worker, HTTPS.
 
