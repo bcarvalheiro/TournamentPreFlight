@@ -11,7 +11,7 @@
 | Auth | Starter kit auth (Fortify) for sessions; Socialite for Google; Socialite Providers for Apple and Discord; own magic-link flow | Password login and registration are removed |
 | Background | Scheduler + queues on the database driver | One `queue:work` process in production |
 | Mail | Laravel Mail, Markdown mailables; Mailpit locally | Provider is an open decision |
-| Tests | Pest 4 (+ browser plugin), Larastan, Pint | See `workflow.md` |
+| Tests | Pest 5 (+ browser plugin), Larastan level 7, Pint; Vite+ `vp check` for TS/React lint and format | See `workflow.md` |
 | Dev help | Laravel Boost (MCP server with version-specific docs, schema, tinker) | Optional but recommended |
 
 ## Code layout

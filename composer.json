@@ -9,7 +9,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "inertiajs/inertia-laravel": "^3.0",
         "laravel/chisel": "^0.1.0",
         "laravel/fortify": "^1.37.2",
@@ -24,11 +24,14 @@
         "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.0.6",
         "laravel/pint": "^1.27",
-        "laravel/sail": "^1.53",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.9.3",
         "pestphp/pest": "^5.3",
+        "pestphp/pest-plugin-browser": "^5.2",
         "pestphp/pest-plugin-laravel": "^5.0"
+    },
+    "conflict": {
+        "brianium/paratest": ">=7.28.0"
     },
     "autoload": {
         "psr-4": {
@@ -75,6 +78,16 @@
             "@lint:check",
             "@types:check",
             "@php artisan test"
+        ],
+        "verify": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan config:clear --ansi",
+            "pint --parallel --test",
+            "phpstan analyse --memory-limit=1G",
+            "npm run build",
+            "npm run types",
+            "npm run lint",
+            "pest --parallel"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

@@ -24,6 +24,20 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-12 | **Ship the official-looking ball icons** (prototype "Classic" set: Poké, Great, Ultra, Master Ball), not our own set. Supersedes the entry above | Bruno's decision; the trademark risk was flagged to him and accepted |
 | 2026-11-12 | **App name is "Pre-Flight"** (brand mark and `config('app.name')`); hero still reads "Pokémon Pre-Flight" as designed | Bruno's decision |
 | 2026-11-12 | **Pokémon TCG tournaments only.** Import only TCG events; no `game` column | Bruno's decision |
+| 2026-11-12 | M01: installed versions: Laravel 13.42, Inertia 3 (inertia-laravel 3.7, @inertiajs/react 3.11), React 19.3, Tailwind 4.3, Pest 5.3, Larastan 3.15, Boost 2.10 | Recorded at scaffold |
+| 2026-11-12 | M01: **keep Tailwind 4**, not Bootstrap 5. Bruno knows Bootstrap, not Tailwind; Claude explains Tailwind as it builds the UI | The starter kit, shadcn/ui and `design.md` tokens are all Tailwind; switching would mean rebuilding the kit's UI |
+| 2026-11-12 | M01: Pest 5 (kit version) instead of the planned Pest 4 | Newer and what the kit ships; no reason to downgrade |
+| 2026-11-12 | M01: Larastan stays at level 7 (kit default) instead of the planned 6 | Stricter is fine; the level is never lowered |
+| 2026-11-12 | M01: JS/TS lint and format with the kit's Vite+ (`vp check`: Oxlint + Oxfmt) instead of ESLint + Prettier | Avoids two linters and two formatters |
+| 2026-11-12 | M01: CI runs PHP 8.4 (production target) even though local PHP is 8.5 | Match production |
+| 2026-11-12 | M01: `composer.json` `conflict` keeps `brianium/paratest` below 7.28 | Paratest 7.28 changed `SuiteLoader::$tests` to nested arrays and breaks `pest --parallel` on Pest 5.3.5. Remove the conflict once a Pest release supports it |
+| 2026-11-12 | M01: `phpunit.xml` carries a test-only `APP_KEY` | Tests never depend on a developer's `.env`; a fresh clone passes without `key:generate`. Never use it outside tests |
+| 2026-11-12 | M01: `composer verify` runs `npm run build` before types, lint and Pest | The build generates Wayfinder TS files (needed by `tsc`) and the Vite manifest (needed by the browser test) |
+| 2026-11-12 | M01: Markdown and `design/**` are excluded from `vp fmt` and `vp lint` | Docs are hand-written; the prototype is a reference, not app code |
+| 2026-11-13 | M01: `.claude/` is tracked in git (agents, commands, hooks, settings, Boost skills); only `.claude/settings.local.json` is ignored | Boost's `.gitignore` had hidden the whole kit, so a fresh clone lost it |
+| 2026-11-13 | **Every milestone gets a `/rethink-tests` step** after `/verify` and before `/review`; Claude explains tests slowly, before running them | Bruno's decision: he is studying the tests and wants them re-examined once the code exists |
+| 2026-11-13 | M01: Inertia SSR is switched off in tests (`INERTIA_SSR_ENABLED=false` in `phpunit.xml`; `config/inertia.php` reads the env, default `true`) | With `composer dev` running, Inertia posts every page to the Vite dev server for SSR; the stray-request guard blocked it and 12 tests failed only when a dev server was up. Feature tests assert Inertia props, not SSR HTML |
+| 2026-11-13 | No separate "summary" agent; `/wrap-up` writes the full, documentation-ready session summary to `progress.md` and the PR | The implementing session has the context; a fresh agent would have to rebuild it from the diff |
 
 ## Open questions
 
@@ -40,6 +54,6 @@ To verify before relying on them:
 - [ ] 2027 division birth years against official Play! Pokémon rules (source so far: playnews.gg).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
 - [ ] Whether Laravel 13 lists MySQL 8.4 as supported.
-- [ ] Inertia version shipped by the starter kit (2 or 3). Record in M01.
+- [x] ~~Inertia version shipped by the starter kit~~: Inertia 3 (recorded M01).
 - [ ] Terms of use covering the official Event Locator.
 - [ ] Text of Lei 58/2019 art. 16 in the Diário da República (only summaries read).
