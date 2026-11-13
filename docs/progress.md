@@ -4,16 +4,16 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M01 · Scaffold, tooling and CI (review). Next: M02.
-- **Branch**: m01-scaffold
-- **State**: tooling, tests and CI in place; PR #1 merged, follow-up commits (review fixes, CI triggers, stronger tests, wrap-up) go in PR #2.
+- **Milestone**: M02 · Design tokens and layout shell (in progress).
+- **Branch**: m02-design-shell
+- **State**: plan presented, waiting for approval. M01 merged (PR #1 and #2).
 
 ## Milestones
 
 | # | Milestone | Status | Notes |
 | --- | --- | --- | --- |
-| M01 | Scaffold, tooling and CI | review | PR #1 merged; PR #2 for the follow-ups |
-| M02 | Design tokens and layout shell | todo | |
+| M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
+| M02 | Design tokens and layout shell | in progress | |
 | M03 | pokedata.ovh spike | todo | |
 | M04 | Domain schema and seed data | todo | |
 | M05 | Home page on seeded data | todo | |
