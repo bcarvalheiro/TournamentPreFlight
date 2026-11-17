@@ -8,12 +8,8 @@ use Pest\Browser\Api\AwaitableWebpage;
  *
  * At phone width the ResponsiveDialog is a bottom drawer (vaul); at desktop
  * width it is a centred dialog (Radix). Both must behave the same way.
+ * The 'widths' dataset lives in tests/Browser/Datasets.php.
  */
-
-dataset('widths', [
-    'phone' => [390, 844],
-    'desktop' => [1280, 800],
-]);
 
 beforeEach(function () {
     registerWebRoutesIn('local');
