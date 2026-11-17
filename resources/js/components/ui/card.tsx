@@ -2,12 +2,16 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/*
+ * Pre-Flight card (docs/design.md: cards white, 6px radius, line border, no shadow).
+ * The one card component for the app; special cards (e.g. the match slip) add classes.
+ */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "bg-card text-card-foreground flex flex-col gap-4 rounded-card border border-line py-4",
         className
       )}
       {...props}
@@ -19,7 +23,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-header"
-      className={cn("flex flex-col gap-1.5 px-6", className)}
+      className={cn("flex flex-col gap-1.5 px-4", className)}
       {...props}
     />
   )
@@ -29,7 +33,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-title"
-      className={cn("leading-none font-semibold", className)}
+      className={cn("font-display text-2xl leading-none font-bold uppercase", className)}
       {...props}
     />
   )
@@ -49,7 +53,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-6", className)}
+      className={cn("px-4", className)}
       {...props}
     />
   )
@@ -59,7 +63,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-footer"
-      className={cn("flex items-center px-6", className)}
+      className={cn("flex items-center px-4", className)}
       {...props}
     />
   )

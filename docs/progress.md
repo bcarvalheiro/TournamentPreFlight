@@ -38,6 +38,7 @@ Implementation:
 - [x] Review #2: single light look in three steps (keep the class-based `dark` variant, never add `.dark`, `color-scheme: light`)
 - [x] Review #4: touch targets raised to 40px (drawer close, Sign in/Sign up, link button)
 - [ ] Signed-in `/ui-check` with the family demo account: after M04 seeds it (Bruno)
+- [x] Cards: shadcn `Card` restyled with the tokens and used for the styleguide sections (Bruno)
 - [ ] Bruno checks in the browser at phone width
 - [ ] `/wrap-up`
 

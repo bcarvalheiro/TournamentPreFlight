@@ -7,6 +7,7 @@ import { ResponsiveDialog } from '@/components/responsive-dialog';
 import { TournamentTypeBadge } from '@/components/tournament-type-badge';
 import { TournamentTypeIcon } from '@/components/tournament-type-icon';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Empty, EmptyContent, EmptyDescription } from '@/components/ui/empty';
 import PublicLayout from '@/layouts/public-layout';
 import {
@@ -14,14 +15,17 @@ import {
     TOURNAMENT_TYPES,
 } from '@/lib/tournament-types';
 
+/** A styleguide section: the app's Card with a title. */
 function Section({ title, children }: { title: string; children: ReactNode }) {
     return (
-        <section className="space-y-3 rounded-card border border-line bg-bg p-4">
-            <h2 className="font-display text-2xl font-bold uppercase">
-                {title}
-            </h2>
-            {children}
-        </section>
+        <Card>
+            <CardHeader>
+                <CardTitle>
+                    <h2>{title}</h2>
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">{children}</CardContent>
+        </Card>
     );
 }
 
