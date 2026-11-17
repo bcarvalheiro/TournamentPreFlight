@@ -33,7 +33,7 @@ Implementation:
 - [x] Styleguide page
 - [x] JS tests in `composer verify`
 - [x] Toast moved to top right, larger (Bruno, after seeing the styleguide)
-- [ ] `/rethink-tests`
+- [x] `/rethink-tests`: proposals P1–P6 all rejected by Bruno (tests kept as they are). Standards check: widths dataset moved to the scoped `tests/Browser/Datasets.php` (Pest docs); kept on purpose: Playwright's `page()->locator()->click(position)` for the backdrop, the `registerWebRoutesIn()` helper (built from documented pieces, no documented alternative), and `renderToStaticMarkup` instead of React Testing Library (revisit when components get behaviour)
 - [ ] `/review` and `/ui-check /styleguide`
 - [ ] Bruno checks in the browser at phone width
 - [ ] `/wrap-up`
