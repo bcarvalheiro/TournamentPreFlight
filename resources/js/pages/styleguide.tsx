@@ -5,14 +5,14 @@ import { toast } from 'sonner';
 import AppLogo from '@/components/app-logo';
 import { ResponsiveDialog } from '@/components/responsive-dialog';
 import { TournamentTypeBadge } from '@/components/tournament-type-badge';
-import {
-    TOURNAMENT_TYPE_NAMES,
-    TOURNAMENT_TYPES,
-    TournamentTypeIcon,
-} from '@/components/tournament-type-icon';
+import { TournamentTypeIcon } from '@/components/tournament-type-icon';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyContent, EmptyDescription } from '@/components/ui/empty';
 import PublicLayout from '@/layouts/public-layout';
+import {
+    TOURNAMENT_TYPE_NAMES,
+    TOURNAMENT_TYPES,
+} from '@/lib/tournament-types';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
     return (
@@ -115,14 +115,14 @@ export default function Styleguide() {
                         description="Pick what you want to see."
                         footer={
                             <>
-                                <Button onClick={() => setDialogOpen(false)}>
-                                    Show 12 events
-                                </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => setDialogOpen(false)}
                                 >
                                     Clear all
+                                </Button>
+                                <Button onClick={() => setDialogOpen(false)}>
+                                    Show 12 events
                                 </Button>
                             </>
                         }

@@ -8,11 +8,12 @@ import { cn } from "@/lib/utils"
  * Pre-Flight buttons (docs/design.md "Buttons"); shadcn variant names kept so kit pages still work:
  * - default = primary: red fill, white bold text
  * - outline = the design's "ghost": outlined graphite
- * - link    = text link (graphite text, red underline: red text would fail contrast at this size)
- * Focus uses the global red outline from app.css.
+ * - link    = text link (graphite text, red underline; no red hover: red text would fail contrast at this size)
+ * Focus uses the global red outline from app.css. Only text, background and border colours animate,
+ * so the red focus ring appears at once instead of fading in.
  */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-button text-sm font-bold transition-colors cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-button text-sm font-bold transition-[color,background-color,border-color] cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -23,7 +24,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "font-semibold text-ink underline decoration-red decoration-2 underline-offset-4 hover:text-red",
+        link: "font-semibold text-ink underline decoration-red decoration-2 underline-offset-4",
       },
       size: {
         default: "h-10 px-4 py-2 has-[>svg]:px-3",

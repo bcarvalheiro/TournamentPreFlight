@@ -14,12 +14,12 @@ export default function AppLogo({ className }: { className?: string }) {
     return (
         <span
             className={cn(
-                'inline-flex items-center gap-1.5 font-display text-xl font-extrabold tracking-[0.06em] uppercase',
+                'inline-flex min-w-0 items-center gap-1.5 font-display text-xl font-extrabold tracking-[0.06em] uppercase',
                 className,
             )}
         >
             <AppLogoIcon className="h-[22px] w-6 shrink-0" />
-            {name}
+            <span className="truncate">{name}</span>
         </span>
     );
 }

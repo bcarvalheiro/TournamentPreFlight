@@ -34,7 +34,10 @@ Implementation:
 - [x] JS tests in `composer verify`
 - [x] Toast moved to top right, larger (Bruno, after seeing the styleguide)
 - [x] `/rethink-tests`: proposals P1–P6 all rejected by Bruno (tests kept as they are). Standards check: widths dataset moved to the scoped `tests/Browser/Datasets.php` (Pest docs); kept on purpose: Playwright's `page()->locator()->click(position)` for the backdrop, the `registerWebRoutesIn()` helper (built from documented pieces, no documented alternative), and `renderToStaticMarkup` instead of React Testing Library (revisit when components get behaviour)
-- [ ] `/review` and `/ui-check /styleguide`
+- [x] `/review` (code-reviewer, privacy-guard, ui-reviewer; ui-reviewer also did the `/ui-check /styleguide` at 390px and 1280px, signed out). Applied: drawer/dialog check in AC4 tests, bold "Sign up", no red hover on links, `aria-describedby` when no description, instant focus ring, mixed-case titles, secondary action first, tournament types moved to `lib/`, dead `app.tsx` case removed, `truncate` on the logo name. Accepted as is (Bruno): "Sept", 9px drawer corners and centred drawer title, 80% dialog backdrop. Declined: AC1 heading check (decided in `/rethink-tests`), DST switch-day test, invalid-date handling, footer width, splitting workflow changes. Open: single light look (#2) and touch targets (#4), see below. privacy-guard: no findings
+- [ ] Review #2: how to force a single (light) look, waiting for Bruno's choice
+- [ ] Review #4: touch targets under 40px (drawer close, Sign in/Sign up, link button), waiting for Bruno's choice
+- [ ] Signed-in `/ui-check` with the family demo account: after M04 seeds it (Bruno)
 - [ ] Bruno checks in the browser at phone width
 - [ ] `/wrap-up`
 
@@ -131,4 +134,6 @@ Status values: todo, in progress, review, done.
 - ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.
 - **Kit dark mode leftovers**: the appearance setting, the inline dark-detection script in `app.blade.php` and `initializeTheme()` still run, but there is no dark palette any more. Remove with the kit demo pages. (M06)
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
+- **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
+- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).

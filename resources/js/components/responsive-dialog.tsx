@@ -54,14 +54,21 @@ export function ResponsiveDialog({
     const isOpen = open ?? ownOpen;
     const setOpen = onOpenChange ?? setOwnOpen;
     const isMobile = useIsMobile();
+    // Without a description, tell Radix on purpose; otherwise it logs a console warning (Radix Dialog docs).
+    const descriptionProps = description
+        ? {}
+        : { 'aria-describedby': undefined };
 
     if (!isMobile) {
         return (
             <Dialog open={isOpen} onOpenChange={setOpen}>
                 <DialogTrigger asChild>{trigger}</DialogTrigger>
-                <DialogContent className="rounded-sheet border-line sm:max-w-md">
+                <DialogContent
+                    className="rounded-sheet border-line sm:max-w-md"
+                    {...descriptionProps}
+                >
                     <DialogHeader>
-                        <DialogTitle className="font-display text-2xl font-bold uppercase">
+                        <DialogTitle className="font-display text-2xl font-bold">
                             {title}
                         </DialogTitle>
                         {description && (
@@ -80,7 +87,10 @@ export function ResponsiveDialog({
         // drawer on open, so the focus trap never engages (found by the browser test).
         <Drawer open={isOpen} onOpenChange={setOpen} autoFocus>
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-            <DrawerContent className="rounded-t-sheet border-line">
+            <DrawerContent
+                className="rounded-t-sheet border-line"
+                {...descriptionProps}
+            >
                 <DrawerClose
                     className="absolute top-3 right-3 rounded-full p-2 text-muted hover:text-ink"
                     aria-label="Close"
@@ -88,7 +98,7 @@ export function ResponsiveDialog({
                     <XIcon className="size-5" />
                 </DrawerClose>
                 <DrawerHeader className="text-left">
-                    <DrawerTitle className="font-display text-2xl font-bold uppercase">
+                    <DrawerTitle className="font-display text-2xl font-bold">
                         {title}
                     </DrawerTitle>
                     {description && (

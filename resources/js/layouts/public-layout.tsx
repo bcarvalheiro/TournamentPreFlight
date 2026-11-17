@@ -53,7 +53,7 @@ function Band({ hero }: { hero?: ReactNode }) {
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-full bg-red px-3.5 py-2 text-[0.88rem] font-semibold text-white"
+                                    className="rounded-full bg-red px-3.5 py-2 text-[0.88rem] font-bold text-white"
                                 >
                                     Sign up
                                 </Link>

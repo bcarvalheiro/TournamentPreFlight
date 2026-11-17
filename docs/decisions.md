@@ -59,6 +59,15 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-17 | **One test per defect, at the lowest layer that catches it**: no browser or feature test for a bug a Vitest or unit test already detects (rule added to `CLAUDE.md`) | Bruno's decision, after M02 planned test 4 duplicated a Vitest test |
 | 2026-11-17 | SVG artwork (logo mark, type balls) stays inline as JSX components | React standard (as in lucide-react); the balls need `useId` clip ids (AC3, design.md). Bruno's decision |
 | 2026-11-17 | Toast moves to the **top right** and is a little larger (420px wide, 15px text); `design.md` updated | Bruno's decision after seeing the styleguide |
+| 2026-11-17 | M02 review: `formatDay` may show September as "Sept" (en-GB month names in current browser data) | Bruno: acceptable; supersedes the strict three-letter reading of "Sat 15 Nov" for September only |
+| 2026-11-17 | M02 review: the drawer keeps shadcn's 9px top corners (not the sheet's 14px) and its centred title on phones | Bruno: no problem. The unused `text-left` on `DrawerHeader` stays |
+| 2026-11-17 | M02 review: the desktop dialog backdrop stays 80% black (shadcn default); the drawer's is 50% | Bruno's decision |
+| 2026-11-17 | M02 review: tournament types (`TOURNAMENT_TYPES`, `TournamentType`, `TOURNAMENT_TYPE_NAMES`) live in `resources/js/lib/tournament-types.ts`, not in the icon component | Component files export only components (React Fast Refresh); filters and legends will import the data |
+| 2026-11-17 | M02 review: dialog titles are mixed case ("Filters"), not uppercase; sheet footers put the secondary action first ("Clear all", then "Show n events") | Prototype; design.md lists uppercase only for hero, day headers, type labels and big counts |
+| 2026-11-17 | M02 review: "Sign up" pill text is bold; the `link` button has no red hover (graphite text, red underline); buttons animate only text, background and border colours | design.md contrast rule (red only behind bold 14px+ white text, never small red text); the focus ring must appear at once, not fade in |
+| 2026-11-17 | M02 review: `ResponsiveDialog` passes `aria-describedby={undefined}` when it has no description | Radix Dialog docs; avoids the console warning |
+| 2026-11-17 | M02 review: no default layout case for public pages yet. Supersedes "PublicLayout is the default layout … picked by page name in `app.tsx`": each public page sets `Page.layout = [PublicLayout, { … }]` | The `styleguide` case in `app.tsx` was dead code (the page's own layout wins); M05 decides whether a shared rule is needed |
+| 2026-11-17 | M02 review: the AC4 browser tests also assert which component opened (`drawer-content` at 390px, `dialog-content` at 1280px), via the `dialog variants` dataset | Both carry `role="dialog"`; a broken `useIsMobile()` would otherwise pass unnoticed (shown by experiment) |
 
 ## Open questions
 

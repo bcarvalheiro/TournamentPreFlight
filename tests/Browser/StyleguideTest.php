@@ -8,7 +8,7 @@ use Pest\Browser\Api\AwaitableWebpage;
  *
  * At phone width the ResponsiveDialog is a bottom drawer (vaul); at desktop
  * width it is a centred dialog (Radix). Both must behave the same way.
- * The 'widths' dataset lives in tests/Browser/Datasets.php.
+ * The 'widths' and 'dialog variants' datasets live in tests/Browser/Datasets.php.
  */
 
 beforeEach(function () {
@@ -55,9 +55,10 @@ it('renders every component without horizontal scroll', function (int $width, in
         ->assertNoJavaScriptErrors();
 })->with('widths');
 
-it('closes the dialog on Escape and returns focus to the button that opened it', function (int $width, int $height) {
+it('closes the dialog on Escape and returns focus to the button that opened it', function (int $width, int $height, string $expectedDialog) {
     $page = visitStyleguide($width, $height)->click('@open-dialog');
-    $page->assertVisible('[role="dialog"]');
+    $page->assertVisible('[role="dialog"]')
+        ->assertPresent($expectedDialog);
 
     $page->keys('[role="dialog"]', 'Escape');
 
@@ -65,11 +66,12 @@ it('closes the dialog on Escape and returns focus to the button that opened it',
     $page->assertNotPresent('[role="dialog"]')
         ->assertScript("document.activeElement.dataset.testid === 'open-dialog'")
         ->assertNoJavaScriptErrors();
-})->with('widths');
+})->with('dialog variants');
 
-it('closes the dialog when the backdrop is clicked', function (int $width, int $height) {
+it('closes the dialog when the backdrop is clicked', function (int $width, int $height, string $expectedDialog) {
     $page = visitStyleguide($width, $height)->click('@open-dialog');
-    $page->assertVisible('[role="dialog"]');
+    $page->assertVisible('[role="dialog"]')
+        ->assertPresent($expectedDialog);
 
     // Pest's click() aims at the centre of an element, and the dialog covers the
     // backdrop's centre. So use Playwright directly: a real mouse click 5px from
@@ -82,11 +84,12 @@ it('closes the dialog when the backdrop is clicked', function (int $width, int $
     waitUntilDialogIsGone($page);
     $page->assertNotPresent('[role="dialog"]')
         ->assertNoJavaScriptErrors();
-})->with('widths');
+})->with('dialog variants');
 
-it('keeps keyboard focus inside the open dialog', function (int $width, int $height) {
+it('keeps keyboard focus inside the open dialog', function (int $width, int $height, string $expectedDialog) {
     $page = visitStyleguide($width, $height)->click('@open-dialog');
-    $page->assertVisible('[role="dialog"]');
+    $page->assertVisible('[role="dialog"]')
+        ->assertPresent($expectedDialog);
 
     foreach (range(1, 6) as $press) {
         $page->keys(':focus', 'Tab');
@@ -95,4 +98,4 @@ it('keeps keyboard focus inside the open dialog', function (int $width, int $hei
     }
 
     $page->assertNoJavaScriptErrors();
-})->with('widths');
+})->with('dialog variants');

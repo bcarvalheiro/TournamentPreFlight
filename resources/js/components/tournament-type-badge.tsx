@@ -1,10 +1,8 @@
 import type { ReactNode } from 'react';
-import {
-    TOURNAMENT_TYPE_NAMES,
-    TournamentTypeIcon,
-} from '@/components/tournament-type-icon';
-import type { TournamentType } from '@/components/tournament-type-icon';
+import { TournamentTypeIcon } from '@/components/tournament-type-icon';
 import { Badge } from '@/components/ui/badge';
+import { TOURNAMENT_TYPE_NAMES } from '@/lib/tournament-types';
+import type { TournamentType } from '@/lib/tournament-types';
 import { cn } from '@/lib/utils';
 
 type TournamentTypeBadgeProps = {
