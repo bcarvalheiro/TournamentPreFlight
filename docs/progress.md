@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M02 · Design tokens and layout shell (in progress).
 - **Branch**: m02-design-shell
-- **State**: plan presented, waiting for approval. M01 merged (PR #1 and #2).
+- **State**: tests written first and green; implementation done. Next: `/verify`, `/rethink-tests`, `/review`, `/ui-check /styleguide`.
 
 ## Milestones
 
@@ -99,3 +99,6 @@ Status values: todo, in progress, review, done.
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
 - **Starter kit demo pages** (`dashboard`, `settings`, password auth pages and their 44 tests) are still in place; replace or remove in M06 with the new auth.
 - ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.
+- **Kit dark mode leftovers**: the appearance setting, the inline dark-detection script in `app.blade.php` and `initializeTheme()` still run, but there is no dark palette any more. Remove with the kit demo pages. (M06)
+- **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
+- **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).

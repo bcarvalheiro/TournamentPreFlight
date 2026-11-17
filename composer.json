@@ -69,6 +69,7 @@
             "npm run build",
             "npm run types:check",
             "npm run check",
+            "npm run test",
             "pest --parallel"
         ],
         "post-autoload-dump": [

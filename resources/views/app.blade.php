@@ -19,14 +19,10 @@
             })();
         </script>
 
-        {{-- Inline style to set the HTML background color based on our theme in app.css --}}
+        {{-- Page background (--color-bg-2) before the CSS loads. Single light look by spec. --}}
         <style>
             html {
-                background-color: oklch(1 0 0);
-            }
-
-            html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: #f8fafc;
             }
         </style>
 

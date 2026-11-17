@@ -37,6 +37,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 - Stay inside the milestone. If you find work outside it, add it to "Found along the way" in `docs/progress.md` instead of doing it.
 - Ask before adding a Composer or npm package that the docs don't name.
 - Prefer Laravel's built-in way. Look up version-specific docs (Laravel Boost `search-docs` if installed) instead of guessing APIs.
+- **Base every implementation on official documentation**: Laravel, Inertia, Pest and Tailwind via `search-docs`; shadcn/ui (Radix flavour) at ui.shadcn.com; each package's own docs. Before writing anything custom, check whether the docs, the starter kit or shadcn already provide it, and use that. In plans, name the doc page each choice comes from.
 - Small commits on the milestone branch. Never commit to `main` directly, never force-push.
 - When a decision is made that the docs don't cover, add it to `docs/decisions.md`.
 - Bruno is learning Tailwind. When you write or change UI, briefly explain the Tailwind classes and patterns that are new to him, and compare them to Bootstrap where that helps.
