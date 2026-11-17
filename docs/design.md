@@ -94,7 +94,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 - **Sheet**: bottom sheet on mobile, dialog on desktop. Close button, Escape, backdrop click, focus trap, returns focus. Use the shadcn Dialog/Drawer underneath, restyled.
 - **ProfilePicker**: list of the account's profiles, each with name, division for this event and a going checkbox; "Save". Shows "Add a profile" link.
-- **Toast**: bottom centre, graphite, 2.6s, `role="status"`.
+- **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
 

@@ -15,4 +15,5 @@ Start milestone $ARGUMENTS.
    - any decision the docs do not settle, with your recommendation,
    - anything in the milestone that conflicts with another doc,
    - anything you need from me (credentials, a choice, a package to approve).
-6. Wait for my approval. After I approve: write the tests first. For each test, explain in plain words what it protects, how it works and what failure we expect, then run it and show the failure. Then implement. After `/verify` passes, remind me to run `/rethink-tests`.
+6. Wait for my approval. After I approve, write the approved plan into `docs/progress.md` under **Current**, as a **Plan** checklist: one line per test (by name) and one per implementation step, each `- [ ]`. Tick each line (`- [x]`) as soon as it is done, and add a line when the plan changes (with a short reason), so Bruno can follow progress in the file at any time.
+7. Then write the tests first. For each test, explain in plain words what it protects, how it works and what failure we expect, then run it and show the failure. Then implement. After `/verify` passes, remind me to run `/rethink-tests`.

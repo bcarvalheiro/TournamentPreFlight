@@ -6,7 +6,37 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M02 · Design tokens and layout shell (in progress).
 - **Branch**: m02-design-shell
-- **State**: tests written first and green; implementation done. Next: `/verify`, `/rethink-tests`, `/review`, `/ui-check /styleguide`.
+- **State**: tests written first and green; implementation done. `/verify` passed. Next: `/rethink-tests`, `/review`, `/ui-check /styleguide`.
+
+### Plan (M02)
+
+Tests (written first, each shown failing):
+- [x] Feature: renders the styleguide in the local environment
+- [x] Feature: returns 404 for the styleguide outside local (production, staging, testing)
+- [x] Browser: renders every component without horizontal scroll (390px, 1280px)
+- [x] ~~Browser: unique clip ids~~ dropped: the Vitest clip-id test catches the same bug (one test per defect)
+- [x] Browser: closes the dialog on Escape and returns focus to the trigger (both widths)
+- [x] Browser: closes the dialog when the backdrop is clicked (both widths)
+- [x] Browser: keeps keyboard focus inside the open dialog (both widths)
+- [x] Vitest: time formatters (Nov, July, December, Lisbon day boundary, relative days)
+- [x] Vitest: TournamentTypeIcon exact SVGs and unique clip ids
+- [x] Vitest: TournamentTypeBadge visible type name
+
+Implementation:
+- [x] Tokens in `app.css`, shadcn variables mapped, light look only
+- [x] Fonts via the Laravel Vite plugin (`google()`, `@fonts`)
+- [x] Local-only `/styleguide` route
+- [x] `lib/time.ts`
+- [x] TournamentTypeIcon, TournamentTypeBadge, AppLogo
+- [x] Button variants, ResponsiveDialog (Dialog + vaul Drawer), Sonner toast, shadcn Empty
+- [x] PublicLayout (band, hero slot, footer) as default layout for public pages
+- [x] Styleguide page
+- [x] JS tests in `composer verify`
+- [x] Toast moved to top right, larger (Bruno, after seeing the styleguide)
+- [ ] `/rethink-tests`
+- [ ] `/review` and `/ui-check /styleguide`
+- [ ] Bruno checks in the browser at phone width
+- [ ] `/wrap-up`
 
 ## Milestones
 
