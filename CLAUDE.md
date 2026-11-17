@@ -34,13 +34,16 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 ## How to work
 
 - Test first: turn each acceptance criterion into a Pest test before writing the code.
+- One test per defect, at the lowest layer that can catch it: if a Vitest or unit test already detects a bug, do not add a feature or browser test for the same bug. Browser tests only for what needs a real browser.
 - Stay inside the milestone. If you find work outside it, add it to "Found along the way" in `docs/progress.md` instead of doing it.
 - Ask before adding a Composer or npm package that the docs don't name.
 - Prefer Laravel's built-in way. Look up version-specific docs (Laravel Boost `search-docs` if installed) instead of guessing APIs.
+- **Base every implementation on official documentation**: Laravel, Inertia, Pest and Tailwind via `search-docs`; shadcn/ui (Radix flavour) at ui.shadcn.com; each package's own docs. Before writing anything custom, check whether the docs, the starter kit or shadcn already provide it, and use that. In plans, name the doc page each choice comes from.
 - Small commits on the milestone branch. Never commit to `main` directly, never force-push.
 - When a decision is made that the docs don't cover, add it to `docs/decisions.md`.
 - Bruno is learning Tailwind. When you write or change UI, briefly explain the Tailwind classes and patterns that are new to him, and compare them to Bootstrap where that helps.
 - When you finish an implementation explain everything you did as it was ready to be documented.
+- At the start of every session, remind Bruno how to follow the plan live, in a second terminal tab: `watch -n 2 'sed -n "/### Plan/,/^## /p" docs/progress.md'` (the Plan checklist in `docs/progress.md`, which you keep ticked as work is done).
 - Bruno is studying the tests. Go slowly on them: before running a test, explain what it protects, how it works and what failure you expect. After implementation, run `/rethink-tests` before `/review`.
 
 ===

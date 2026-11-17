@@ -11,7 +11,7 @@
 | Auth | Starter kit auth (Fortify) for sessions; Socialite for Google; Socialite Providers for Apple and Discord; own magic-link flow | Password login and registration are removed |
 | Background | Scheduler + queues on the database driver | One `queue:work` process in production |
 | Mail | Laravel Mail, Markdown mailables; Mailpit locally | Provider is an open decision |
-| Tests | Pest 5 (+ browser plugin), Larastan level 7, Pint; Vite+ `vp check` for TS/React lint and format | See `workflow.md` |
+| Tests | Pest 5 (+ browser plugin), Larastan level 7, Pint; Vite+ `vp check` for TS/React lint and format; Vitest (bundled in Vite+, `npm run test`) for pure JS logic and component markup, files `resources/js/**/*.test.ts(x)` | See `workflow.md` |
 | Dev help | Laravel Boost (MCP server with version-specific docs, schema, tinker) | Optional but recommended |
 
 ## Code layout
@@ -30,8 +30,13 @@ app/
   Http/Controllers/Public, /Account, /Admin
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
-  components/pf/      our components: PairingsSheet, MatchSlip, TypeBall, GoingButton, ProfilePicker, FilterBar, FilterSheet
+  layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
+  components/         our components, flat, kebab-case files like the kit: app-logo, tournament-type-icon,
+                      tournament-type-badge, responsive-dialog; later pairings-sheet, match-slip, going-button,
+                      profile-picker, filter-bar
+  components/ui/      shadcn/ui files we own and restyle with the tokens (button, card, dialog, drawer, empty, sonner, ...)
   lib/time.ts         all date formatting, Europe/Lisbon, en-GB style
+  lib/tournament-types.ts  tournament types (common to rare) and their display names
 tests/
   Feature/  Unit/  Browser/  Arch/  Fixtures/pokedata/
 ```

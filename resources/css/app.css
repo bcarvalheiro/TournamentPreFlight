@@ -5,51 +5,62 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+/*
+ * Single light look (design.md). dark: utilities apply only under a .dark class
+ * (Tailwind docs, "Toggling dark mode manually"), and nothing adds that class, so
+ * the kit's dark: styles never fire. Without this line they would follow the OS setting.
+ */
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Pre-Flight design tokens (docs/design.md "Tokens"). Use only these.
+ * Each --color-* creates bg-*, text-*, border-* … utilities (e.g. bg-ink, text-muted).
+ * Single light look by spec: there is no dark palette.
+ */
 @theme {
-    --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
-        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-        'Noto Color Emoji';
+    --color-bg: #ffffff;
+    --color-bg-2: #f8fafc;
+    --color-ink: #1f2933;
+    --color-ink-2: #2b3742;
+    --color-muted: #5b6875;
+    --color-line: #e1e7ed;
+    --color-red: #e63946;
+    --color-paper: #fbfbf8;
+    --color-board-fg: #e9eef3;
+    --color-amber: #f6c453;
 
+    /* Same stacks as the fonts in vite.config.ts; @fonts loads the files. */
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    --radius-card: 6px;
+    --radius-button: 9px;
+    --radius-sheet: 14px;
+
+    /* shadcn/ui (kit) names, pointed at the tokens below in :root. */
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
 
     --color-background: var(--background);
     --color-foreground: var(--foreground);
-
     --color-card: var(--card);
     --color-card-foreground: var(--card-foreground);
-
     --color-popover: var(--popover);
     --color-popover-foreground: var(--popover-foreground);
-
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
-
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
-
-    --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
-
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
-
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
-
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
-
-    --color-chart-1: var(--chart-1);
-    --color-chart-2: var(--chart-2);
-    --color-chart-3: var(--chart-3);
-    --color-chart-4: var(--chart-4);
-    --color-chart-5: var(--chart-5);
 
     --color-sidebar: var(--sidebar);
     --color-sidebar-foreground: var(--sidebar-foreground);
@@ -61,83 +72,65 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* shadcn/ui variables mapped to the Pre-Flight tokens, so kit components match. */
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
-}
+    /* Tell the browser the site is light-only: native controls, scrollbars and autofill stay light. */
+    color-scheme: light;
 
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.985 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.985 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --background: var(--color-bg);
+    --foreground: var(--color-ink);
+    --card: var(--color-bg);
+    --card-foreground: var(--color-ink);
+    --popover: var(--color-bg);
+    --popover-foreground: var(--color-ink);
+    --primary: var(--color-red);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-bg-2);
+    --secondary-foreground: var(--color-ink);
+    --muted-foreground: var(--color-muted);
+    --accent: var(--color-bg-2);
+    --accent-foreground: var(--color-ink);
+    --destructive: var(--color-red);
+    --destructive-foreground: var(--color-red);
+    --border: var(--color-line);
+    --input: var(--color-line);
+    --ring: var(--color-red);
+    --radius: 9px;
+    --sidebar: var(--color-bg-2);
+    --sidebar-foreground: var(--color-ink);
+    --sidebar-primary: var(--color-ink);
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: var(--color-bg);
+    --sidebar-accent-foreground: var(--color-ink);
+    --sidebar-border: var(--color-line);
+    --sidebar-ring: var(--color-red);
 }
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        @apply border-border;
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-bg-2 font-sans text-[15px]/[1.45] text-ink;
+    }
+
+    /* Focus: 2px red outline, 2px offset, on every interactive element. */
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-red;
+    }
+
+    /*
+     * Respect prefers-reduced-motion. Durations go to almost zero instead of "none"
+     * so animationend still fires (Radix and vaul wait for it before closing).
+     */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        ::before,
+        ::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
     }
 }

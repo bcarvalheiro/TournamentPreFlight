@@ -42,3 +42,6 @@ yarn-error.log
 /boost.json
 /opencode.json
 /opencode.jsonc
+
+# Pest browser test failure screenshots
+/tests/Browser/Screenshots
