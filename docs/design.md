@@ -23,7 +23,7 @@ Define these once in `resources/css/app.css` as Tailwind 4 `@theme` variables an
 | `--color-board-fg` | `#E9EEF3` | Text on the band |
 | `--color-amber` | `#F6C453` | Reserved for warnings ("possibly cancelled") |
 
-Fonts (Google Fonts, `display=swap`):
+Fonts (Google Fonts, `display=swap`), loaded through the Laravel Vite plugin's `fonts` option and `@fonts`, so the files are self-hosted:
 
 - Display: **Barlow Condensed** 600/700/800, uppercase, for the hero, day headers, type labels, big counts.
 - Text: **IBM Plex Sans** 400/500/600/700, body at 15px / 1.45.
@@ -44,7 +44,7 @@ Each tournament type has a ball icon, ranked common to rare. **Ship the official
 | Challenge | | Ultra Ball (black top, yellow bands) |
 | Cup | Rare | Master Ball (purple top, pink dots, white M) |
 
-Build them as one `TypeBall` React component (`type`, `size`) from these SVGs (viewBox 0 0 24 24, `aria-hidden`, the type name is always shown as text next to it):
+Build them as one `TournamentTypeIcon` React component (`type`, `size`) from these SVGs (viewBox 0 0 24 24, `aria-hidden`, the type name is always shown as text next to it):
 
 ```svg
 <!-- Shared clip for the top half. In React give it a unique id per instance (useId) -->
@@ -63,7 +63,7 @@ A small legend under the filter bar shows the four icons from "Common" to "Rare"
 
 ## Brand mark
 
-Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `Brand` component. The hero headline stays "Pokémon Pre-Flight".
+Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `AppLogo` component. The hero headline stays "Pokémon Pre-Flight".
 
 ## Home page, top to bottom
 
@@ -92,7 +92,9 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 ## Shared components
 
-- **Sheet**: bottom sheet on mobile, dialog on desktop. Close button, Escape, backdrop click, focus trap, returns focus. Use the shadcn Dialog/Drawer underneath, restyled.
+- **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
+- **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
+- **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
 - **ProfilePicker**: list of the account's profiles, each with name, division for this event and a going checkbox; "Save". Shows "Add a profile" link.
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
