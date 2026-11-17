@@ -13,7 +13,7 @@ type PublicLayoutProps = {
 };
 
 const navLink =
-    'rounded-lg px-2.5 py-2 text-[0.88rem] font-semibold text-board-fg hover:bg-white/10';
+    'inline-flex h-10 items-center rounded-lg px-2.5 text-[0.88rem] font-semibold text-board-fg hover:bg-white/10';
 
 /** The playmat band: navbar, optional hero, two faint dashed card outlines as decoration. */
 function Band({ hero }: { hero?: ReactNode }) {
@@ -53,7 +53,7 @@ function Band({ hero }: { hero?: ReactNode }) {
                                 </Link>
                                 <Link
                                     href={register()}
-                                    className="rounded-full bg-red px-3.5 py-2 text-[0.88rem] font-bold text-white"
+                                    className="inline-flex h-10 items-center rounded-full bg-red px-3.5 text-[0.88rem] font-bold text-white"
                                 >
                                     Sign up
                                 </Link>

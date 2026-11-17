@@ -92,7 +92,7 @@ export function ResponsiveDialog({
                 {...descriptionProps}
             >
                 <DrawerClose
-                    className="absolute top-3 right-3 rounded-full p-2 text-muted hover:text-ink"
+                    className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full text-muted hover:text-ink"
                     aria-label="Close"
                 >
                     <XIcon className="size-5" />

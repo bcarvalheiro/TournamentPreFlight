@@ -35,7 +35,8 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       // A text link has no box: undo the size's height and padding.
-      { variant: "link", className: "h-auto px-0 has-[>svg]:px-0" },
+      // min-h-10 keeps a 40px touch target (ui-reviewer rule).
+      { variant: "link", className: "h-auto min-h-10 px-0 has-[>svg]:px-0" },
     ],
     defaultVariants: {
       variant: "default",

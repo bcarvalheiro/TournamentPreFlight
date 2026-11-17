@@ -5,6 +5,11 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+/*
+ * Single light look (design.md). dark: utilities apply only under a .dark class
+ * (Tailwind docs, "Toggling dark mode manually"), and nothing adds that class, so
+ * the kit's dark: styles never fire. Without this line they would follow the OS setting.
+ */
 @custom-variant dark (&:is(.dark *));
 
 /*
@@ -69,6 +74,9 @@
 
 /* shadcn/ui variables mapped to the Pre-Flight tokens, so kit components match. */
 :root {
+    /* Tell the browser the site is light-only: native controls, scrollbars and autofill stay light. */
+    color-scheme: light;
+
     --background: var(--color-bg);
     --foreground: var(--color-ink);
     --card: var(--color-bg);
