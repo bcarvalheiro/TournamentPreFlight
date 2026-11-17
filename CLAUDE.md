@@ -34,6 +34,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 ## How to work
 
 - Test first: turn each acceptance criterion into a Pest test before writing the code.
+- One test per defect, at the lowest layer that can catch it: if a Vitest or unit test already detects a bug, do not add a feature or browser test for the same bug. Browser tests only for what needs a real browser.
 - Stay inside the milestone. If you find work outside it, add it to "Found along the way" in `docs/progress.md` instead of doing it.
 - Ask before adding a Composer or npm package that the docs don't name.
 - Prefer Laravel's built-in way. Look up version-specific docs (Laravel Boost `search-docs` if installed) instead of guessing APIs.

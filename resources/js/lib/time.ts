@@ -68,6 +68,9 @@ function lisbonDayNumber(instant: Instant): number {
 /**
  * "Today", "Tomorrow", "In 3 days", "Next week" or "In 2 weeks", counted in
  * Lisbon calendar days from `now`.
+ *
+ * For upcoming events only: the app never lists past events, so a past
+ * instant has no label of its own and falls into "Today".
  */
 export function formatRelativeDay(
     instant: Instant,

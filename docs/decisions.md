@@ -55,6 +55,9 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-17 | M02: single light look. The kit's `.dark` palette is removed from `app.css`, the page background is `bg-2`, and shadcn's variables point at the Pre-Flight tokens. The kit's `bg-muted` now means the design's muted grey | design.md "Single light look"; kit demo pages (removed in M06) may look off |
 | 2026-11-17 | M02: `formatRelativeDay`: 0 days "Today", 1 "Tomorrow", 2–6 "In n days", 7–13 "Next week", 14+ "In n weeks", counted in Lisbon calendar days | Bruno confirmed |
 | 2026-11-17 | M02: JS unit tests run with the Vitest bundled in Vite+ (`vp test`, imports from `vite-plus/test`, config in `vite.config.ts`); `npm run test` is part of `composer verify` | Vite+ docs; no new dependency |
+| 2026-11-17 | The app lists **upcoming events only**; past dates are never displayed, so `formatRelativeDay` has no "past" label | Bruno's decision |
+| 2026-11-17 | **One test per defect, at the lowest layer that catches it**: no browser or feature test for a bug a Vitest or unit test already detects (rule added to `CLAUDE.md`) | Bruno's decision, after M02 planned test 4 duplicated a Vitest test |
+| 2026-11-17 | SVG artwork (logo mark, type balls) stays inline as JSX components | React standard (as in lucide-react); the balls need `useId` clip ids (AC3, design.md). Bruno's decision |
 
 ## Open questions
 
