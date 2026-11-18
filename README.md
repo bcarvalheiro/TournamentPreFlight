@@ -19,7 +19,7 @@ design/prototype/             the chosen "Pre-Flight Pairings" prototype (open p
   settings.json               permissions + hooks
   hooks/format.sh             auto-format edited files (Pint, vp fmt)
   hooks/protect-files.sh      block edits to .env, vendor, lock files, merged migrations
-  commands/                   /start-milestone /verify /rethink-tests /review /ui-check /wrap-up
+  commands/                   /start-milestone /slice /verify /rethink-tests /review /ui-check /wrap-up
   agents/                     code-reviewer, privacy-guard, ui-reviewer
 ```
 
@@ -51,17 +51,19 @@ Create the `tournament_preflight` and `tournament_preflight_test` databases firs
 
 ```
 /clear
-/start-milestone M05     Claude reads context, creates the branch, shows a plan
+/start-milestone M05     Claude reads context, creates the branch, proposes a slice list
 (you approve or push back)
-                         Claude writes failing tests, then the code
+/slice                   Claude proposes the next slice and waits
+(you approve)            Claude explains the test, red → green, shows the diff, suggests a commit
+(you read the diff and commit)      … /slice again until the list is done
 /verify                  full gate: Pint, Larastan, build, TypeScript, vp check, Pest
 /rethink-tests           look at the tests again together, before review
 /review                  fresh-context subagents review the diff
 (you look at it in the browser, at phone width too)
-/wrap-up                 progress + decisions updated, commit, PR text
+/wrap-up                 progress + decisions updated; suggests commit, push and PR
 ```
 
-Merge the PR when CI is green, then `/clear` and start the next milestone. One milestone per session and per branch.
+Push, open the PR and merge when CI is green (you run these; Claude can't), then `/clear` and start the next milestone. One milestone per session and per branch.
 
 Tips: press Shift+Tab to switch to plan mode for the planning step; press Esc to stop Claude mid-step; when Claude makes the same mistake twice, add a line to `CLAUDE.md`.
 

@@ -13,8 +13,10 @@ Check, in this order:
 2. **Correctness**: logic errors, off-by-one in dates, timezone mistakes (stored UTC, shown Europe/Lisbon), race conditions on the attendance upsert, missing authorization (policies on Account and Admin controllers), missing validation, N+1 queries.
 3. **Rules in CLAUDE.md**: any break of the "Rules that never bend".
 4. **Tests**: tests that assert too little, test the framework instead of our code, depend on order or the real clock (use `travelTo`), or hit the network.
-5. **Laravel and React style**: framework built-ins ignored, fat controllers (logic belongs in Actions), untyped TS props, components that duplicate `components/pf`.
-6. **Scope**: changes outside the milestone.
+5. **Standard and simple**: the code follows the layout in `docs/architecture.md` ("Code layout"). Flag, each with the simpler standard version: Laravel, Inertia, starter kit or shadcn built-ins ignored (name the doc page or existing file), abstractions used only once, folders or patterns outside that layout, packages not named in the docs, code bigger than the behaviour needs.
+6. **Laravel and React style**: fat controllers (logic belongs in Actions), untyped TS props, components that duplicate one already in `resources/js/components`.
+7. **Commits**: `git log --oneline --stat main..HEAD`. Compare each commit with its slice line in the **Plan** in `docs/progress.md` (`Slice n: goal (files; test name)`). Flag files a commit touched that its slice line did not name, commits that mix unrelated concerns, and commits too big to review comfortably.
+8. **Scope**: changes outside the milestone.
 
 You may run tests and read-only git commands. Do not edit files.
 

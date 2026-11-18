@@ -16,18 +16,23 @@
 
 ## Code layout
 
-Follow Laravel defaults. Additions:
+Laravel defaults first, plus Actions and Services. KISS: no domain or module folders, no repositories, no interface until there are two implementations. Anything outside this layout needs Bruno's approval and a line in `decisions.md`.
 
 ```
 app/
-  Actions/            single-purpose classes: SetAttendance, CreatePlayerProfile, ApproveSubmission
+  Http/Controllers/Public, /Account, /Admin
+                      thin: a Form Request validates, a Policy authorizes, one Action does the work,
+                      the controller returns Inertia with Data objects
+  Actions/            one class per operation that changes state, one public `handle()` method; called from
+                      controllers, jobs and commands: SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+  Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
+                      PokedataClient, DivisionResolver (birth year + event date -> Division)
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
   Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
-  Domain/Divisions/   DivisionResolver (birth year + event date -> Division)
+  Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, AttendanceStatus, Division, EventSourceKey
-  Import/             EventSource interface, PokedataSource, EventSync, SyncReport, ImportedEvent
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
-  Http/Controllers/Public, /Account, /Admin
+  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
@@ -86,20 +91,13 @@ Computed with `withCount` filtered by status and joined to profiles for division
 
 ## Event import
 
-```php
-interface EventSource
-{
-    public function key(): EventSourceKey;           // enum, e.g. EventSourceKey::Pokedata
-    /** @return iterable<ImportedEvent> */
-    public function upcoming(): iterable;            // throws SourceUnavailable on failure
-}
-```
+There is one source, so there is no source interface (KISS; add one only when a second source exists). Player-submitted events do not go through the import.
+
+`PokedataClient` (service) has one public method, `upcoming(): list<ImportedEvent>`. It uses Laravel's HTTP client with `->throw()`, so a failed request raises an exception, and maps the real response (fields recorded in the M03 spike in `docs/pokedata.md`) to `ImportedEvent`. Unknown types map to `other`. It only asks for Portugal and only keeps TCG events. Tests use `Http::fake()` with the fixtures.
 
 `ImportedEvent` is a plain readonly object: sourceEventId, officialGuid, officialUrl, displayId, type, title, startsAt (UTC CarbonImmutable), endsAt (nullable), venueName, venueAddress, city.
 
-`PokedataSource` maps the real response (fields recorded in the M03 spike in `docs/pokedata.md`) to `ImportedEvent`. Unknown types map to `other`. It only asks for Portugal and only keeps TCG events.
-
-`EventSync` (`php artisan events:sync {--source=pokedata} {--dry-run}`), scheduled nightly at 03:30 Lisbon:
+`SyncEvents` (action), run by `php artisan events:sync {--dry-run}` and scheduled nightly at 03:30 Lisbon:
 
 1. Fetch. On exception, an empty result, or a result less than half the size of the last good run, abort: change nothing, record the run as aborted, notify admins.
 2. For each imported event, find an existing one by (source, source_event_id), then official_guid, then official_url. Not found: create as `listed`. Found and unchanged: touch `last_seen_at`. Found and changed in starts_at, ends_at or venue: update, set `changed_at`, clear `confirmed_at` on its going answers, dispatch `StillGoingNotification` (reason: changed) to the accounts concerned. Other field changes (title, display ID) update silently.
