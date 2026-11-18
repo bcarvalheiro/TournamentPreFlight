@@ -16,5 +16,5 @@ Rethink the tests for the current milestone. This is a teaching conversation wit
    - `CLAUDE.md` rules the milestone touches (privacy, under-13s, division, UTC, one answer per profile),
    - tests that are redundant and could go.
 4. Propose a short list: tests to add, change or remove, each with a one-line reason. Mark your recommendation.
-5. Wait for Bruno's decision. Apply only what he agrees to, explain each new test the same way before running it, then run `/verify`.
+5. Wait for Bruno's decision. Apply only what he agrees to, one change at a time: explain each new or changed test the same way before running it, then suggest `git add <paths>` and a commit message, and wait until he has committed. Run `/verify` after the last one.
 6. Note the outcome (what was added, changed, rejected and why) so `/wrap-up` can put it in the session log.

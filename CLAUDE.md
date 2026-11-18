@@ -15,7 +15,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 ## Commands
 
-- `composer verify`: the full gate (Pint check, Larastan, Pest, TypeScript, `vp check`, build). Must pass before any commit.
+- `composer verify`: the full gate (Pint check, Larastan, Pest, TypeScript, `vp check`, build). Must pass before a PR is opened, and before committing a change to shared config.
 - `php artisan test --filter=Name`: run one test while iterating.
 - `composer dev`: app, queue, logs and Vite together.
 - `php artisan events:sync`: nightly import (safe to run twice).
