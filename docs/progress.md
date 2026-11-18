@@ -4,51 +4,23 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M02 · Design tokens and layout shell (review).
-- **Branch**: m02-design-shell
-- **State**: all five acceptance criteria met and tested; `/rethink-tests`, `/review` and `/ui-check` done; `composer verify` green (23 Vitest, 60 Pest, Larastan 0 errors). Next: push and open the PR, merge after CI. Then M03.
+- **Milestone**: M03 · pokedata.ovh spike (in progress).
+- **Branch**: m03-pokedata-spike
+- **State**: slice list approved (18 Nov). Next: Slice 1.
 
-### Plan (M02)
+### Plan (M03)
 
-Tests (written first, each shown failing):
-- [x] Feature: renders the styleguide in the local environment
-- [x] Feature: returns 404 for the styleguide outside local (production, staging, testing)
-- [x] Browser: renders every component without horizontal scroll (390px, 1280px)
-- [x] ~~Browser: unique clip ids~~ dropped: the Vitest clip-id test catches the same bug (one test per defect)
-- [x] Browser: closes the dialog on Escape and returns focus to the trigger (both widths)
-- [x] Browser: closes the dialog when the backdrop is clicked (both widths)
-- [x] Browser: keeps keyboard focus inside the open dialog (both widths)
-- [x] Vitest: time formatters (Nov, July, December, Lisbon day boundary, relative days)
-- [x] Vitest: TournamentTypeIcon exact SVGs and unique clip ids
-- [x] Vitest: TournamentTypeBadge visible type name
-
-Implementation:
-- [x] Tokens in `app.css`, shadcn variables mapped, light look only
-- [x] Fonts via the Laravel Vite plugin (`google()`, `@fonts`)
-- [x] Local-only `/styleguide` route
-- [x] `lib/time.ts`
-- [x] TournamentTypeIcon, TournamentTypeBadge, AppLogo
-- [x] Button variants, ResponsiveDialog (Dialog + vaul Drawer), Sonner toast, shadcn Empty
-- [x] PublicLayout (band, hero slot, footer); pages pick it with a layout tuple (the default-layout case was removed in review)
-- [x] Styleguide page
-- [x] JS tests in `composer verify`
-- [x] Toast moved to top right, larger (Bruno, after seeing the styleguide)
-- [x] `/rethink-tests`: proposals P1–P6 all rejected by Bruno (tests kept as they are). Standards check: widths dataset moved to the scoped `tests/Browser/Datasets.php` (Pest docs); kept on purpose: Playwright's `page()->locator()->click(position)` for the backdrop, the `registerWebRoutesIn()` helper (built from documented pieces, no documented alternative), and `renderToStaticMarkup` instead of React Testing Library (revisit when components get behaviour)
-- [x] `/review` (code-reviewer, privacy-guard, ui-reviewer; ui-reviewer also did the `/ui-check /styleguide` at 390px and 1280px, signed out). Applied: drawer/dialog check in AC4 tests, bold "Sign up", no red hover on links, `aria-describedby` when no description, instant focus ring, mixed-case titles, secondary action first, tournament types moved to `lib/`, dead `app.tsx` case removed, `truncate` on the logo name. Accepted as is (Bruno): "Sept", 9px drawer corners and centred drawer title, 80% dialog backdrop. Declined: AC1 heading check (decided in `/rethink-tests`), DST switch-day test, invalid-date handling, footer width, splitting workflow changes. Open: single light look (#2) and touch targets (#4), see below. privacy-guard: no findings
-- [x] Review #2: single light look in three steps (keep the class-based `dark` variant, never add `.dark`, `color-scheme: light`)
-- [x] Review #4: touch targets raised to 40px (drawer close, Sign in/Sign up, link button)
-- [ ] Signed-in `/ui-check` with the family demo account: after M04 seeds it (Bruno)
-- [x] Cards: shadcn `Card` restyled with the tokens and used for the styleguide sections (Bruno)
-- [x] Bruno checked the styleguide in the browser ("The rest seems fine. Really fine!")
-- [x] `/wrap-up`
+- [ ] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
+- [ ] Slice 2: `docs/pokedata.md` maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
+- [ ] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov) in `decisions.md`, `architecture.md` (events.type, Event import, Time) and `product.md`; ball icon for prerelease left open for Bruno (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, M10 file only if facts change it; no test) · AC3
 
 ## Milestones
 
 | # | Milestone | Status | Notes |
 | --- | --- | --- | --- |
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
-| M02 | Design tokens and layout shell | review | All ACs met; PR to open. Signed-in `/ui-check` after M04 |
-| M03 | pokedata.ovh spike | todo | |
+| M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
+| M03 | pokedata.ovh spike | in progress | |
 | M04 | Domain schema and seed data | todo | |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
@@ -205,5 +177,6 @@ Status values: todo, in progress, review, done.
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
+- **Signed-in `/ui-check`** of the M02 shell with the family demo account, once M04 seeds it (Bruno). (M04)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)
