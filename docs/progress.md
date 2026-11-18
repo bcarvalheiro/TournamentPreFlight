@@ -6,12 +6,13 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M03 · pokedata.ovh spike (in progress).
 - **Branch**: m03-pokedata-spike
-- **State**: slice list approved (18 Nov). Next: Slice 1.
+- **State**: Slice 1 done (fixtures saved). Next: Slice 2.
 
 ### Plan (M03)
 
-- [ ] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
-- [ ] Slice 2: `docs/pokedata.md` maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
+- [x] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
+  - Changed (Bruno, 18 Nov): the slice also records the request and filter contract in `docs/pokedata.md`, after 5 extra one-off requests (repeat, filter order, `ftcg`, two website POSTs) showed that a bare `_tcg` returns VG/GO events and that `product` must be checked.
+- [ ] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
 - [ ] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov) in `decisions.md`, `architecture.md` (events.type, Event import, Time) and `product.md`; ball icon for prerelease left open for Bruno (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, M10 file only if facts change it; no test) · AC3
 
 ## Milestones
