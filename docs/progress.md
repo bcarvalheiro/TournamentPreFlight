@@ -6,14 +6,15 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M03 · pokedata.ovh spike (in progress).
 - **Branch**: m03-pokedata-spike
-- **State**: Slice 1 done (fixtures saved). Next: Slice 2.
+- **State**: Slices 1–2 done (fixtures, `docs/pokedata.md`). Next: Slice 3.
 
 ### Plan (M03)
 
 - [x] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
   - Changed (Bruno, 18 Nov): the slice also records the request and filter contract in `docs/pokedata.md`, after 5 extra one-off requests (repeat, filter order, `ftcg`, two website POSTs) showed that a bare `_tcg` returns VG/GO events and that `product` must be checked.
-- [ ] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
-- [ ] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov) in `decisions.md`, `architecture.md` (events.type, Event import, Time) and `product.md`; ball icon for prerelease left open for Bruno (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, M10 file only if facts change it; no test) · AC3
+- [x] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
+  - Changed (Bruno, 18 Nov): one `guid` (no separate officialGuid), `shopName`/`shopAddress` instead of venue, no `endsAt`, `leagueId` kept, cost not used, `nonpremier TCG` = one casual type (League and Friendly collapsed, decided), `title` null when `name` is empty and shown as type + shop name, Azores only a warning for now.
+- [ ] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov), the `ImportedEvent` shape from Slice 2 (guid, shop fields, no endsAt, leagueId), casual type replacing League and Friendly (decided; big events sanctioned as `nonpremier TCG` listed as casual is a known risk, open), in `decisions.md`, `architecture.md` (events.type, Event import, Time) and `product.md`; icons: casual keeps the Poké Ball, prerelease gets the Great Ball (Bruno, 18 Nov; code change goes to Found along the way) (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, `docs/design.md`, M10 file only if facts change it; no test) · AC3
 
 ## Milestones
 

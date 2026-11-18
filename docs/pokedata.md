@@ -26,7 +26,7 @@ Keep an event only if one of these holds:
 
 | `type` | `product` | Keep as |
 | --- | --- | --- |
-| `nonpremier TCG` | (field absent) | friendly |
+| `nonpremier TCG` | (field absent) | casual (League and Friendly) |
 | `League Challenge` | `tcg` | challenge |
 | `League Cup` | `tcg` | cup |
 | prerelease (name not seen yet, see below) | to confirm | prerelease |
@@ -41,7 +41,7 @@ Drop everything else, including:
 
 `product` exists only on League Challenge and League Cup. **Filtering on `type` alone would import 12 VG and GO tournaments as TCG.**
 
-Counts kept on 18 Nov 2026: 777 friendly, 29 challenge, 10 cup (816 of 850).
+Counts kept on 18 Nov 2026: 777 casual, 29 challenge, 10 cup (816 of 850).
 
 ### Why not the narrowed request
 
@@ -51,13 +51,14 @@ Counts kept on 18 Nov 2026: 777 friendly, 29 challenge, 10 cup (816 of 850).
 
 | pokedata `type` | Website label | Our type |
 | --- | --- | --- |
-| `nonpremier TCG` | TCG Friendly | friendly |
+| `nonpremier TCG` | TCG Friendly | casual |
 | `League Challenge` (`product: tcg`) | TCG League Challenge | challenge |
 | `League Cup` (`product: tcg`) | TCG League Cup | cup |
 | not seen yet | Pre Release | prerelease |
 
 - **Prerelease** is a type of its own (Bruno, 18 Nov 2026). None were listed on 18 Nov because prereleases only run before a new set is released; the website showed 0. Its `type` and `product` values are unknown until one appears: check before relying on the mapping.
-- **League** has no type in pokedata. League nights may arrive as `nonpremier TCG`. Open for Bruno.
+- **Casual**: pokedata uses `nonpremier TCG` for both League nights and Friendlies (Bruno, 18 Nov 2026). Some carry League names ("Liga semanal - Terça Feira", "Liga Pokémon TCG Semanal Competitive"), most have no name. They map to one **casual** type: League and Friendly are collapsed (Bruno, 18 Nov 2026), since they mean the same to most players.
+- **Known risk**: a bigger tournament can be sanctioned as `nonpremier TCG`, and we would list it as casual. Needs more digging (later).
 - The website also has `premier` and `mss` filters (see below). Neither appeared in the Portugal data; values unknown.
 
 ## Event-specific URL and tournament ID
@@ -114,7 +115,74 @@ All on 18 Nov 2026, one by one with `curl`, User-Agent `Pre-Flight spike`, appro
 
 No error response was produced: invalid filters return `200` with `[]` instead of an error.
 
-## Still to do (Slice 2)
+## Field mapping
 
-- Field-by-field mapping to `ImportedEvent`: times and zones (incl. Madeira and Azores), end times, venue fields.
-- Questions for the pokedata.ovh author.
+`ImportedEvent` (the importer's plain object, M10) and where each property comes from. One property per fact: no duplicates.
+
+| `ImportedEvent` | Source field | Example | Rule |
+| --- | --- | --- | --- |
+| `guid` | `guid` | `0aaf9ad5-8100-42c8-ae2c-98ab878999be` | Always present, unique (850 of 850). The one identifier for matching; the website uses the same value |
+| `type` | `type` + `product` | `League Cup` + `tcg` | Filter contract above. Values: casual, challenge, cup, prerelease |
+| `title` | `name` | `Liga Casual Pokémon` | `null` when `name` is empty (723 of 816 kept events). The app then shows the type and the shop name as the title (Bruno, 18 Nov 2026), so a name added later in pokedata still takes over |
+| `startsAt` | `when` | `2026-11-21 15:00:00` | Local time without a zone; parsed as `Europe/Lisbon`, stored as UTC (CarbonImmutable). See Time |
+| `officialUrl` | `pokemon_url` | `…/play-pokemon-tournaments/26-11-001729/` | Only when event-specific (104 of 850); the generic locator URL gives `null` |
+| `displayId` | end of `pokemon_url` | `26-11-001729` | The official tournament ID; `null` when the URL is generic |
+| `shopName` | `shop` | `VERSUS GAMECENTER LISBOA` | Spelling varies, see Shop |
+| `shopAddress` | `street_address` | `ESTR. DE SÃO LUÍS 70, 8000-123 FARO, PORTUGAL` | Free text, format varies |
+| `city` | `city` | `Faro` | Without accents (`Portimao`, `Loule`) |
+| `leagueId` | `league` | `26062297` | The organiser's league ID; stable where shop names vary. Kept for shop matching, decided later (M04/M10) |
+
+**Missing, and what we do instead**
+
+- **End time**: pokedata has none. `ImportedEvent` has no `endsAt`; the app estimates the end by type (`product.md`).
+- **Postal code**: `postal_code` is always empty. Some addresses contain one; we do not parse it.
+
+## Every field
+
+All values are strings, including coordinates and counts. 850 events on 18 Nov 2026.
+
+| Field | Filled | Example | Used |
+| --- | --- | --- | --- |
+| `type` | 850 | `nonpremier TCG` | yes, filter and type |
+| `product` | 51 (cups and challenges only) | `tcg` | yes, filter |
+| `name` | 105 | `Pokémon League Challenge - Algés` | yes, title |
+| `date` | 850 | `2026-11-21` | no, `when` has it |
+| `time` | 850 | `15:00:00` | no, `when` has it |
+| `when` | 850 | `2026-11-21 15:00:00` | yes, startsAt. Always `date` + `time` |
+| `guid` | 850 | `0aaf9ad5-…` | yes |
+| `pokemon_url` | 850 (104 event-specific) | `…/26-11-001729/` | yes, officialUrl and displayId |
+| `shop` | 850 | `DECKOUT` | yes |
+| `street_address` | 850 | `R. JOÃO PIRES PINTO 39 1º ANDAR, 8135, PORTUGAL` | yes |
+| `city` | 850 | `Almancil` | yes |
+| `state` | 850 | `Faro` | no. District; not standardised |
+| `country_code` | 850 | `PT` | no, always `PT` (we ask for it) |
+| `latitude`, `longitude` | 850 | `37.0746`, `-7.97926` | no (see Time) |
+| `league` | 850 | `26062297` | yes, leagueId |
+| `date_added` | 850 | `2026-08-23` | no. When pokedata first saw the event |
+| `cost` | 91 | `5€`, `6.5`, `7 euros`, `6,5`, `€10` | no. Free text, not used |
+| `totalPlayers`, `TCaccounts`, `juniors`, `seniors`, `masters` | always `"0"` | `0` | no |
+| `postal_code`, `status`, `category`, `tournament_date`, `tournament_completed`, `Event_website`, `Third_party_registration_website` | always empty | | no |
+
+## Time
+
+- `when` is the start time in the shop's local time, with no zone or offset. The values are what a shop would announce (15:00 for 474 events, 10:30, 19:00, 21:00) and match the times on the website.
+- The importer parses `when` as `Europe/Lisbon` and stores UTC.
+- **Madeira and Azores: be careful.** On 18 Nov 2026 there were no events on the islands (the most westerly longitude was about −8.9; every `state` was a mainland district). Madeira is on Lisbon time, but the Azores are one hour behind, so an Azores event parsed as Lisbon time would be an hour off. When island events start to appear, check how they look (`state`, `city`, coordinates) and handle the Azores zone then (Bruno, 18 Nov 2026: no special handling until then).
+- No end time (see Field mapping).
+
+## Shop
+
+- One `league` ID can appear with two spellings of the shop: `ABISSAL GAMES` / `ABYSSAL GAMES`, `TBMJ` / `TBMJ COLLECTIBLES`, `ARENA PORTO` / `LOJAS ARENA PORTO`, `PLAY YOUTH STORE` / `PLAY YOUTH A LOJA`, `GG LOUNGE` / `GGLOUNGE` (8 IDs on 18 Nov 2026).
+- 8 shops appear with two addresses or two sets of coordinates.
+- So shop name and city alone are not a reliable key. `leagueId` is kept as a candidate; the choice is for M04/M10.
+
+## Questions for the pokedata.ovh author
+
+1. Is this use fine with you: a free, non-commercial fan site for Portugal that requests `/events/api/_tcg/_country/PT` once a night and credits pokedata.ovh?
+2. Is there a rate limit or a preferred time of day for requests?
+3. How often is the data refreshed from the official locator, and are changes to time, venue or cancellations picked up after the first retrieval ("Events are retrieved once")?
+4. A bare `_tcg` returns VG and GO events too. Is that intended? Could the API accept a friendly option like the website's `ftcg` (for example `_tcg/cups/challenges/pre/ftcg`)?
+5. What `type` and `product` values do prereleases, and the website's `premier` and `mss` filters, have?
+6. Is `when` always the venue's local time? What happens for events in the Azores (UTC−1)?
+7. Is `guid` the official Event Locator GUID, and does it stay the same when an event is edited?
+8. When an event is cancelled or removed from the locator, does it disappear from the API or stay with a status? (`status` is always empty today.)
