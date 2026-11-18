@@ -24,14 +24,14 @@ Then wait for Bruno. If he changes the slice, update its Plan line.
 ## Build
 
 3. Write the test, run it alone, show the failure. If it fails for an unexpected reason, stop and explain.
-4. Write the smallest code that makes it pass, as proposed. If you need something the proposal didn't name (a file, class, package, or another approach), stop and ask first.
+4. Write the smallest code that makes it pass, as proposed. The proposal is a contract: if the slice needs a file, class or package it didn't name, another approach, or will clearly exceed the size estimate, stop before writing it, say why, and offer to move the extra into a new slice added to the Plan.
 5. Run the slice's tests. Run `composer verify` only if the slice touched shared config (composer.json, package.json, vite, phpunit, CI).
 
 ## Stop 2: show and suggest
 
 - `git status --short` and `git diff --stat` (untracked files count too).
 - Walk through the important hunks in plain words, ready to paste into documentation; Tailwind notes when UI changed.
-- Anything that differs from the proposal, and why.
+- Compare the diff with the proposal (files and size). Anything that differs, and why.
 - Tick the slice in the Plan (`docs/progress.md` goes in the same commit).
 - Suggest the exact `git add <paths>` and a commit message. Never run them.
 

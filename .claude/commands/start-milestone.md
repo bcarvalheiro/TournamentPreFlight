@@ -15,5 +15,5 @@ Start milestone $ARGUMENTS.
    - any decision the docs do not settle, with your recommendation,
    - anything in the milestone that conflicts with another doc,
    - anything you need from me (credentials, a choice, a package to approve).
-6. Wait for my approval. Then write the slice list into `docs/progress.md` under **Current** as a **Plan** checklist, one `- [ ]` line per slice (`Slice 1: goal (test name)`). When the plan changes later, edit the line and add a short reason.
+6. Wait for my approval. Then write the slice list into `docs/progress.md` under **Current** as a **Plan** checklist, one `- [ ]` line per slice (`Slice 1: goal (files; test name)`). The line is the slice's contract. When the plan changes later, edit the line and add a short reason.
 7. Stop. Remind me of the `watch` command, suggest `git add docs/progress.md` and a commit message for the plan, and tell me to run `/slice` for the first slice. Do not write tests or code in this command.
