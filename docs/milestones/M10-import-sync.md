@@ -6,9 +6,9 @@
 Real Portuguese events arrive every night, safely.
 
 ## Scope
-- `EventSource` interface, `ImportedEvent`, `PokedataSource` (mapping from `docs/pokedata.md`, tested on the M03 fixtures).
+- `ImportedEvent` and the `PokedataClient` service (mapping from `docs/pokedata.md`, tested on the M03 fixtures). No source interface.
 - Venue matching and creation by normalised name + city.
-- `EventSync` service and `events:sync {--source=pokedata} {--dry-run}` command, implementing every step in `architecture.md`, writing `import_runs`.
+- `SyncEvents` action and the `events:sync {--dry-run}` command that runs it, implementing every step in `architecture.md`, writing `import_runs`.
 - Abort rules: exception, empty result, result under half the previous good run. Admins are notified (mail) on abort.
 - On significant change: update, set `changed_at`, clear confirmations, dispatch a `StillGoingNotification` job with reason "changed" (the mail itself can be a simple stub until M12).
 - Possibly-cancelled flagging and clearing; dispatch `PossiblyCancelled` (stub until M12).
