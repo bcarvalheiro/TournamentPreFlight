@@ -28,10 +28,18 @@
       "Bash(git branch:*)",
       "Bash(git switch:*)",
       "Bash(git checkout -b:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "WebFetch(domain:laravel.com)",
+      "WebFetch(domain:inertiajs.com)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:tailwindcss.com)",
+      "WebFetch(domain:pestphp.com)",
+      "WebFetch(domain:react.dev)",
+      "WebFetch(domain:vaul.emilkowal.ski)",
+      "WebFetch(domain:radix-ui.com)"
     ],
     "ask": [
+      "Read(./node_modules/**)",
+      "Read(./vendor/**)",
       "Bash(composer require:*)",
       "Bash(composer remove:*)",
       "Bash(composer update:*)",
@@ -49,6 +57,11 @@
       "Read(./.env.production)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git stash:*)",
+      "Bash(git restore:*)",
+      "Bash(git checkout --:*)",
       "Bash(php artisan db:wipe:*)"
     ]
   },
