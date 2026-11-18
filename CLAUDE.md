@@ -33,18 +33,35 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 ## How to work
 
-- Test first: turn each acceptance criterion into a Pest test before writing the code.
-- One test per defect, at the lowest layer that can catch it: if a Vitest or unit test already detects a bug, do not add a feature or browser test for the same bug. Browser tests only for what needs a real browser.
-- Stay inside the milestone. If you find work outside it, add it to "Found along the way" in `docs/progress.md` instead of doing it.
-- Ask before adding a Composer or npm package that the docs don't name.
-- Prefer Laravel's built-in way. Look up version-specific docs (Laravel Boost `search-docs` if installed) instead of guessing APIs.
-- **Base every implementation on official documentation**: Laravel, Inertia, Pest and Tailwind via `search-docs`; shadcn/ui (Radix flavour) at ui.shadcn.com; each package's own docs. Before writing anything custom, check whether the docs, the starter kit or shadcn already provide it, and use that. In plans, name the doc page each choice comes from.
-- Small commits on the milestone branch. Never commit to `main` directly, never force-push.
-- When a decision is made that the docs don't cover, add it to `docs/decisions.md`.
-- Bruno is learning Tailwind. When you write or change UI, briefly explain the Tailwind classes and patterns that are new to him, and compare them to Bootstrap where that helps.
-- When you finish an implementation explain everything you did as it was ready to be documented.
-- At the start of every session, remind Bruno how to follow the plan live, in a second terminal tab: `watch -n 2 'sed -n "/### Plan/,/^## /p" docs/progress.md'` (the Plan checklist in `docs/progress.md`, which you keep ticked as work is done).
-- Bruno is studying the tests. Go slowly on them: before running a test, explain what it protects, how it works and what failure you expect. After implementation, run `/rethink-tests` before `/review`.
+**In slices.** A milestone is split into slices: one concern, its test and its code together, one commit each. Keep a slice small enough to review comfortably in one sitting; around 150 changed lines is a good guide, not a hard limit. If a slice will clearly be much bigger, say so in its proposal and offer a split. `/slice` runs one. Every slice has two stops, and the next slice never starts without Bruno's OK:
+1. Proposal (goal, files, code sketch, standard way, new things, test), then wait.
+2. After the test goes red → green: diff walkthrough and a suggested commit, then wait.
+
+**Bruno commits.** Never stage or commit. Suggest the exact `git add <paths>` and a message (one concern, imperative subject). Never on `main`, never force-push.
+
+**Look things up in this order**, stopping at the first that answers:
+1. Boost `search-docs` (Laravel, Inertia, Pest, Tailwind, Wayfinder).
+2. The official docs site via WebFetch (ui.shadcn.com, react.dev, a package's own docs).
+3. What the app or starter kit already has (`resources/js/components/ui`, existing classes and tests).
+4. Only then `node_modules/` or `vendor/`: say which docs you checked and why they fell short, and record the fact in `docs/decisions.md` with its source.
+
+In plans and slice proposals, name the doc page each choice comes from.
+
+**Simple and standard.**
+- Take the documented default. If it seems too limited, stop and ask; don't build around it.
+- No abstraction used only once. No new folder, interface, base class, helper, config key or package unless the slice proposal named it and Bruno approved it.
+- Stay inside the milestone; other work goes to "Found along the way" in `docs/progress.md`.
+- A decision the docs don't cover goes into `docs/decisions.md`.
+
+**Tests.**
+- Test first: each acceptance criterion becomes a Pest test, shown failing before the code.
+- One test per defect, at the lowest layer that can catch it (Vitest/unit before feature, feature before browser). Browser tests only for what needs a real browser.
+- Bruno is studying the tests: before running one, explain what it protects, how it works and what failure you expect. After implementation, run `/rethink-tests` before `/review`.
+
+**Explaining.**
+- At stop 2, explain the change so it could be pasted into documentation.
+- Bruno is learning Tailwind: explain new classes and patterns, comparing with Bootstrap where it helps.
+- At the start of every session, remind Bruno how to follow the plan live in a second tab: `watch -n 2 'sed -n "/### Plan/,/^## /p" docs/progress.md'` (the Plan checklist in `docs/progress.md`, kept ticked as work is done).
 
 ===
 
