@@ -56,7 +56,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **magic_login_tokens**: email, token_hash, expires_at, used_at (nullable), ip. A link is valid once, for 15 minutes.
 
-**player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on save: under 13 this calendar year), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
+**player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 

@@ -6,9 +6,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Validation\ValidationException;
 
 /*
- * AC5 and CLAUDE.md rule 2: a profile under 13 this calendar year is a child
- * profile, and it cannot be saved without the parent's recorded consent.
- * Time is frozen in 2026.
+ * AC5 and CLAUDE.md rule 2: a profile that may be under 13 at some point this
+ * calendar year (it turns 13 or younger) is a child profile, and it cannot be
+ * saved without the parent's recorded consent. Time is frozen in 2026.
+ * Only the birth year is known, so someone born in 2013 is treated as a child
+ * all year: over-asking for consent is harmless, under-asking is not.
  */
 beforeEach(function () {
     $this->travelTo(Carbon::parse('2026-06-15 12:00', 'UTC'));
@@ -25,8 +27,8 @@ it('sets is_child from the birth year', function (int $birthYear, bool $isChild)
 
     expect($profile->is_child)->toBe($isChild);
 })->with([
-    'born 2014, turns 12 this year' => [2014, true],
-    'born 2013, turns 13 this year' => [2013, false],
+    'born 2013, turns 13 this year' => [2013, true],
+    'born 2012, turns 14 this year' => [2012, false],
 ]);
 
 it('refuses a child profile without recorded consent', function (array $consent) {
@@ -41,6 +43,7 @@ it('refuses a child profile without recorded consent', function (array $consent)
 })->with([
     'no consent at all' => [['consent_given_at' => null, 'consent_by_user_id' => null]],
     'a time but no user' => [['consent_given_at' => '2026-06-15 12:00', 'consent_by_user_id' => null]],
+    'a user but no time' => [['consent_given_at' => null, 'consent_by_user_id' => fn (array $attributes) => $attributes['user_id']]],
 ]);
 
 it('saves a child profile with recorded consent', function () {

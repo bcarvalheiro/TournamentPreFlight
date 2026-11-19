@@ -23,7 +23,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Profile fields: name, Player ID, birth year. All required.
 - Player ID: digits only, unique across the app. Exact length is unconfirmed (see `decisions.md`); validate 1–10 digits until confirmed.
-- A profile whose birth year makes the person under 13 this calendar year is a child profile. Creating one requires the parent to tick a consent statement; the time and the account are stored.
+- A profile whose birth year means the person may be under 13 at some point this calendar year (they turn 13 or younger) is a child profile. Only the birth year is known, so someone turning 13 this year counts as a child all year: asking for consent too often is harmless, too rarely is not. Creating one requires the parent to tick a consent statement; the time and the account are stored.
 - No divisions (Junior, Senior, Masters) and no seasons: Pre-Flight does not use them. Birth year is kept only to tell child profiles apart.
 
 ## Events

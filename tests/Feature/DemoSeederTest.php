@@ -40,9 +40,11 @@ it('seeds one ongoing and one ended event', function () {
     $this->seed();
 
     $upcoming = Event::upcoming()->get();
+    $leftOut = Event::query()->whereNotIn('id', $upcoming->modelKeys())->sole();
 
     expect($upcoming)->toHaveCount(29)
-        ->and($upcoming->first()?->starts_at->isPast())->toBeTrue();
+        ->and($upcoming->first()?->starts_at->isPast())->toBeTrue()
+        ->and($leftOut->ends_at->isPast())->toBeTrue();
 });
 
 it('seeds the family account with two consented children and an admin', function () {

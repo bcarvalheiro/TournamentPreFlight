@@ -32,14 +32,15 @@ class PlayerProfile extends Model
     use HasFactory;
 
     /**
-     * A profile under 13 this calendar year is a child profile, and it needs
-     * the parent's recorded consent (CLAUDE.md rule 2). Checked on every save,
-     * so no path can skip it.
+     * A profile that may be under 13 at some point this calendar year (it turns
+     * 13 or younger) is a child profile, and it needs the parent's recorded
+     * consent (CLAUDE.md rule 2). Only the birth year is known, so this errs
+     * towards asking. Checked on every model save (not on bulk queries).
      */
     protected static function booted(): void
     {
         static::saving(function (PlayerProfile $profile): void {
-            $profile->is_child = now('Europe/Lisbon')->year - $profile->birth_year <= 12;
+            $profile->is_child = now('Europe/Lisbon')->year - $profile->birth_year <= 13;
 
             if ($profile->is_child && ($profile->consent_given_at === null || $profile->consent_by_user_id === null)) {
                 throw ValidationException::withMessages([

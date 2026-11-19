@@ -17,7 +17,7 @@ class ImportRunFactory extends Factory
      */
     public function definition(): array
     {
-        $startedAt = now()->subDay()->setTime(3, 30);
+        $startedAt = now('Europe/Lisbon')->subDay()->setTime(3, 30)->utc();
 
         return [
             'source' => 'pokedata',
