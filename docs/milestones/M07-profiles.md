@@ -9,6 +9,7 @@ An account manages its own profile and its children's.
 - Pages: profile list, create, edit, delete. First-run flow "Create your player profile" after first sign-in (keeps the pending intent).
 - `CreatePlayerProfile` / `UpdatePlayerProfile` actions with validation: name required, Player ID digits only 1–10 and unique, birth year between 1920 and the current year.
 - Child profiles: consent checkbox appears when the birth year means under 13 this year; consent time and user stored.
+- Save profiles through the model (`create`/`update` on a `PlayerProfile`), never with bulk queries: the model's saving hook sets `is_child` and enforces consent (`decisions.md`, M04 review).
 - Navbar "Profiles (n)".
 - `PlayerProfilePolicy`: only the owner can view, edit, delete.
 - Own-data shapes in `app/Data/Own/`.
