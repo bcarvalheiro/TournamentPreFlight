@@ -69,4 +69,3 @@ it('stores seeded Lisbon times in UTC', function () {
 
     expect($cup->starts_at->toDateTimeString())->toBe('2027-07-04 09:00:00');
 });
-
