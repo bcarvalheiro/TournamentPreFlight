@@ -9,9 +9,9 @@ use App\Models\PlayerProfile;
 use App\Models\Shop;
 use App\Models\User;
 use Carbon\CarbonInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * The prototype's world (design/prototype/app.js): invented shops, ~6 weeks of
@@ -34,6 +34,12 @@ class DemoSeeder extends Seeder
         'levada' => ['Levada TCG', 'Funchal', 'Madeira'],
         'liz' => ['Liz Card Club', 'Leiria', 'Leiria'],
     ];
+
+    /**
+     * Anonymous players behind the counts. At least as many as the two biggest
+     * same-day events together (38 + 8 on day 4), so they never overlap.
+     */
+    private const CROWD_SIZE = 60;
 
     /**
      * [day offset, Lisbon start time or 'now', type, shop, going]. From the
@@ -86,16 +92,23 @@ class DemoSeeder extends Seeder
             'official_name_key' => mb_strtolower("{$shop[0]}|{$shop[1]}"),
         ]));
 
-        $crowd = PlayerProfile::factory()->count(40)->create();
+        $crowd = PlayerProfile::factory()->count(self::CROWD_SIZE)->create();
+        $crowdTwice = $crowd->concat($crowd);
+        $next = 0;
 
-        $events = collect(self::EVENTS)->map(function (array $row) use ($shops, $crowd): Event {
+        $events = collect(self::EVENTS)->map(function (array $row) use ($shops, $crowdTwice, &$next): Event {
             [$day, $time, $type, $shop, $going] = $row;
 
             $event = Event::factory()->for($shops[$shop])->create([
                 'type' => $type,
                 'starts_at' => $this->startsAt($day, $time),
             ]);
-            $this->attend($event, $crowd->take($going));
+
+            // Each event takes the next block of the crowd (wrapping around, hence
+            // the crowd twice), so nobody goes everywhere and same-day events,
+            // which sit next to each other in EVENTS, never share a player.
+            $this->attend($event, $crowdTwice->slice($next, $going));
+            $next = ($next + $going) % self::CROWD_SIZE;
 
             return $event;
         });
@@ -107,20 +120,21 @@ class DemoSeeder extends Seeder
      * Solo player, parent with two children, and an admin. Password "password"
      * (the kit's) until M06 removes passwords.
      *
-     * @param  \Illuminate\Support\Collection<int, Event>  $events
+     * @param  Collection<int, Event>  $events
      */
-    private function seedDemoAccounts(\Illuminate\Support\Collection $events): void
+    private function seedDemoAccounts(Collection $events): void
     {
         $solo = User::factory()->create(['name' => 'Solo Demo', 'email' => 'solo@preflight.test']);
         $soloProfile = PlayerProfile::factory()->for($solo)->create(['name' => 'Solo Demo', 'birth_year' => 1995]);
-        $this->attend($events[4], new Collection([$soloProfile]));
-        $this->attend($events[11], new Collection([$soloProfile]));
+        $this->attend($events[4], [$soloProfile]);
+        $this->attend($events[11], [$soloProfile]);
 
         $family = User::factory()->create(['name' => 'Family Demo', 'email' => 'family@preflight.test']);
         $parent = PlayerProfile::factory()->for($family)->create(['name' => 'Parent Demo', 'birth_year' => 1985]);
-        $junior = PlayerProfile::factory()->child()->for($family)->create(['name' => 'Junior Demo', 'birth_year' => 2015]);
-        $senior = PlayerProfile::factory()->child()->for($family)->create(['name' => 'Senior Demo', 'birth_year' => 2014]);
-        $this->attend($events[6], new Collection([$parent, $junior, $senior]));
+        $thisYear = now('Europe/Lisbon')->year;
+        $junior = PlayerProfile::factory()->child()->for($family)->create(['name' => 'Junior Demo', 'birth_year' => $thisYear - 11]);
+        $senior = PlayerProfile::factory()->child()->for($family)->create(['name' => 'Senior Demo', 'birth_year' => $thisYear - 12]);
+        $this->attend($events[6], [$parent, $junior, $senior]);
 
         User::factory()->create(['name' => 'Admin Demo', 'email' => 'admin@preflight.test', 'is_admin' => true]);
     }
@@ -139,10 +153,12 @@ class DemoSeeder extends Seeder
     }
 
     /**
-     * @param  Collection<int, PlayerProfile>  $profiles
+     * @param  iterable<PlayerProfile>  $profiles
      */
-    private function attend(Event $event, Collection $profiles): void
+    private function attend(Event $event, iterable $profiles): void
     {
-        $profiles->each(fn (PlayerProfile $profile) => Attendance::factory()->for($event)->for($profile)->create());
+        foreach ($profiles as $profile) {
+            Attendance::factory()->for($event)->for($profile)->create();
+        }
     }
 }

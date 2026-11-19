@@ -24,8 +24,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
 - [x] Slice 9: import_runs (migration, `ImportRun` model, factory; `MigrationsTest` extended: the table goes on rollback and comes back) · AC1
   - Changed (Bruno, 19 Nov): counters named `events_created`, `events_updated`, `events_flagged`, `events_unchanged` (not `created`/`updated`, which read like timestamps); `finished_at` required; `source` a plain string, not `EventSourceKey`. No behaviour of its own yet, so no new test; M10 tests writing runs and the abort rule.
-- [x] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), ~40 players for the counts, solo, parent (children born 2015 and 2014) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
+- [x] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), a crowd of 60 players for the counts, solo, parent (two children, aged 11 and 12 this year) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
   - Changed (19 Nov): `WithoutModelEvents` removed from `DatabaseSeeder` (it muted the saving hooks); demo accounts `solo@`, `family@`, `admin@preflight.test`, password `password`; their 5 answers add to the prototype counts (315 rows).
+  - Changed (review, 19 Nov): children's birth years relative to the current year (fixed years aged out on 1 Jan); crowd 60, each event takes the next block so no player is at two events on one day; seeder tests freeze time.
 
 ## Milestones
 

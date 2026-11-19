@@ -11,7 +11,13 @@ use Illuminate\Support\Carbon;
 /*
  * AC4: `php artisan migrate:fresh --seed` produces the demo world the UI is
  * built on. $this->seed() runs DatabaseSeeder, the same thing --seed runs.
+ * Time is frozen so the tests never depend on the real date; a test may
+ * travel elsewhere before seeding.
  */
+beforeEach(function () {
+    $this->travelTo(Carbon::parse('2026-11-20 12:00', 'UTC'));
+});
+
 it('seeds the demo data with the expected count per table', function () {
     $this->seed();
 
@@ -22,8 +28,8 @@ it('seeds the demo data with the expected count per table', function () {
         'events' => Event::query()->count(),
         'attendances' => Attendance::query()->count(),
     ])->toBe([
-        'users' => 43,
-        'player_profiles' => 44,
+        'users' => 63,
+        'player_profiles' => 64,
         'shops' => 9,
         'events' => 30,
         'attendances' => 315,
@@ -49,6 +55,29 @@ it('seeds the family account with two consented children and an admin', function
         ->and($children)->toHaveCount(2)
         ->and($children->every(fn (PlayerProfile $child) => $child->consent_by_user_id === $family->id))->toBeTrue()
         ->and(User::query()->where('email', 'admin@preflight.test')->value('is_admin'))->toBeTruthy();
+});
+
+it('keeps the demo children children in any year', function () {
+    $this->travelTo(Carbon::parse('2031-03-01 12:00', 'UTC'));
+
+    $this->seed();
+
+    $family = User::query()->where('email', 'family@preflight.test')->firstOrFail();
+
+    expect($family->playerProfiles()->where('is_child', true)->count())->toBe(2);
+});
+
+it('never sends a crowd player to two events on the same day', function () {
+    $this->seed();
+
+    $sameDayAnswers = Attendance::query()
+        ->join('events', 'events.id', '=', 'attendances.event_id')
+        ->selectRaw('player_profile_id, DATE(starts_at) AS day, COUNT(*) AS answers')
+        ->groupBy('player_profile_id', 'day')
+        ->having('answers', '>', 1)
+        ->count();
+
+    expect($sameDayAnswers)->toBe(0);
 });
 
 /*
