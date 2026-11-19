@@ -20,7 +20,7 @@ Working "I'm going" (M08), sign-in (M06), event page (M09: slips link to `/event
 2. Up next shows exactly the first 5 upcoming, unaffected by filters.
 3. Each filter works alone and combined (type AND shop AND date); multi-select within a group is OR. Date presets "This week", "This weekend", "Next 7", "Next 30", custom From/To are correct around a Sunday and across month ends (freeze time in tests).
 4. Date filter applies before the cap: with 40 matching events the page says "First 25 of 40".
-5. Counts are going only (maybe excluded).
+5. Counts are the number of going answers.
 6. Shop filter lists only shops with upcoming events, with counts.
 7. Privacy test passes: no seeded names or Player IDs in the response.
 8. Browser test at 390px: filter sheet opens, choosing Cup and a shop updates the list and the URL; reloading the URL keeps the filters.

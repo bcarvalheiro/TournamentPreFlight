@@ -87,6 +87,11 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-19 | M03: `tests/Fixtures/**` is excluded from `vp fmt` (`ignorePatterns` in `vite.config.ts`) | Fixtures are raw third-party responses and must stay byte-for-byte as received |
 | 2026-11-19 | M03 review: no `other` type. Types are casual, prerelease, challenge, cup; anything else is dropped at import. Supersedes "other" in the 18 Nov types entry and the 19 Nov end-time entry | Bruno: the importer never produces it and players pick from the four types |
 | 2026-11-19 | M03 review: `events.ends_at_estimated` dropped; `ends_at` is always the type's estimate and is recomputed when starts_at or type changes | Bruno: end times are only ever estimates; a moved event must not keep its old end |
+| 2026-11-19 | M04: **no divisions and no seasons.** No `seasons` table, no `Division` enum, no `DivisionResolver`; nothing shows Junior/Senior/Masters. Birth year stays, only for the under-13 rule. Supersedes the 2026-11-12 division entry and CLAUDE.md rule 3 | Bruno: the site never uses divisions; what matters is that one account (a parent) can hold several profiles |
+| 2026-11-19 | M04: **no "maybe".** An attendance row means going; not going means no row. No `status` column and no `AttendanceStatus` enum. `confirmed_at` stays for M12; how confirmation works is decided then | Bruno: keep the answer binary; confirmation later |
+| 2026-11-19 | M04: enums are stored as plain string columns with Laravel enum casts, not MySQL `ENUM` columns. Only `EventType`, `EventStatus`, `EventSourceKey` are enums; `social_accounts.provider`, `event_reports.kind`, `import_runs.status` stay plain strings until their milestone (M06, M11, M10) | Laravel docs, Eloquent "Enum casting"; the allowed values live in one place, the PHP enum, and adding one needs no migration |
+| 2026-11-19 | M04: end-time estimates live on `EventType::estimatedHours()`, not in `config/preflight.php`; the `Event` model's `saving` hook writes `ends_at` (a stored column, because `upcoming()` filters and indexes on it; an accessor would not reach SQL) | Config is for settings that vary by environment; these are product rules that belong with the type, and a `match` without default forces an estimate for every new type |
+| 2026-11-19 | M04: the under-13 rule lives in the `PlayerProfile` model's `saving` hook: it sets `is_child` (Lisbon calendar year minus birth year is 12 or less) and throws `ValidationException` when a child profile has no consent | No save path can skip it (seeders, admin, M07's action), and forms get the error message for free |
 
 ## Open questions
 
@@ -102,7 +107,7 @@ To verify before relying on them:
 - [x] ~~pokedata.ovh response fields~~: recorded in `docs/pokedata.md` (M03, 18 Nov).
 - [ ] Matching player-submitted events to imported ones (M10 AC5, M11). An event-specific locator link ends in the tournament ID (`26-11-001729`, our `display_id`), not a guid, and whether pokedata's `guid` is the official locator GUID is unknown (`pokedata.md` question 7). Decide guid or `display_id` matching after the author answers.
 - [ ] Write to the pokedata.ovh author (refresh behaviour, rate limits, terms, prerelease type; questions at the end of `docs/pokedata.md`). Bruno.
-- [ ] 2027 division birth years against official Play! Pokémon rules (source so far: playnews.gg).
+- [x] ~~2027 division birth years~~: no longer needed, divisions dropped (M04, 19 Nov).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
 - [x] ~~Whether Laravel 13 lists MySQL 8.4 as supported~~: yes, the Laravel 13 docs list MySQL 5.7+; M01 runs on 8.4.7 locally and 8.4 in CI.
 - [x] ~~Inertia version shipped by the starter kit~~: Inertia 3 (recorded M01).

@@ -26,11 +26,11 @@ app/
   Actions/            one class per operation that changes state, one public `handle()` method; called from
                       controllers, jobs and commands: SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
-                      PokedataClient, DivisionResolver (birth year + event date -> Division)
+                      PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
   Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
-  Enums/              EventType, EventStatus, AttendanceStatus, Division, EventSourceKey
+  Enums/              EventType, EventStatus, EventSourceKey
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
 resources/js/
@@ -58,13 +58,11 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **player_profiles**: user_id (owner), name, player_id (string of digits, unique), birth_year (smallint), is_child (bool, computed on save: under 13 this calendar year), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
-**seasons**: name ("2027"), starts_on, ends_on (dates), junior_born_from (e.g. 2015), senior_born_from (e.g. 2011). Masters is everything older. Seeded; edited by admin.
-
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
-**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `config/preflight.php`; recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
+**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
-**attendances**: event_id, player_profile_id, status, confirmed_at (nullable), anonymised_at (nullable). Unique (event_id, player_profile_id). Removing an answer deletes the row. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs). Index (event_id, status). If there's a record, it's because it's atending.
+**attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 
 **event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
 
@@ -76,7 +74,7 @@ Plus the framework tables: sessions, jobs, failed_jobs, cache, notifications (no
 
 ### Counts
 
-Computed with `withCount` filtered by status and joined to profiles for divisions. No denormalised counter in v1. If the home page query gets slow, add a cached counts table later, written by the `SetAttendance` action. Divisions are computed in SQL from `birth_year` and the event's season bounds, or in PHP for one event's page.
+Computed with `withCount` on attendances. No denormalised counter in v1. If the home page query gets slow, add a cached counts table later, written by the `SetAttendance` action.
 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
@@ -121,7 +119,7 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 ## Admin
 
-Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs, seasons. No admin package.
+Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs. No admin package.
 
 ## Environments and CI
 

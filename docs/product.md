@@ -11,7 +11,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 | Who | What they do |
 | --- | --- |
 | Guest | Browses events and counts, opens event pages, shares links |
-| Player (account holder) | Signs in, manages profiles, answers "I'm going" / "Maybe" per profile, follows events, gets emails |
+| Player (account holder) | Signs in, manages profiles, answers "I'm going" per profile, follows events, gets emails |
 | Parent | A player whose account also holds profiles for their children (under 13 have no login of their own) |
 | Admin | Moderates player-submitted events, sees import runs, hides wrong events |
 | Shop | Not in v1. Later, optional (see "Later phase") |
@@ -23,7 +23,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 - Profile fields: name, Player ID, birth year. All required.
 - Player ID: digits only, unique across the app. Exact length is unconfirmed (see `decisions.md`); validate 1–10 digits until confirmed.
 - A profile whose birth year makes the person under 13 this calendar year is a child profile. Creating one requires the parent to tick a consent statement; the time and the account are stored.
-- **Division** (Junior, Senior, Masters) is derived from birth year and the season of the event, using the `seasons` table. 2027 season (to confirm against official rules): Junior born 2015 or later, Senior 2011–2014, Masters 2010 or earlier.
+- No divisions (Junior, Senior, Masters) and no seasons: Pre-Flight does not use them. Birth year is kept only to tell child profiles apart.
 
 ## Events
 
@@ -35,9 +35,9 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ## Attendance
 
-- Answers per profile per event: **going**, **maybe**, or none. Changing an answer updates the same row; removing it deletes the row (or sets not_going, see architecture).
-- The public count is **going** only. Maybe is shown separately on the event page.
-- Cards show the total going. The event page splits going by division (Junior, Senior, Masters) and shows maybe and confirmed counts: "12 going (8 confirmed) · 4 maybe".
+- Answers per profile per event: **going** or not going. Going is a row; not going is no row (removing the answer deletes the row). There is no "maybe".
+- The public count is the number of going answers.
+- Cards show the total going. The event page shows the going and confirmed counts: "12 going (8 confirmed)". How confirmation works is decided later (M12).
 - **Others see counts only, never names.** The account holder sees which of their own profiles are going.
 - Answers can only be given for listed events that have not ended.
 
@@ -46,7 +46,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 1. Signed out: open sign-in. After signing in, come back to the same page and continue with step 2 for that event. If the account has no profile yet, create the first profile, then continue.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
 3. Signed in with several profiles: open a picker listing each profile with a checkbox for going. Save applies the choices per profile. The button then reads "Going (2)".
-4. The button on the card only sets going. Maybe is chosen on the event page.
+4. The button toggles going; the event page has the same per-profile controls.
 
 ## Home page
 
@@ -64,7 +64,7 @@ See `design.md` for the visual spec. Content:
 
 ## Event page
 
-Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going by division, maybe, confirmed), the viewer's own answers with "I'm going" / "Maybe" / clear per profile, follow with a threshold ("tell me when 16 are going"), "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons.
+Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, follow with a threshold ("tell me when 16 are going"), "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons.
 
 ## Adding a missing event
 
