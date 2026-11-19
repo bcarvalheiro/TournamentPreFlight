@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M03 · pokedata.ovh spike (in progress).
+- **Milestone**: M03 · pokedata.ovh spike (review).
 - **Branch**: m03-pokedata-spike
-- **State**: Slices 1–3 done; all three ACs met. Next: `/rethink-tests`, then `/review`.
+- **State**: Slices 1–3 done; all three ACs met; `/rethink-tests` done; `composer verify` green (23 Vitest, 66 Pest, Larastan 0 errors). Next: `/review`, then push and open the PR.
 
 ### Plan (M03)
 
@@ -23,7 +23,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | --- | --- | --- | --- |
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
-| M03 | pokedata.ovh spike | in progress | |
+| M03 | pokedata.ovh spike | review | All ACs met; `/review` and PR to do |
 | M04 | Domain schema and seed data | todo | |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
@@ -42,6 +42,49 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-18/19 · M03 · pokedata.ovh spike
+
+**Outcome.** All three acceptance criteria met. Real responses saved as fixtures, `docs/pokedata.md` written (request and filter contract, field mapping, time, shops, questions for the author), docs and decisions aligned. `composer verify` green (also with `CI=true`): Pint, Larastan 0 errors, build, `tsc`, `vp check`, 23 Vitest, 66 Pest (7,033 assertions). First milestone run in slices (`/slice`), with Bruno committing each one.
+
+**Commits** (`main..HEAD`)
+- `1d6a79f` start m03: pokedata.ovh spike slice plan
+- `b3cf756` record pokedata.ovh fixtures, define API returns and how we will stablish contracts (Slice 1)
+- `95186c3` map pokedata.ovh fields to ImportedEvent and list questions for the author (Slice 2)
+- `d10747e` changed venue denomination to shops. text only
+- `c3d2dc4` alignd docs with pokedata findings: casual and prereleases types, shops and one guid. (Slice 3)
+- `827f78e` check the pokedata fixture is a list of events with the importers fields (`/rethink-tests` P1)
+- `7856f46` keep pokedata raw fixtures out of the formatter (`/verify`)
+
+**What the spike found** (details in `docs/pokedata.md`)
+- One request, `GET /events/api/_tcg/_country/PT`: 850 events up to 28 Feb 2027, no paging, plain JSON list.
+- A bare `_tcg` filters nothing (byte-identical to `_country/PT`, VG and GO included). Cups and challenges carry a `product` field (`tcg`/`vg`/`go`); friendlies do not. The importer keeps `nonpremier TCG`, or League Challenge/Cup with `product: tcg`. Filtering on `type` alone would have let in 12 VG/GO tournaments.
+- `nonpremier TCG` covers League nights and Friendlies; the website calls them "TCG Friendly". No prereleases listed (no set release due).
+- `when` is local shop time without a zone; no end time; `name` empty for 723 of 816 kept events; `pokemon_url` event-specific (with the tournament ID) for 104 events, generic otherwise; shop spellings vary under one `league` ID.
+- The website uses its own undocumented, paged endpoint with the same data; not used.
+
+**Decisions by Bruno** (all in `decisions.md`): casual replaces Friendly and League; prerelease is its own type (Great Ball, casual keeps the Poké Ball); "shops", never "venue"; one `official_guid`; `ImportedEvent` without endsAt, `title` null when empty and shown as type + shop name; end-time estimates Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h; `leagueId` kept for later; cost not used; Azores only a warning.
+
+**Problems hit and how they were solved**
+- *The branch was behind `main`* (PR #4 merged after it was created), so `/start-milestone` would have run on old rules. Stopped; Bruno fast-forwarded and restarted.
+- *I believed a bare `_tcg` filtered TCG.* Bruno doubted the first result; two repeat requests (fresh, `cf-cache-status: DYNAMIC`, other filter order) confirmed it does not.
+- *My first type filter was wrong* (any League Challenge/Cup counted as TCG). Comparing the website's endpoint with the API (Bruno's idea) exposed 12 VG/GO cups and challenges and the `product` field.
+- *Slice 1 grew*: Bruno asked to record the findings before committing, so the request and filter contract went into `docs/pokedata.md` in Slice 1 (Plan line updated).
+- *`vp check` wanted to reformat the raw fixtures*: `tests/Fixtures/**` added to the formatter's `ignorePatterns`, like `design/**`.
+- *I asked twice whether "shop instead of venue" applied everywhere*; Bruno had already said so.
+
+**`/rethink-tests` outcome.** P1 accepted: test 3 now requires a list of events, each with the 8 fields the importer reads (`toBeList()`, `->each->toHaveKeys()`), shown red with a wrong key first. Rejected: a test that the empty fixture is `[]` (M10's abort test covers it) and deleting the byte-identical `pt-all-games` fixture (evidence for the `_tcg` finding). Bruno's question on weeks without events: tests use saved fixtures; the live import asks for every future event, so a quiet week is not an empty result; a truly empty result aborts and emails admins.
+
+**Review outcome.** `/review` not run yet.
+
+**What is left**
+- `/review`, then push and open the PR.
+- Bruno: write to the pokedata.ovh author (questions at the end of `docs/pokedata.md`).
+
+**Surprising**
+- The public API ignores a bare `_tcg`, and an unknown sub-option (`_tcg/ftcg`) returns `[]` instead of an error: invalid filters never fail loudly.
+- The website does not use the public API at all.
+- The website's own warning: events are retrieved once, and later edits may not reach pokedata. This matters for the sync's change detection in M10.
 
 ### 2026-11-17 · M02 · Design tokens and layout shell
 
@@ -183,5 +226,7 @@ Status values: todo, in progress, review, done.
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account, once M04 seeds it (Bruno). (M04)
 - **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M04/M05)
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
+- **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)
+- **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)

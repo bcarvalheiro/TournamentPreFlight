@@ -84,6 +84,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-19 | End times estimated by type: Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h (other 4h); an event leaves the lists when its estimate has passed | Bruno: only start times are known; nobody controls the end |
 | 2026-11-18 | Pokedata `league` ID kept on `ImportedEvent` as the candidate shop key; decided in M10 | Shop name spellings vary under one league ID (8 cases) |
 | 2026-11-18 | Azores: no special handling until island events appear; warning in `docs/pokedata.md` and `architecture.md` (Time) | Bruno: none listed today; Madeira shares Lisbon time, Azores are an hour behind |
+| 2026-11-19 | M03: `tests/Fixtures/**` is excluded from `vp fmt` (`ignorePatterns` in `vite.config.ts`) | Fixtures are raw third-party responses and must stay byte-for-byte as received |
 
 ## Open questions
 
