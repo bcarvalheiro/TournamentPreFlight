@@ -5,8 +5,11 @@ namespace App\Models;
 use App\Enums\EventSourceKey;
 use App\Enums\EventStatus;
 use App\Enums\EventType;
+use Carbon\CarbonInterface;
 use Database\Factories\EventFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -70,6 +73,54 @@ class Event extends Model
             'last_seen_at' => 'datetime',
             'changed_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Listed events that have not ended yet (ongoing ones included), soonest first.
+     *
+     * @param  Builder<Event>  $query
+     */
+    #[Scope]
+    protected function upcoming(Builder $query): void
+    {
+        $query->where('status', EventStatus::Listed)
+            ->where('ends_at', '>', now())
+            ->orderBy('starts_at');
+    }
+
+    /**
+     * Events of any of the given types. An empty list matches nothing.
+     *
+     * @param  Builder<Event>  $query
+     * @param  list<EventType>  $types
+     */
+    #[Scope]
+    protected function ofTypes(Builder $query, array $types): void
+    {
+        $query->whereIn('type', $types);
+    }
+
+    /**
+     * Events at any of the given shops. An empty list matches nothing.
+     *
+     * @param  Builder<Event>  $query
+     * @param  list<int>  $shopIds
+     */
+    #[Scope]
+    protected function atShops(Builder $query, array $shopIds): void
+    {
+        $query->whereIn('shop_id', $shopIds);
+    }
+
+    /**
+     * Events starting between the two moments, both included.
+     *
+     * @param  Builder<Event>  $query
+     */
+    #[Scope]
+    protected function between(Builder $query, CarbonInterface $from, CarbonInterface $to): void
+    {
+        $query->whereBetween('starts_at', [$from, $to]);
     }
 
     /**
