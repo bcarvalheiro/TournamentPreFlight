@@ -21,8 +21,6 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
-        $startsAt = fake()->dateTimeBetween('+1 day', '+6 weeks');
-
         return [
             'shop_id' => Shop::factory(),
             'source' => EventSourceKey::Pokedata,
@@ -31,8 +29,7 @@ class EventFactory extends Factory
             'display_id' => null,
             'type' => EventType::Casual,
             'title' => null,
-            'starts_at' => $startsAt,
-            'ends_at' => (clone $startsAt)->modify('+2 hours'),
+            'starts_at' => fake()->dateTimeBetween('+1 day', '+6 weeks'),
             'status' => EventStatus::Listed,
         ];
     }

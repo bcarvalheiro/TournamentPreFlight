@@ -6,12 +6,12 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M04 · Domain schema and seed data (in progress).
 - **Branch**: m04-domain-schema
-- **State**: Slice 1 done. Next: Slice 2.
+- **State**: Slices 1–2 done. Next: Slice 3.
 
 ### Plan (M04)
 
 - [x] Slice 1: shops and events tables, enums EventType/EventStatus/EventSourceKey (string columns + casts), models, factories, unique keys (`shops` + `events` migrations, `app/Enums/*`, `Shop`, `Event`, factories; `EventUniqueKeysTest`: official_guid, official_url, shops.official_name_key; `MigrationsTest`: roll back everything, migrate again) · AC1, AC2
-- [ ] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
+- [x] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
 - [ ] Slice 3: scopes `upcoming()`, `ofTypes()`, `atShops()`, `between()`, plural, taking lists (`Event`; `EventScopesTest`) · AC3
 - [ ] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory with child state, `User` casts and relations; `PlayerProfileUniqueKeysTest`) · AC1, AC2
 - [ ] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook; `PlayerProfileChildTest`) · AC5
@@ -233,4 +233,5 @@ Status values: todo, in progress, review, done.
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)
+- **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
 - **"Maybe" button in the styleguide** (`resources/js/pages/styleguide.tsx`): there is no maybe any more (M04 decision); remove or relabel it. (M05)

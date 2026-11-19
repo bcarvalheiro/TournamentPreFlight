@@ -34,13 +34,24 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'shop_id', 'source', 'official_guid', 'official_url', 'display_id', 'type', 'title',
-    'starts_at', 'ends_at', 'status', 'possibly_cancelled_at', 'last_seen_at', 'changed_at',
+    'starts_at', 'status', 'possibly_cancelled_at', 'last_seen_at', 'changed_at',
     'added_by_user_id', 'moderation_note',
 ])]
 class Event extends Model
 {
     /** @use HasFactory<EventFactory> */
     use HasFactory;
+
+    /**
+     * ends_at is always the type's estimate, recomputed on every save
+     * so a moved event or a changed type never keeps an old end.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Event $event): void {
+            $event->ends_at = $event->starts_at->copy()->addHours($event->type->estimatedHours());
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
