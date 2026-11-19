@@ -11,10 +11,12 @@ it('rolls every migration back and runs them again', function () {
     $this->artisan('migrate:reset')->assertSuccessful();
 
     expect(Schema::hasTable('shops'))->toBeFalse()
-        ->and(Schema::hasTable('events'))->toBeFalse();
+        ->and(Schema::hasTable('events'))->toBeFalse()
+        ->and(Schema::hasTable('import_runs'))->toBeFalse();
 
     $this->artisan('migrate')->assertSuccessful();
 
     expect(Schema::hasTable('shops'))->toBeTrue()
-        ->and(Schema::hasTable('events'))->toBeTrue();
+        ->and(Schema::hasTable('events'))->toBeTrue()
+        ->and(Schema::hasTable('import_runs'))->toBeTrue();
 });

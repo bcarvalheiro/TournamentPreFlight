@@ -68,7 +68,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
 
-**import_runs**: source, started_at, finished_at, status (ok, failed, aborted), created, updated, flagged, unchanged (ints), error (text, nullable), payload_sample (json, nullable).
+**import_runs**: source, started_at, finished_at, status (ok, failed, aborted), events_created, events_updated, events_flagged, events_unchanged (ints, default 0), error (text, nullable), payload_sample (json, nullable).
 
 Plus the framework tables: sessions, jobs, failed_jobs, cache, notifications (not needed unless database notifications are used).
 

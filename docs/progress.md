@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M04 · Domain schema and seed data (in progress).
 - **Branch**: m04-domain-schema
-- **State**: Slices 1–8 done. Next: Slice 9.
+- **State**: Slices 1–9 done. Next: Slice 10.
 
 ### Plan (M04)
 
@@ -22,7 +22,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
 - [x] Slice 8: event_follows and event_reports (migrations, models, factories; `EventFollowsAndReportsTest`: one follow per user per event, compound key, account deletion removes follows and reports) · AC1, AC2
   - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
-- [ ] Slice 9: import_runs (migration, `ImportRun` model, factory; test to be proposed) · AC1
+- [x] Slice 9: import_runs (migration, `ImportRun` model, factory; `MigrationsTest` extended: the table goes on rollback and comes back) · AC1
+  - Changed (Bruno, 19 Nov): counters named `events_created`, `events_updated`, `events_flagged`, `events_unchanged` (not `created`/`updated`, which read like timestamps); `finished_at` required; `source` a plain string, not `EventSourceKey`. No behaviour of its own yet, so no new test; M10 tests writing runs and the abort rule.
 - [ ] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), ~40 players for the counts, solo, parent (children born 2015 and 2014) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
 
 ## Milestones
