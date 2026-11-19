@@ -4,18 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M03 · pokedata.ovh spike (review).
-- **Branch**: m03-pokedata-spike
-- **State**: Slices 1–3 done; all three ACs met; `/rethink-tests` and `/review` done; `composer verify` green (23 Vitest, 66 Pest, Larastan 0 errors). Next: push and open the PR.
-
-### Plan (M03)
-
-- [x] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
-  - Changed (Bruno, 18 Nov): the slice also records the request and filter contract in `docs/pokedata.md`, after 5 extra one-off requests (repeat, filter order, `ftcg`, two website POSTs) showed that a bare `_tcg` returns VG/GO events and that `product` must be checked.
-- [x] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
-  - Changed (Bruno, 18 Nov): one `guid` (no separate officialGuid), `shopName`/`shopAddress` instead of venue, no `endsAt`, `leagueId` kept, cost not used, `nonpremier TCG` = one casual type (League and Friendly collapsed, decided), `title` null when `name` is empty and shown as type + shop name, Azores only a warning for now.
-- [x] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov), the `ImportedEvent` shape from Slice 2 (guid, shop fields, no endsAt, leagueId), casual type replacing League and Friendly (decided; big events sanctioned as `nonpremier TCG` listed as casual is a known risk, open), "shops" instead of "venue" everywhere (Bruno, 18 Nov: `venues` table → `shops`, `events.venue_id` → `shop_id`, `Event::atVenues()` → `atShops()`, shop matching in M10), in `decisions.md`, `architecture.md` (events.type, shops, Event import, Time) and `product.md`; icons: casual keeps the Poké Ball, prerelease gets the Great Ball (Bruno, 18 Nov; code change goes to Found along the way) (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, `docs/design.md`, `docs/pokedata.md`, `docs/milestones/M04`, `M05`, `M10` for the rename; no test) · AC3
-  - Changed (Bruno, 19 Nov): only `official_guid` (no `source_event_id`); end-time estimates Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h.
+- **Milestone**: M04 · Domain schema and seed data (in progress).
+- **Branch**: m04-domain-schema
+- **State**: plan proposed, waiting for Bruno's approval.
 
 ## Milestones
 
@@ -23,8 +14,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | --- | --- | --- | --- |
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
-| M03 | pokedata.ovh spike | review | All ACs met; reviewed; PR to open |
-| M04 | Domain schema and seed data | todo | |
+| M03 | pokedata.ovh spike | done | PR #5 merged |
+| M04 | Domain schema and seed data | in progress | |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
