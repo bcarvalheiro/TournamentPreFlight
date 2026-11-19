@@ -116,6 +116,8 @@ To verify before relying on them:
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
 - [x] ~~Whether "event changed" and "possibly cancelled" follow the reminders setting~~: always sent (Bruno, 19 Nov; decision log).
 - [ ] Per-category unsubscribe was dropped with the three settings: check in M14 that threshold, moderation and change emails count as transactional and need no opt-out.
+- [ ] **Alerts as topics, not rows per user** (Bruno, 19 Nov; decide in M10/M12). Outgoing alerts follow a publish/subscribe model: the topic is the event; subscribers are accounts with a going answer plus followers (`event_follows` is the subscription table); a change is stored once on the event (`changed_at`, `possibly_cancelled_at`) and fanned out by one job with `Notification::send()` on the mail channel, so no row is written per user per message (avoid the `database` notification channel for these). Open: add an `event_changes` log (event, field, old value, new value, when), one row per change, so emails and the event page can say what changed. Recommended: yes, in M10.
+- [ ] **Grouping reports** (M11). `event_reports` stays one row per reporting user (who, message, when; needed for rate limits and abuse). The admin list groups them by event and type ("5 reports of *changed*") so one real change is one item to handle. A query and UI concern, no schema change.
 - [x] ~~Whether Laravel 13 lists MySQL 8.4 as supported~~: yes, the Laravel 13 docs list MySQL 5.7+; M01 runs on 8.4.7 locally and 8.4 in CI.
 - [x] ~~Inertia version shipped by the starter kit~~: Inertia 3 (recorded M01).
 - [ ] Terms of use covering the official Event Locator.
