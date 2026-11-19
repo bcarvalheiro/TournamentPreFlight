@@ -66,7 +66,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
 
-**event_reports**: event_id, user_id, kind (changed, cancelled, wrong), message. For "Report a change".
+**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
 
 **import_runs**: source, started_at, finished_at, status (ok, failed, aborted), created, updated, flagged, unchanged (ints), error (text, nullable), payload_sample (json, nullable).
 

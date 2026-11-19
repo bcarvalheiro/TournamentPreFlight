@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M04 · Domain schema and seed data (in progress).
 - **Branch**: m04-domain-schema
-- **State**: Slices 1–7 done. Next: Slice 8.
+- **State**: Slices 1–8 done. Next: Slice 9.
 
 ### Plan (M04)
 
@@ -20,8 +20,10 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
 - [x] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories, `User::socialAccounts()`; `AuthTablesTest`: unique provider identity, compound key, cascade on account deletion, unique token hash) · AC1, AC2
   - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
-- [ ] Slice 8: event_follows, event_reports, import_runs (migrations, models, factories; `EventFollowUniqueKeysTest`) · AC1, AC2
-- [ ] Slice 9: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), ~40 players for the counts, solo, parent (children born 2015 and 2014) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
+- [x] Slice 8: event_follows and event_reports (migrations, models, factories; `EventFollowsAndReportsTest`: one follow per user per event, compound key, account deletion removes follows and reports) · AC1, AC2
+  - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
+- [ ] Slice 9: import_runs (migration, `ImportRun` model, factory; test to be proposed) · AC1
+- [ ] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), ~40 players for the counts, solo, parent (children born 2015 and 2014) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
 
 ## Milestones
 
@@ -190,7 +192,7 @@ Status values: todo, in progress, review, done.
 - `.gitignore`: `CLAUDE.md` and `.claude/` are tracked; only `.claude/settings.local.json` is ignored.
 
 *Claude kit and docs*
-- `.claude/commands/rethink-tests.md` (new) and the `/rethink-tests` step in `workflow.md`, `start-milestone.md`, `CLAUDE.md`. `/wrap-up` now writes this kind of documentation-ready log.
+- `.claude/commands/rethink-tests.md` (new) and the `/rethink-tests` step in `workflow.md`, `start-milestone.md`, `CLAUDE.md`. `/wrap-up` now writes this type of documentation-ready log.
 - `.claude/hooks/format.sh`: formats TS/CSS/JSON with `vp fmt` (Prettier is not installed); Markdown no longer auto-formatted.
 - `CLAUDE.md`, `README.md`, `docs/architecture.md`, `docs/workflow.md`, `docs/milestones/M01-scaffold.md`: aligned with the installed kit (Pest 5, Larastan 7, Vite+, Tailwind kept, Herd + DBngin, `composer setup`); Tailwind-teaching and slow-tests notes in `CLAUDE.md`.
 - `docs/decisions.md`: 15+ entries (versions and every choice above).
@@ -236,5 +238,6 @@ Status values: todo, in progress, review, done.
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)
+- **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
 - **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
 - **"Maybe" button in the styleguide** (`resources/js/pages/styleguide.tsx`): there is no maybe any more (M04 decision); remove or relabel it. (M05)
