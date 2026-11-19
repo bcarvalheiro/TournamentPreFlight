@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 /**
  * A player, owned by an account: the parent's own profile or one per child.
@@ -28,6 +29,24 @@ class PlayerProfile extends Model
 {
     /** @use HasFactory<PlayerProfileFactory> */
     use HasFactory;
+
+    /**
+     * A profile under 13 this calendar year is a child profile, and it needs
+     * the parent's recorded consent (CLAUDE.md rule 2). Checked on every save,
+     * so no path can skip it.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (PlayerProfile $profile): void {
+            $profile->is_child = now('Europe/Lisbon')->year - $profile->birth_year <= 12;
+
+            if ($profile->is_child && ($profile->consent_given_at === null || $profile->consent_by_user_id === null)) {
+                throw ValidationException::withMessages([
+                    'consent' => 'A parent must give consent for a player under 13.',
+                ]);
+            }
+        });
+    }
 
     /**
      * Get the attributes that should be cast.
