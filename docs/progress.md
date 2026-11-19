@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M03 · pokedata.ovh spike (in progress).
 - **Branch**: m03-pokedata-spike
-- **State**: Slices 1–2 done (fixtures, `docs/pokedata.md`). Next: Slice 3.
+- **State**: Slices 1–3 done; all three ACs met. Next: `/rethink-tests`, then `/review`.
 
 ### Plan (M03)
 
@@ -14,7 +14,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 18 Nov): the slice also records the request and filter contract in `docs/pokedata.md`, after 5 extra one-off requests (repeat, filter order, `ftcg`, two website POSTs) showed that a bare `_tcg` returns VG/GO events and that `product` must be checked.
 - [x] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
   - Changed (Bruno, 18 Nov): one `guid` (no separate officialGuid), `shopName`/`shopAddress` instead of venue, no `endsAt`, `leagueId` kept, cost not used, `nonpremier TCG` = one casual type (League and Friendly collapsed, decided), `title` null when `name` is empty and shown as type + shop name, Azores only a warning for now.
-- [ ] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov), the `ImportedEvent` shape from Slice 2 (guid, shop fields, no endsAt, leagueId), casual type replacing League and Friendly (decided; big events sanctioned as `nonpremier TCG` listed as casual is a known risk, open), "shops" instead of "venue" everywhere (Bruno, 18 Nov: `venues` table → `shops`, `events.venue_id` → `shop_id`, `Event::atVenues()` → `atShops()`, shop matching in M10), in `decisions.md`, `architecture.md` (events.type, shops, Event import, Time) and `product.md`; icons: casual keeps the Poké Ball, prerelease gets the Great Ball (Bruno, 18 Nov; code change goes to Found along the way) (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, `docs/design.md`, `docs/pokedata.md`, `docs/milestones/M04`, `M05`, `M10` for the rename; no test) · AC3
+- [x] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov), the `ImportedEvent` shape from Slice 2 (guid, shop fields, no endsAt, leagueId), casual type replacing League and Friendly (decided; big events sanctioned as `nonpremier TCG` listed as casual is a known risk, open), "shops" instead of "venue" everywhere (Bruno, 18 Nov: `venues` table → `shops`, `events.venue_id` → `shop_id`, `Event::atVenues()` → `atShops()`, shop matching in M10), in `decisions.md`, `architecture.md` (events.type, shops, Event import, Time) and `product.md`; icons: casual keeps the Poké Ball, prerelease gets the Great Ball (Bruno, 18 Nov; code change goes to Found along the way) (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, `docs/design.md`, `docs/pokedata.md`, `docs/milestones/M04`, `M05`, `M10` for the rename; no test) · AC3
+  - Changed (Bruno, 19 Nov): only `official_guid` (no `source_event_id`); end-time estimates Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h.
 
 ## Milestones
 
@@ -180,5 +181,7 @@ Status values: todo, in progress, review, done.
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account, once M04 seeds it (Bruno). (M04)
+- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M04/M05)
+- **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)

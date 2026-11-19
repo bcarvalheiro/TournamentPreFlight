@@ -94,8 +94,8 @@ Compared with the public API on 18 Nov 2026: all 100 events on page 0 are in the
 
 - A League Challenge starting at `03:00:00` (22 Nov 2026), probably a data entry error.
 - `state` is not standardised (`Lisboa` and `Lisbon` both appear on the website), as the API help warns. We filter by country only.
-- The website warns: "Events are retrieved once (but some data is updated afterwards). Beware of edits." Changes to time or venue may not reach pokedata. This matters for the sync's change detection (M10).
-- The website's "Last Update" is shown in GMT+1, one hour ahead of Lisbon in winter. Whether `when` is local venue time is checked in the field mapping.
+- The website warns: "Events are retrieved once (but some data is updated afterwards). Beware of edits." Changes to time or shop may not reach pokedata. This matters for the sync's change detection (M10).
+- The website's "Last Update" is shown in GMT+1, one hour ahead of Lisbon in winter. Whether `when` is the shop's local time is checked in the field mapping.
 
 ## Requests made
 
@@ -180,9 +180,9 @@ All values are strings, including coordinates and counts. 850 events on 18 Nov 2
 
 1. Is this use fine with you: a free, non-commercial fan site for Portugal that requests `/events/api/_tcg/_country/PT` once a night and credits pokedata.ovh?
 2. Is there a rate limit or a preferred time of day for requests?
-3. How often is the data refreshed from the official locator, and are changes to time, venue or cancellations picked up after the first retrieval ("Events are retrieved once")?
+3. How often is the data refreshed from the official locator, and are changes to time, shop or cancellations picked up after the first retrieval ("Events are retrieved once")?
 4. A bare `_tcg` returns VG and GO events too. Is that intended? Could the API accept a friendly option like the website's `ftcg` (for example `_tcg/cups/challenges/pre/ftcg`)?
 5. What `type` and `product` values do prereleases, and the website's `premier` and `mss` filters, have?
-6. Is `when` always the venue's local time? What happens for events in the Azores (UTC−1)?
+6. Is `when` always the shop's local time? What happens for events in the Azores (UTC−1)?
 7. Is `guid` the official Event Locator GUID, and does it stay the same when an event is edited?
 8. When an event is cancelled or removed from the locator, does it disappear from the API or stay with a status? (`status` is always empty today.)

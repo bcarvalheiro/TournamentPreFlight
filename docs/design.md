@@ -39,8 +39,8 @@ Each tournament type has a ball icon, ranked common to rare. **Ship the official
 
 | Type | Rank | Icon |
 | --- | --- | --- |
-| Friendly | Common | Poké Ball (red top) |
-| League | | Great Ball (blue top, red bands) |
+| Casual | Common | Poké Ball (red top) |
+| Prerelease | | Great Ball (blue top, red bands) |
 | Challenge | | Ultra Ball (black top, yellow bands) |
 | Cup | Rare | Master Ball (purple top, pink dots, white M) |
 
@@ -49,9 +49,9 @@ Build them as one `TournamentTypeIcon` React component (`type`, `size`) from the
 ```svg
 <!-- Shared clip for the top half. In React give it a unique id per instance (useId) -->
 <clipPath id="ballTop"><path d="M1 12a11 11 0 0 1 22 0z"/></clipPath>
-<!-- Friendly: Poké Ball -->
+<!-- Casual: Poké Ball -->
 <path d="M1 12a11 11 0 0 1 22 0z" fill="#E3350D"/><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/>
-<!-- League: Great Ball -->
+<!-- Prerelease: Great Ball -->
 <path d="M1 12a11 11 0 0 1 22 0z" fill="#2F6BD8"/><g clip-path="url(#ballTop)" fill="#E3350D"><ellipse cx="5.6" cy="6.4" rx="4" ry="1.9" transform="rotate(-38 5.6 6.4)"/><ellipse cx="18.4" cy="6.4" rx="4" ry="1.9" transform="rotate(38 18.4 6.4)"/></g><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/>
 <!-- Challenge: Ultra Ball -->
 <path d="M1 12a11 11 0 0 1 22 0z" fill="#222"/><g clip-path="url(#ballTop)" fill="#F5C518"><rect x="3.2" y="0" width="3.4" height="12"/><rect x="17.4" y="0" width="3.4" height="12"/><rect x="3.2" y="6.2" width="17.6" height="2"/></g><path d="M1 12a11 11 0 0 0 22 0z" fill="#fff"/><path d="M1 12h22" stroke="#1B1B1B" stroke-width="2"/><circle cx="12" cy="12" r="11" fill="none" stroke="#1B1B1B" stroke-width="1.5"/><circle cx="12" cy="12" r="3.3" fill="#fff" stroke="#1B1B1B" stroke-width="1.6"/>
