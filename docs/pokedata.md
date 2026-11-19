@@ -65,7 +65,7 @@ Counts kept on 18 Nov 2026: 777 casual, 29 challenge, 10 cup (816 of 850).
 
 `pokemon_url` is either:
 
-- event-specific, ending in the official tournament ID: `https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments/26-11-001729/`. All 51 cups and challenges and 53 of the 777 friendlies on 18 Nov 2026;
+- event-specific, ending in the official tournament ID: `https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments/26-11-001729/`. All 51 cups and challenges (39 of them TCG) and 53 of the 777 casual events on 18 Nov 2026: 104 in all, 92 among the 816 kept;
 - or the generic locator page `https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments//` (note the double slash), carrying no information. Treat it as missing.
 
 Every event has a `guid` (for example `0aaf9ad5-8100-42c8-ae2c-98ab878999be`), the same value the website uses.
@@ -125,7 +125,7 @@ No error response was produced: invalid filters return `200` with `[]` instead o
 | `type` | `type` + `product` | `League Cup` + `tcg` | Filter contract above. Values: casual, challenge, cup, prerelease |
 | `title` | `name` | `Liga Casual Pokémon` | `null` when `name` is empty (723 of 816 kept events). The app then shows the type and the shop name as the title (Bruno, 18 Nov 2026), so a name added later in pokedata still takes over |
 | `startsAt` | `when` | `2026-11-21 15:00:00` | Local time without a zone; parsed as `Europe/Lisbon`, stored as UTC (CarbonImmutable). See Time |
-| `officialUrl` | `pokemon_url` | `…/play-pokemon-tournaments/26-11-001729/` | Only when event-specific (104 of 850); the generic locator URL gives `null` |
+| `officialUrl` | `pokemon_url` | `…/play-pokemon-tournaments/26-11-001729/` | Only when event-specific (92 of the 816 kept events; 104 of all 850); the generic locator URL gives `null` |
 | `displayId` | end of `pokemon_url` | `26-11-001729` | The official tournament ID; `null` when the URL is generic |
 | `shopName` | `shop` | `VERSUS GAMECENTER LISBOA` | Spelling varies, see Shop |
 | `shopAddress` | `street_address` | `ESTR. DE SÃO LUÍS 70, 8000-123 FARO, PORTUGAL` | Free text, format varies |
@@ -167,12 +167,24 @@ All values are strings, including coordinates and counts. 850 events on 18 Nov 2
 
 - `when` is the start time in the shop's local time, with no zone or offset. The values are what a shop would announce (15:00 for 474 events, 10:30, 19:00, 21:00) and match the times on the website.
 - The importer parses `when` as `Europe/Lisbon` and stores UTC.
-- **Madeira and Azores: be careful.** On 18 Nov 2026 there were no events on the islands (the most westerly longitude was about −8.9; every `state` was a mainland district). Madeira is on Lisbon time, but the Azores are one hour behind, so an Azores event parsed as Lisbon time would be an hour off. When island events start to appear, check how they look (`state`, `city`, coordinates) and handle the Azores zone then (Bruno, 18 Nov 2026: no special handling until then).
+- **Madeira and Azores: be careful.** On 18 Nov 2026 there were no events on the islands (every `state` was a mainland district). Madeira is on Lisbon time, but the Azores are one hour behind, so an Azores event parsed as Lisbon time would be an hour off. When island events start to appear, check how they look (`state`, `city`, coordinates) and handle the Azores zone then (Bruno, 18 Nov 2026: no special handling until then).
 - No end time (see Field mapping).
 
 ## Shop
 
-- One `league` ID can appear with two spellings of the shop: `ABISSAL GAMES` / `ABYSSAL GAMES`, `TBMJ` / `TBMJ COLLECTIBLES`, `ARENA PORTO` / `LOJAS ARENA PORTO`, `PLAY YOUTH STORE` / `PLAY YOUTH A LOJA`, `GG LOUNGE` / `GGLOUNGE` (8 IDs on 18 Nov 2026).
+- One `league` ID can appear with two spellings of the shop. All 8 cases on 18 Nov 2026:
+
+  | `league` | Spellings |
+  | --- | --- |
+  | `26071312` | `ABISSAL GAMES` / `ABYSSAL GAMES` |
+  | `6237897` | `VERSUS GAMECENTER` / `VERSUS GAMECENTER LISBOA` |
+  | `26060255` | `TBMJ` / `TBMJ COLLECTIBLES` |
+  | `44904` | `ARENA PORTO` / `LOJAS ARENA PORTO` |
+  | `6241551` | `PLAY YOUTH STORE` / `PLAY YOUTH A LOJA` |
+  | `25092901` | `TEMPLARS ARENA LISBOA` / `TEMPLARS ARENA GAMECENTER (LISBOA)` |
+  | `25127247` | `DIVERCENTRO` / `DIVERCENTRO LTA.` |
+  | `6236586` | `GG LOUNGE` / `GGLOUNGE` |
+
 - 8 shops appear with two addresses or two sets of coordinates.
 - So shop name and city alone are not a reliable key. `leagueId` is kept as a candidate; the choice is for M04/M10.
 
