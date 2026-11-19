@@ -22,5 +22,5 @@ it('has a list of events with the fields the importer uses', function () {
     );
 
     expect($events)->toBeList()->not->toBeEmpty()
-        ->each->toHaveKeys(['guid', 'type', 'when', 'shop', 'street_address', 'city', 'pokemon_url', 'league']);
+        ->each->toHaveKeys(['guid', 'name', 'type', 'when', 'shop', 'street_address', 'city', 'pokemon_url', 'league']);
 });
