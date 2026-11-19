@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M03 · pokedata.ovh spike (review).
 - **Branch**: m03-pokedata-spike
-- **State**: Slices 1–3 done; all three ACs met; `/rethink-tests` done; `composer verify` green (23 Vitest, 66 Pest, Larastan 0 errors). Next: `/review`, then push and open the PR.
+- **State**: Slices 1–3 done; all three ACs met; `/rethink-tests` and `/review` done; `composer verify` green (23 Vitest, 66 Pest, Larastan 0 errors). Next: push and open the PR.
 
 ### Plan (M03)
 
@@ -23,7 +23,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | --- | --- | --- | --- |
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
-| M03 | pokedata.ovh spike | review | All ACs met; `/review` and PR to do |
+| M03 | pokedata.ovh spike | review | All ACs met; reviewed; PR to open |
 | M04 | Domain schema and seed data | todo | |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
@@ -75,10 +75,10 @@ Status values: todo, in progress, review, done.
 
 **`/rethink-tests` outcome.** P1 accepted: test 3 now requires a list of events, each with the 8 fields the importer reads (`toBeList()`, `->each->toHaveKeys()`), shown red with a wrong key first. Rejected: a test that the empty fixture is `[]` (M10's abort test covers it) and deleting the byte-identical `pt-all-games` fixture (evidence for the `_tcg` finding). Bruno's question on weeks without events: tests use saved fixtures; the live import asks for every future event, so a quiet week is not an empty result; a truly empty result aborts and emails admins.
 
-**Review outcome.** `/review` not run yet.
+**Review outcome.** `code-reviewer` only (no routes, props, mail or UI touched, so no privacy-guard or ui-reviewer). No blocking defect; all ACs met; every count in `pokedata.md` re-checked against the fixtures. Applied: `other` type removed (dropped at import), `ends_at_estimated` dropped and `ends_at` recomputed when starts_at or type changes, guid-vs-display_id matching for player submissions added as an open question, longitude figure removed, kept counts added (92 of 816 event-specific URLs), "friendlies" → casual, all 8 shop spelling pairs listed, `name` added to the fixture test, decision rows sorted. Declined: a `product` check in the test (M10's filter tests cover it), shop-spelling flips triggering "still going?" (Bruno: will not happen), commit-message typos (no history rewrite).
 
 **What is left**
-- `/review`, then push and open the PR.
+- Push and open the PR.
 - Bruno: write to the pokedata.ovh author (questions at the end of `docs/pokedata.md`).
 
 **Surprising**
