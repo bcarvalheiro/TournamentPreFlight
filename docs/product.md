@@ -27,9 +27,9 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ## Events
 
-- Types shown in v1: **Friendly, League, Challenge, Cup** (League Challenge and League Cup on the long label). Other types from the import are stored but not listed.
+- Types shown in v1: **Casual, Prerelease, Challenge, Cup** (League Challenge and League Cup on the long label). Casual covers League nights and Friendlies, which pokedata does not tell apart. Any other type is dropped at import; there is no "other" type.
 - **Pokémon TCG tournaments only.** Video game and GO events are not imported or listed.
-- An event has: date and start time, end time (from the source, or estimated by type), official tournament ID, type, host shop (venue) and city, official listing link, status.
+- An event has: date and start time, end time (estimated by type: Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h; the source has none), official tournament ID, type, title (when the source has none, shown as type and shop name), host shop and city, official listing link, status.
 - Statuses: `pending` (submitted, awaiting moderation), `listed`, `hidden` (admin), `cancelled`. Separately, a "possibly cancelled" flag set by the sync.
 - "Upcoming" means the event has not ended yet, so ongoing events stay in the list until they finish. Past events never show in lists; their pages stay reachable by link and say the event has ended.
 
@@ -56,7 +56,7 @@ See `design.md` for the visual spec. Content:
 - Hero: "Pokémon Pre-Flight" and "Should I go or should I stay at home?", one line saying what the app is.
 - **Up next** (the pairings sheet): the next 5 upcoming or ongoing events by start time, ignoring filters.
 - **Event list**: up to 25 upcoming and ongoing events, grouped by day, after filters. The count line says "12 of 29 events" or "First 25 of 31".
-- Filters, all multi-select and combined with AND between groups: type (Friendly, League, Challenge, Cup), host shop (only shops with upcoming events, with their counts), date range (Any time, This week, This weekend, Next 7 days, Next 30 days, Pick dates with From and To). The date filter applies before the 25 cap. Filters live in the URL query string so a filtered view can be shared.
+- Filters, all multi-select and combined with AND between groups: type (Casual, Prerelease, Challenge, Cup), host shop (only shops with upcoming events, with their counts), date range (Any time, This week, This weekend, Next 7 days, Next 30 days, Pick dates with From and To). The date filter applies before the 25 cap. Filters live in the URL query string so a filtered view can be shared.
 - Card: date and start time, tournament ID, type with its icon, shop name and city, total going count, quick "I'm going" button. "Happening now" replaces the start time for ongoing events.
 - Empty state: "Nothing matches these filters" with Clear filters.
 - Disclaimer line under the list and the non-affiliation footer.
@@ -73,7 +73,7 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 ## Notifications (email)
 
 - **Day-before reminder**: the day before the event, each account with a going answer gets one email listing its profiles: "Still going?" with Yes and No buttons (signed links, no login needed). Yes sets confirmed; No removes the going answer.
-- **Event changed**: when the sync changes an event's date, time or venue, going answers become unconfirmed and the same "still going?" email goes out, saying what changed.
+- **Event changed**: when the sync changes an event's date, time or shop, going answers become unconfirmed and the same "still going?" email goes out, saying what changed.
 - **Possibly cancelled**: when the sync flags an event, followers and going players get one email suggesting they check with the shop.
 - **Threshold**: a follower is emailed once when the going count first reaches their number. Optionally also when it drops back below (setting on the follow).
 - **Moderation**: submitter is told when their event is approved or rejected.

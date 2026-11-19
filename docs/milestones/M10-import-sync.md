@@ -1,13 +1,13 @@
 # M10 · Nightly import and sync
 
-**Branch**: `m10-import-sync` · **Read**: `architecture.md` (Event import, Time, Data model: events, venues, import_runs), `docs/pokedata.md`, `product.md` (Notifications: event changed, possibly cancelled)
+**Branch**: `m10-import-sync` · **Read**: `architecture.md` (Event import, Time, Data model: events, shops, import_runs), `docs/pokedata.md`, `product.md` (Notifications: event changed, possibly cancelled)
 
 ## Goal
 Real Portuguese events arrive every night, safely.
 
 ## Scope
 - `ImportedEvent` and the `PokedataClient` service (mapping from `docs/pokedata.md`, tested on the M03 fixtures). No source interface.
-- Venue matching and creation by normalised name + city.
+- Shop matching and creation. Name + city is unreliable (spellings vary, `docs/pokedata.md`); decide here whether the pokedata `league` ID is the key.
 - `SyncEvents` action and the `events:sync {--dry-run}` command that runs it, implementing every step in `architecture.md`, writing `import_runs`.
 - Abort rules: exception, empty result, result under half the previous good run. Admins are notified (mail) on abort.
 - On significant change: update, set `changed_at`, clear confirmations, dispatch a `StillGoingNotification` job with reason "changed" (the mail itself can be a simple stub until M12).

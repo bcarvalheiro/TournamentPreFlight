@@ -52,6 +52,7 @@ In plans and slice proposals, name the doc page each choice comes from.
 - No abstraction used only once. No new folder, interface, base class, helper, config key or package unless the slice proposal named it and Bruno approved it.
 - Stay inside the milestone; other work goes to "Found along the way" in `docs/progress.md`.
 - A decision the docs don't cover goes into `docs/decisions.md`.
+- When Bruno sets a name or rule, apply it everywhere it reaches (docs, schema, code names) without asking again; list the places changed.
 
 **Tests.**
 - Test first: each acceptance criterion becomes a Pest test, shown failing before the code.

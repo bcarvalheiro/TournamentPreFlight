@@ -60,9 +60,9 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 **seasons**: name ("2027"), starts_on, ends_on (dates), junior_born_from (e.g. 2015), senior_born_from (e.g. 2011). Masters is everything older. Seeded; edited by admin.
 
-**venues** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key).
+**shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
-**events**: venue_id, source (pokedata, player), source_event_id (nullable), official_guid (nullable, unique), official_url (nullable, unique), display_id (official tournament ID, nullable), type (friendly, league, challenge, cup, other), title, starts_at, ends_at, ends_at_estimated (bool), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Unique (source, source_event_id). Index (status, ends_at, starts_at).
+**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `config/preflight.php`; recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
 **attendances**: event_id, player_profile_id, status, confirmed_at (nullable), anonymised_at (nullable). Unique (event_id, player_profile_id). Removing an answer deletes the row. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs). Index (event_id, status). If there's a record, it's because it's atending.
 
@@ -87,20 +87,20 @@ Computed with `withCount` filtered by status and joined to profiles for division
 
 ## Time
 
-`APP_TIMEZONE=UTC` (read by `config/app.php`; never change it per environment). Database in UTC. Imported local times are parsed as `Europe/Lisbon` then converted (note Madeira and Azores: if pokedata gives a venue in those regions, use `Atlantic/Madeira` / `Atlantic/Azores`; record this in the spike). The frontend formats every date through `resources/js/lib/time.ts` with `timeZone: 'Europe/Lisbon'` and `en-GB` style ("Sat 15 Nov, 10:00"). Date filter presets are computed in Lisbon time on the server.
+`APP_TIMEZONE=UTC` (read by `config/app.php`; never change it per environment). Database in UTC. Imported local times are parsed as `Europe/Lisbon` then converted (no island events on 18 Nov 2026; Madeira shares Lisbon time but the Azores are an hour behind, so check the first Azores events before trusting them: warning in `docs/pokedata.md`, no special handling until then). The frontend formats every date through `resources/js/lib/time.ts` with `timeZone: 'Europe/Lisbon'` and `en-GB` style ("Sat 15 Nov, 10:00"). Date filter presets are computed in Lisbon time on the server.
 
 ## Event import
 
 There is one source, so there is no source interface (KISS; add one only when a second source exists). Player-submitted events do not go through the import.
 
-`PokedataClient` (service) has one public method, `upcoming(): list<ImportedEvent>`. It uses Laravel's HTTP client with `->throw()`, so a failed request raises an exception, and maps the real response (fields recorded in the M03 spike in `docs/pokedata.md`) to `ImportedEvent`. Unknown types map to `other`. It only asks for Portugal and only keeps TCG events. Tests use `Http::fake()` with the fixtures.
+`PokedataClient` (service) has one public method, `upcoming(): list<ImportedEvent>`. It uses Laravel's HTTP client with `->throw()`, so a failed request raises an exception, and maps the real response (fields recorded in the M03 spike in `docs/pokedata.md`) to `ImportedEvent`. It requests `_tcg/_country/PT` and keeps only `nonpremier TCG`, or `League Challenge`/`League Cup` with `product: tcg` (a bare `_tcg` also returns VG and GO events; filter contract in `docs/pokedata.md`); every other type is dropped, so prereleases join the filter once their pokedata `type` is known. Tests use `Http::fake()` with the fixtures.
 
-`ImportedEvent` is a plain readonly object: sourceEventId, officialGuid, officialUrl, displayId, type, title, startsAt (UTC CarbonImmutable), endsAt (nullable), venueName, venueAddress, city.
+`ImportedEvent` is a plain readonly object: guid, officialUrl (nullable), displayId (nullable), type, title (nullable), startsAt (UTC CarbonImmutable), shopName, shopAddress, city, leagueId. No end time: pokedata has none.
 
 `SyncEvents` (action), run by `php artisan events:sync {--dry-run}` and scheduled nightly at 03:30 Lisbon:
 
 1. Fetch. On exception, an empty result, or a result less than half the size of the last good run, abort: change nothing, record the run as aborted, notify admins.
-2. For each imported event, find an existing one by (source, source_event_id), then official_guid, then official_url. Not found: create as `listed`. Found and unchanged: touch `last_seen_at`. Found and changed in starts_at, ends_at or venue: update, set `changed_at`, clear `confirmed_at` on its going answers, dispatch `StillGoingNotification` (reason: changed) to the accounts concerned. Other field changes (title, display ID) update silently.
+2. For each imported event, find an existing one by official_guid, then official_url. Not found: create as `listed`. Found and unchanged: touch `last_seen_at`. Found and changed in starts_at or shop: update (recomputing ends_at from the type's estimate), set `changed_at`, clear `confirmed_at` on its going answers, dispatch `StillGoingNotification` (reason: changed) to the accounts concerned. Other field changes (title, display ID) update silently.
 3. Each listed, upcoming event from this source not seen tonight gets `possibly_cancelled_at` (once) and a `PossiblyCancelled` notification. If it reappears later, the flag is cleared.
 4. Write the `import_runs` row with the counts.
 

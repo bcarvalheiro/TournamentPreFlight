@@ -73,6 +73,20 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-17 | M02: the kit's shadcn `Card` (`ui/card.tsx`) is the one card component, restyled with the tokens: `rounded-card` (6px), `border-line`, no shadow, 16px padding, `CardTitle` in the display font (uppercase, bold). The styleguide sections use it; special cards add classes (e.g. the match slip's top border) | Bruno's decision: one component keeps cards coherent; same approach as `Button` |
 | 2026-11-17 | M02: under Vitest (`process.env.VITEST`), `vite.config.ts` loads only the React plugin and takes the `@/` alias from `tsconfig.json` (`resolve.tsconfigPaths`); the Laravel, Inertia, Wayfinder and Tailwind plugins load only for the build and dev server. `LARAVEL_BYPASS_ENV_CHECK` is not used | CI failed: the Laravel Vite plugin refuses to run as a dev server when `CI` is set, and Vitest loaded it. Vitest docs ("Config") recommend branching on `process.env.VITEST`; the bypass would also have run dev-server code (hot file, dev font manifest) inside tests |
 | 2026-11-18 | **Code standard: Laravel defaults plus Actions and Services, KISS** (layout in `architecture.md`). No domain or module folders, no repositories, no interface with a single implementation. `DivisionResolver` moves from `Domain/Divisions/` to `Services/`; the import becomes the `PokedataClient` service, the `SyncEvents` action and plain `Data/Import` objects. Supersedes the `EventSource` interface in the 2026-11-12 import entry (pokedata.ovh nightly import and player submissions stay); `events:sync` loses its `--source` option | Bruno's decision: one standard to stick to, simple and close to Laravel's own conventions; an interface with one implementation is an abstraction used once |
+| 2026-11-18 | M03: pokedata request is `GET /events/api/_tcg/_country/PT` (one request, no paging). The importer keeps only `type: nonpremier TCG`, or `League Challenge`/`League Cup` with `product: tcg`, and drops everything else | Measured: a bare `_tcg` returns the same bytes as `_country/PT`, VG and GO events included; `product` is the only TCG marker on cups and challenges; `_tcg/ftcg` returns `[]` (`docs/pokedata.md`) |
+| 2026-11-18 | M03: the website's internal endpoint (`POST /events/tableapi/index_table.php`) is not used | Undocumented, paged (100), details only in HTML; same data as the public API |
+| 2026-11-18 | **Casual replaces Friendly and League** (`nonpremier TCG`). Types: casual, prerelease, challenge, cup, other. Known risk, open: a bigger tournament sanctioned as `nonpremier TCG` is listed as casual | Bruno: pokedata does not tell League nights from Friendlies, and they mean the same to most players |
+| 2026-11-18 | **Prerelease is its own type**, shown in v1. Its pokedata `type` value is not known yet (none listed on 18 Nov) | Bruno: prereleases matter to players; they only run before a set release |
+| 2026-11-18 | Icons: Casual keeps the Poké Ball, Prerelease gets the Great Ball (formerly League) | Bruno |
+| 2026-11-18 | **"Shops", never "venue"**: `venues` table → `shops`, `events.venue_id` → `shop_id`, `Event::atShops()`, `ImportedEvent` shopName/shopAddress | Bruno: the hosts are shops |
+| 2026-11-18 | `ImportedEvent`: guid, officialUrl, displayId, type, title, startsAt, shopName, shopAddress, city, leagueId. No endsAt (pokedata has none); `title` null when pokedata `name` is empty, shown as type and shop name; `cost` not used | Bruno; field facts in `docs/pokedata.md` |
+| 2026-11-18 | Pokedata `league` ID kept on `ImportedEvent` as the candidate shop key; decided in M10 | Shop name spellings vary under one league ID (8 cases) |
+| 2026-11-18 | Azores: no special handling until island events appear; warning in `docs/pokedata.md` and `architecture.md` (Time) | Bruno: none listed today; Madeira shares Lisbon time, Azores are an hour behind |
+| 2026-11-19 | One identifier: `events.official_guid` (pokedata's `guid`); `source_event_id` and the (source, source_event_id) key are dropped. Matching: official_guid, then official_url | Bruno: no duplicate fields; the pokedata guid is the event's identifier |
+| 2026-11-19 | End times estimated by type: Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h (other 4h); an event leaves the lists when its estimate has passed | Bruno: only start times are known; nobody controls the end |
+| 2026-11-19 | M03: `tests/Fixtures/**` is excluded from `vp fmt` (`ignorePatterns` in `vite.config.ts`) | Fixtures are raw third-party responses and must stay byte-for-byte as received |
+| 2026-11-19 | M03 review: no `other` type. Types are casual, prerelease, challenge, cup; anything else is dropped at import. Supersedes "other" in the 18 Nov types entry and the 19 Nov end-time entry | Bruno: the importer never produces it and players pick from the four types |
+| 2026-11-19 | M03 review: `events.ends_at_estimated` dropped; `ends_at` is always the type's estimate and is recomputed when starts_at or type changes | Bruno: end times are only ever estimates; a moved event must not keep its old end |
 
 ## Open questions
 
@@ -85,7 +99,9 @@ Decisions for Bruno (Claude: do not decide these; use the stated default and fla
 
 To verify before relying on them:
 
-- [ ] pokedata.ovh response fields and refresh behaviour; write to its author about this use. (Spike M03.)
+- [x] ~~pokedata.ovh response fields~~: recorded in `docs/pokedata.md` (M03, 18 Nov).
+- [ ] Matching player-submitted events to imported ones (M10 AC5, M11). An event-specific locator link ends in the tournament ID (`26-11-001729`, our `display_id`), not a guid, and whether pokedata's `guid` is the official locator GUID is unknown (`pokedata.md` question 7). Decide guid or `display_id` matching after the author answers.
+- [ ] Write to the pokedata.ovh author (refresh behaviour, rate limits, terms, prerelease type; questions at the end of `docs/pokedata.md`). Bruno.
 - [ ] 2027 division birth years against official Play! Pokémon rules (source so far: playnews.gg).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
 - [x] ~~Whether Laravel 13 lists MySQL 8.4 as supported~~: yes, the Laravel 13 docs list MySQL 5.7+; M01 runs on 8.4.7 locally and 8.4 in CI.
