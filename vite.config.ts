@@ -101,6 +101,7 @@ export default defineConfig({
             'design/**',
             '**/*.md',
             '.claude/**',
+            'tests/Fixtures/**',
             'resources/js/components/ui/*',
             'resources/views/mail/*',
         ],
