@@ -98,3 +98,18 @@ it('stores seeded Lisbon times in UTC', function () {
 
     expect($cup->starts_at->toDateTimeString())->toBe('2027-07-04 09:00:00');
 });
+
+/*
+ * The demo world includes an admin with a known password, so it must never
+ * reach a real server, even if someone runs db:seed there.
+ */
+it('seeds nothing outside local and testing', function () {
+    app()->detectEnvironment(fn (): string => 'production');
+
+    // --force skips production's "Are you sure?", as a deploy script would.
+    $this->artisan('db:seed', ['--force' => true])->assertSuccessful();
+
+    expect(User::query()->count())->toBe(0)
+        ->and(Shop::query()->count())->toBe(0)
+        ->and(Event::query()->count())->toBe(0);
+});

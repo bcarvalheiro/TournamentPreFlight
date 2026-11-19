@@ -85,6 +85,13 @@ class DemoSeeder extends Seeder
      */
     public function run(): void
     {
+        // The demo admin has a known password: never seed this on a real server.
+        if (! app()->environment('local', 'testing')) {
+            $this->command?->warn('DemoSeeder skipped: it only runs in local and testing.');
+
+            return;
+        }
+
         $shops = collect(self::SHOPS)->map(fn (array $shop): Shop => Shop::factory()->create([
             'name' => $shop[0],
             'city' => $shop[1],
