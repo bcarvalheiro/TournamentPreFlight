@@ -10,7 +10,7 @@ All v1 tables, models, enums and factories, a working DivisionResolver, and real
 - Enums: EventType, EventStatus, AttendanceStatus, Division, EventSourceKey.
 - Models with casts, relationships, and scopes: `Event::upcoming()` (listed, ends_at > now, ordered by starts_at), `Event::ofTypes()`, `Event::atShops()`, `Event::between()`.
 - `DivisionResolver::for(int $birthYear, CarbonInterface $eventDate): Division` using the season that contains the event date; throws a clear exception if no season covers it.
-- Default end-time estimate by type in `config/preflight.php` (Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h, other 4h).
+- Default end-time estimate by type in `config/preflight.php` (Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h).
 - Factories for every model. A `DemoSeeder` mirroring the prototype: the nine invented shops and cities from `design/prototype/app.js`, ~30 events over the next 6 weeks (one ongoing, one ended), attendances giving realistic counts, two demo accounts (solo and family with a Junior and a Senior child), one admin, the 2027 season.
 
 ## Out of scope

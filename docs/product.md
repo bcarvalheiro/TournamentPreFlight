@@ -27,7 +27,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ## Events
 
-- Types shown in v1: **Casual, Prerelease, Challenge, Cup** (League Challenge and League Cup on the long label). Casual covers League nights and Friendlies, which pokedata does not tell apart. Other types from the import are stored but not listed.
+- Types shown in v1: **Casual, Prerelease, Challenge, Cup** (League Challenge and League Cup on the long label). Casual covers League nights and Friendlies, which pokedata does not tell apart. Any other type is dropped at import; there is no "other" type.
 - **Pokémon TCG tournaments only.** Video game and GO events are not imported or listed.
 - An event has: date and start time, end time (estimated by type: Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h; the source has none), official tournament ID, type, title (when the source has none, shown as type and shop name), host shop and city, official listing link, status.
 - Statuses: `pending` (submitted, awaiting moderation), `listed`, `hidden` (admin), `cancelled`. Separately, a "possibly cancelled" flag set by the sync.

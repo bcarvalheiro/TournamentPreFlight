@@ -85,6 +85,8 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-18 | Pokedata `league` ID kept on `ImportedEvent` as the candidate shop key; decided in M10 | Shop name spellings vary under one league ID (8 cases) |
 | 2026-11-18 | Azores: no special handling until island events appear; warning in `docs/pokedata.md` and `architecture.md` (Time) | Bruno: none listed today; Madeira shares Lisbon time, Azores are an hour behind |
 | 2026-11-19 | M03: `tests/Fixtures/**` is excluded from `vp fmt` (`ignorePatterns` in `vite.config.ts`) | Fixtures are raw third-party responses and must stay byte-for-byte as received |
+| 2026-11-19 | M03 review: no `other` type. Types are casual, prerelease, challenge, cup; anything else is dropped at import. Supersedes "other" in the 18 Nov types entry and the 19 Nov end-time entry | Bruno: the importer never produces it and players pick from the four types |
+| 2026-11-19 | M03 review: `events.ends_at_estimated` dropped; `ends_at` is always the type's estimate and is recomputed when starts_at or type changes | Bruno: end times are only ever estimates; a moved event must not keep its old end |
 
 ## Open questions
 
@@ -98,6 +100,7 @@ Decisions for Bruno (Claude: do not decide these; use the stated default and fla
 To verify before relying on them:
 
 - [x] ~~pokedata.ovh response fields~~: recorded in `docs/pokedata.md` (M03, 18 Nov).
+- [ ] Matching player-submitted events to imported ones (M10 AC5, M11). An event-specific locator link ends in the tournament ID (`26-11-001729`, our `display_id`), not a guid, and whether pokedata's `guid` is the official locator GUID is unknown (`pokedata.md` question 7). Decide guid or `display_id` matching after the author answers.
 - [ ] Write to the pokedata.ovh author (refresh behaviour, rate limits, terms, prerelease type; questions at the end of `docs/pokedata.md`). Bruno.
 - [ ] 2027 division birth years against official Play! Pokémon rules (source so far: playnews.gg).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
