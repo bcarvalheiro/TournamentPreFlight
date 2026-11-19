@@ -19,6 +19,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 ## Accounts and profiles
 
 - Login methods: Google, Apple, Discord, email magic link. No passwords.
+- Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Profile fields: name, Player ID, birth year. All required.
 - Player ID: digits only, unique across the app. Exact length is unconfirmed (see `decisions.md`); validate 1–10 digits until confirmed.

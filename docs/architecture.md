@@ -50,7 +50,7 @@ tests/
 
 All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
 
 **social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 

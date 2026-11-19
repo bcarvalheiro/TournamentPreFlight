@@ -96,6 +96,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-19 | M04: `users.notification_settings` holds only `reminders` (default true). `changes`, `thresholds` and `moderation` are dropped: threshold emails stop by unfollowing, moderation emails are a one-off reply to the submitter. It stays a JSON object so settings can grow later. Supersedes the four categories in `architecture.md` and "unsubscribe per category" in `product.md` | Bruno's choice: one setting is enough for now |
 | 2026-11-19 | M04: the Player ID column is `player_profiles.pop_id` (Pokémon Player ID), not `player_id`. UI copy still says "Player ID" | Bruno: the column name matches the ID players actually mean |
 | 2026-11-19 | M04: "event changed" and "possibly cancelled" emails are always sent; the reminders setting does not stop them | Bruno: they are rare, and someone planning to go needs to know |
+| 2026-11-19 | M04: account holders must be 13 or older, self-declared with an "I am 13 or older" checkbox at sign-up (`users.age_confirmed_at`, built in M06). Under-13s exist only as child profiles on a parent's account; `is_child` is computed from birth year and needs recorded consent. Whether the consenting user must be the profile's owner is checked by M07's action, not the model | Bruno: under-13s cannot register; without an age gate a child could sign up and consent for themselves. Self-declaration is the standard gate, and a parent who does not play needs no profile of their own |
 
 ## Open questions
 
