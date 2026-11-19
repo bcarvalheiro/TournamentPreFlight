@@ -14,12 +14,13 @@ it('stores every pokedata fixture as valid JSON', function (string $path) {
     expect(file_get_contents($path))->toBeJson();
 })->with($fixtures);
 
-it('has at least one event in the upcoming fixture', function () {
+it('has a list of events with the fields the importer uses', function () {
     $events = json_decode(
         file_get_contents(__DIR__.'/../Fixtures/pokedata/pt-tcg-upcoming-2026-11-18.json'),
         true,
         flags: JSON_THROW_ON_ERROR,
     );
 
-    expect($events)->not->toBeEmpty();
+    expect($events)->toBeList()->not->toBeEmpty()
+        ->each->toHaveKeys(['guid', 'type', 'when', 'shop', 'street_address', 'city', 'pokemon_url', 'league']);
 });
