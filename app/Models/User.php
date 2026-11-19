@@ -38,6 +38,16 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
     /**
+     * Defaults a new object has before it is saved, in their stored (JSON) form.
+     * The migration has the same default for rows inserted without the model.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'notification_settings' => '{"reminders":true}',
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
