@@ -6,15 +6,16 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M04 · Domain schema and seed data (in progress).
 - **Branch**: m04-domain-schema
-- **State**: Slices 1–3 done. Next: Slice 4.
+- **State**: Slices 1–4 done. Next: Slice 5.
 
 ### Plan (M04)
 
 - [x] Slice 1: shops and events tables, enums EventType/EventStatus/EventSourceKey (string columns + casts), models, factories, unique keys (`shops` + `events` migrations, `app/Enums/*`, `Shop`, `Event`, factories; `EventUniqueKeysTest`: official_guid, official_url, shops.official_name_key; `MigrationsTest`: roll back everything, migrate again) · AC1, AC2
 - [x] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
 - [x] Slice 3: scopes `upcoming()`, `ofTypes()`, `atShops()`, `between()`, plural, taking lists (`Event`; `EventScopesTest`) · AC3
-- [ ] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory with child state, `User` casts and relations; `PlayerProfileUniqueKeysTest`) · AC1, AC2
-- [ ] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook; `PlayerProfileChildTest`) · AC5
+- [x] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory, `User` casts and relations; `PlayerProfileTest`: unique Player ID across accounts, several profiles per account, deleting the account deletes its profiles; `UserDefaultsTest`: not admin, reminders on) · AC1, AC2
+  - Changed (Bruno, 19 Nov): the factory's child state moves to Slice 5, where it is used; defaults get their own test; `notification_settings` keeps only `reminders`; the Player ID column is `pop_id`.
+- [ ] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook, factory `child()` state; `PlayerProfileChildTest`) · AC5
 - [ ] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
 - [ ] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories; `SocialAccountUniqueKeysTest`) · AC1, AC2
 - [ ] Slice 8: event_follows, event_reports, import_runs (migrations, models, factories; `EventFollowUniqueKeysTest`) · AC1, AC2

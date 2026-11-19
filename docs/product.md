@@ -77,7 +77,7 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 - **Possibly cancelled**: when the sync flags an event, followers and going players get one email suggesting they check with the shop.
 - **Threshold**: a follower is emailed once when the going count first reaches their number. Optionally also when it drops back below (setting on the follow).
 - **Moderation**: submitter is told when their event is approved or rejected.
-- All emails have an unsubscribe link per category.
+- Reminders can be turned off, with a one-click unsubscribe link in each one. Threshold emails stop when the player unfollows the event. Moderation emails are a one-off reply to the submitter. "Event changed" and "possibly cancelled" emails are always sent: they are rare and matter to anyone planning to go.
 
 ## Privacy and brand
 

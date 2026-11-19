@@ -17,7 +17,7 @@ Controllers, pages, auth changes.
 
 ## Acceptance criteria
 1. Migrations run up and down cleanly.
-2. Unique keys enforced: (event_id, player_profile_id), player_id, official_guid, official_url, (provider, provider_user_id), shops.official_name_key, event_follows (event_id, user_id). One test per key.
+2. Unique keys enforced: (event_id, player_profile_id), pop_id, official_guid, official_url, (provider, provider_user_id), shops.official_name_key, event_follows (event_id, user_id). One test per key.
 3. `Event::upcoming()` includes an ongoing event, excludes an ended one, excludes pending/hidden/cancelled, orders by start.
 4. `php artisan migrate:fresh --seed` produces the demo data; a test asserts the counts per table.
 5. Saving a profile under 13 this year sets `is_child`; saving it without consent fails validation at the model/action level.

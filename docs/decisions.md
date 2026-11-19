@@ -93,6 +93,9 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-19 | M04: end-time estimates live on `EventType::estimatedHours()`, not in `config/preflight.php`; the `Event` model's `saving` hook writes `ends_at` (a stored column, because `upcoming()` filters and indexes on it; an accessor would not reach SQL) | Config is for settings that vary by environment; these are product rules that belong with the type, and a `match` without default forces an estimate for every new type |
 | 2026-11-19 | M04: the under-13 rule lives in the `PlayerProfile` model's `saving` hook: it sets `is_child` (Lisbon calendar year minus birth year is 12 or less) and throws `ValidationException` when a child profile has no consent | No save path can skip it (seeders, admin, M07's action), and forms get the error message for free |
 | 2026-11-19 | M04: `MigrationsTest` runs `migrate:reset` then `migrate` inside a `RefreshDatabase` test. MySQL commits the test transaction on any schema change; Laravel's rollback checks `inTransaction()` first, so teardown does not fail, and the test ends fully migrated and empty | Laravel's testing and migration docs do not cover this; checked in `vendor/laravel/framework/src/Illuminate/Database/Concerns/ManagesTransactions.php` (`performRollBack`) and `Foundation/Testing/RefreshDatabase.php` |
+| 2026-11-19 | M04: `users.notification_settings` holds only `reminders` (default true). `changes`, `thresholds` and `moderation` are dropped: threshold emails stop by unfollowing, moderation emails are a one-off reply to the submitter. It stays a JSON object so settings can grow later. Supersedes the four categories in `architecture.md` and "unsubscribe per category" in `product.md` | Bruno's choice: one setting is enough for now |
+| 2026-11-19 | M04: the Player ID column is `player_profiles.pop_id` (Pokémon Player ID), not `player_id`. UI copy still says "Player ID" | Bruno: the column name matches the ID players actually mean |
+| 2026-11-19 | M04: "event changed" and "possibly cancelled" emails are always sent; the reminders setting does not stop them | Bruno: they are rare, and someone planning to go needs to know |
 
 ## Open questions
 
@@ -110,6 +113,8 @@ To verify before relying on them:
 - [ ] Write to the pokedata.ovh author (refresh behaviour, rate limits, terms, prerelease type; questions at the end of `docs/pokedata.md`). Bruno.
 - [x] ~~2027 division birth years~~: no longer needed, divisions dropped (M04, 19 Nov).
 - [ ] Player ID format (length, digits only). Default validation: 1–10 digits.
+- [x] ~~Whether "event changed" and "possibly cancelled" follow the reminders setting~~: always sent (Bruno, 19 Nov; decision log).
+- [ ] Per-category unsubscribe was dropped with the three settings: check in M14 that threshold, moderation and change emails count as transactional and need no opt-out.
 - [x] ~~Whether Laravel 13 lists MySQL 8.4 as supported~~: yes, the Laravel 13 docs list MySQL 5.7+; M01 runs on 8.4.7 locally and 8.4 in CI.
 - [x] ~~Inertia version shipped by the starter kit~~: Inertia 3 (recorded M01).
 - [ ] Terms of use covering the official Event Locator.
