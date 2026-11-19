@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M04 · Domain schema and seed data (in progress).
 - **Branch**: m04-domain-schema
-- **State**: Slices 1–6 done. Next: Slice 7.
+- **State**: Slices 1–7 done. Next: Slice 8.
 
 ### Plan (M04)
 
@@ -18,7 +18,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook, factory `child()` state; `PlayerProfileChildTest`) · AC5
   - Changed (Bruno, 19 Nov): account holders must be 13+, confirmed by a sign-up checkbox (`users.age_confirmed_at`), added to M06; `is_child` keeps its name.
 - [x] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
-- [ ] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories; `SocialAccountUniqueKeysTest`) · AC1, AC2
+- [x] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories, `User::socialAccounts()`; `AuthTablesTest`: unique provider identity, compound key, cascade on account deletion, unique token hash) · AC1, AC2
+  - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
 - [ ] Slice 8: event_follows, event_reports, import_runs (migrations, models, factories; `EventFollowUniqueKeysTest`) · AC1, AC2
 - [ ] Slice 9: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), ~40 players for the counts, solo, parent (children born 2015 and 2014) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
 
