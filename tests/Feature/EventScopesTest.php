@@ -85,3 +85,20 @@ it('keeps events starting in the range, both ends included', function () {
 
     expect($found->pluck('id')->all())->toEqualCanonicalizing([$atFrom->id, $inside->id, $atTo->id]);
 });
+
+/*
+ * CLAUDE.md rule 4: M05 computes date ranges in Lisbon time. In July Lisbon is
+ * UTC+1, so Lisbon's 10 July runs from 23:00 UTC on the 9th to 22:59:59 UTC on
+ * the 10th.
+ */
+it('keeps events by moment whatever time zone the range is given in', function () {
+    $justAfterLisbonMidnight = casualAt('2027-07-09 23:30');
+    casualAt('2027-07-10 23:30');
+
+    $found = Event::between(
+        Carbon::parse('2027-07-10 00:00:00', 'Europe/Lisbon'),
+        Carbon::parse('2027-07-10 23:59:59', 'Europe/Lisbon'),
+    );
+
+    expect($found->pluck('id')->all())->toBe([$justAfterLisbonMidnight->id]);
+});
