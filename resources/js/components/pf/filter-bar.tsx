@@ -72,6 +72,7 @@ export function FilterBar({
                     trigger={
                         <button
                             type="button"
+                            data-testid="open-filters"
                             className={`${pill} bg-ink text-white`}
                         >
                             Filters
