@@ -18,12 +18,9 @@ beforeEach(function () {
     $this->shopC = Shop::factory()->create();
 });
 
-/** A future event; each call starts one day later, so the order is the call order. */
-function filterableEvent(EventType $type, Shop $shop): Event
+/** An event at 10:00 UTC, `$day` days after the frozen Saturday. */
+function filterableEvent(EventType $type, Shop $shop, int $day): Event
 {
-    static $day = 0;
-    $day = $day % 20 + 1;
-
     return Event::factory()->create([
         'type' => $type,
         'shop_id' => $shop->id,
@@ -40,9 +37,9 @@ function listedIds(AssertableInertia $page): array
 }
 
 it('filters by type alone', function () {
-    $cup = filterableEvent(EventType::Cup, $this->shopA);
-    filterableEvent(EventType::Casual, $this->shopA);
-    filterableEvent(EventType::Challenge, $this->shopB);
+    $cup = filterableEvent(EventType::Cup, $this->shopA, day: 1);
+    filterableEvent(EventType::Casual, $this->shopA, day: 2);
+    filterableEvent(EventType::Challenge, $this->shopB, day: 3);
 
     $this->get(route('home', ['type' => ['cup']]))
         ->assertInertia(fn (AssertableInertia $page) => $page
@@ -53,9 +50,9 @@ it('filters by type alone', function () {
 });
 
 it('shows events of any chosen type', function () {
-    $cup = filterableEvent(EventType::Cup, $this->shopA);
-    $challenge = filterableEvent(EventType::Challenge, $this->shopB);
-    filterableEvent(EventType::Casual, $this->shopA);
+    $cup = filterableEvent(EventType::Cup, $this->shopA, day: 1);
+    $challenge = filterableEvent(EventType::Challenge, $this->shopB, day: 2);
+    filterableEvent(EventType::Casual, $this->shopA, day: 3);
 
     $this->get(route('home', ['type' => ['cup', 'challenge']]))
         ->assertInertia(fn (AssertableInertia $page) => expect(listedIds($page))
@@ -64,9 +61,9 @@ it('shows events of any chosen type', function () {
 });
 
 it('shows events at any chosen shop', function () {
-    $atA = filterableEvent(EventType::Casual, $this->shopA);
-    $atB = filterableEvent(EventType::Casual, $this->shopB);
-    filterableEvent(EventType::Casual, $this->shopC);
+    $atA = filterableEvent(EventType::Casual, $this->shopA, day: 1);
+    $atB = filterableEvent(EventType::Casual, $this->shopB, day: 2);
+    filterableEvent(EventType::Casual, $this->shopC, day: 3);
 
     $this->get(route('home', ['shop' => [$this->shopA->id, $this->shopB->id]]))
         ->assertInertia(fn (AssertableInertia $page) => expect(listedIds($page))
@@ -75,9 +72,9 @@ it('shows events at any chosen shop', function () {
 });
 
 it('combines type and shop, and echoes the filters', function () {
-    $cupAtA = filterableEvent(EventType::Cup, $this->shopA);
-    filterableEvent(EventType::Cup, $this->shopB);
-    filterableEvent(EventType::Casual, $this->shopA);
+    $cupAtA = filterableEvent(EventType::Cup, $this->shopA, day: 1);
+    filterableEvent(EventType::Cup, $this->shopB, day: 2);
+    filterableEvent(EventType::Casual, $this->shopA, day: 3);
 
     $this->get(route('home', ['type' => ['cup'], 'shop' => [$this->shopA->id]]))
         ->assertInertia(fn (AssertableInertia $page) => $page
@@ -88,8 +85,8 @@ it('combines type and shop, and echoes the filters', function () {
 });
 
 it('keeps up next the same whatever the filters', function () {
-    $casual = filterableEvent(EventType::Casual, $this->shopA);
-    $cup = filterableEvent(EventType::Cup, $this->shopB);
+    $casual = filterableEvent(EventType::Casual, $this->shopA, day: 1);
+    $cup = filterableEvent(EventType::Cup, $this->shopB, day: 2);
 
     $this->get(route('home', ['type' => ['cup']]))
         ->assertInertia(fn (AssertableInertia $page) => $page
@@ -101,8 +98,8 @@ it('keeps up next the same whatever the filters', function () {
 });
 
 it('drops filter values it does not know', function () {
-    filterableEvent(EventType::Cup, $this->shopA);
-    filterableEvent(EventType::Casual, $this->shopB);
+    filterableEvent(EventType::Cup, $this->shopA, day: 1);
+    filterableEvent(EventType::Casual, $this->shopB, day: 2);
 
     $this->get(route('home', ['type' => ['friendly'], 'shop' => ['abc']]))
         ->assertOk()
