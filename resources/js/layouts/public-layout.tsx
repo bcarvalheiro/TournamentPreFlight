@@ -84,12 +84,12 @@ function Footer() {
                     sponsored by Nintendo or The Pokémon Company.
                 </p>
                 <nav aria-label="Footer">
-                    <ul className="flex flex-wrap gap-x-4 gap-y-1">
+                    <ul className="flex flex-wrap gap-x-4">
                         {footerLinks.map((link) => (
                             <li key={link.label}>
                                 <a
                                     href={link.href}
-                                    className="font-semibold text-ink underline-offset-4 hover:underline"
+                                    className="inline-flex min-h-10 items-center font-semibold text-ink underline-offset-4 hover:underline"
                                 >
                                     {link.label}
                                 </a>

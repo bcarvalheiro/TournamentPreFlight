@@ -48,7 +48,8 @@ function toggled<T>(list: T[], value: T): T[] {
 const option =
     'flex h-11 cursor-pointer items-center justify-center gap-2 rounded-button border-[1.5px] border-line bg-bg px-3 text-sm font-semibold aria-pressed:border-ink aria-pressed:bg-ink aria-pressed:text-white';
 
-const sectionTitle = 'mb-2 font-display text-lg font-bold uppercase';
+const sectionTitle =
+    'mb-2 text-xs font-semibold tracking-wider text-muted uppercase';
 
 /**
  * The filter sheet (design.md, Filter sheet): When, Type and Host shop.
@@ -93,7 +94,7 @@ export function FilterSheet({
                 </>
             }
         >
-            <div className="max-h-[55vh] space-y-5 overflow-y-auto pb-1">
+            <div className="space-y-5 pb-1">
                 <fieldset>
                     <legend className={sectionTitle}>When</legend>
                     <div className="grid grid-cols-2 gap-2">

@@ -8,7 +8,7 @@ import type { EventCard } from '@/types';
 
 /** The punched half-circles at the top and bottom of the tear line. */
 const punchedHole =
-    'absolute -left-1.75 size-3 rounded-full border border-line bg-bg-2';
+    'absolute -left-2 size-3.5 rounded-full border border-sheet-line bg-bg-2';
 
 /**
  * One event in the agenda, styled as a tear-off slip (design.md, Event list
@@ -46,19 +46,14 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                 )}
             </div>
             <div className="relative flex flex-col items-center justify-center gap-1.5 border-l-2 border-dashed border-sheet-line px-2 py-2.5">
+                <span aria-hidden="true" className={`${punchedHole} -top-2`} />
                 <span
                     aria-hidden="true"
-                    className={`${punchedHole} -top-1.75`}
+                    className={`${punchedHole} -bottom-2`}
                 />
-                <span
-                    aria-hidden="true"
-                    className={`${punchedHole} -bottom-1.75`}
-                />
-                <span
-                    aria-label={`${event.goingCount} trainers going`}
-                    className="font-display text-4xl leading-none font-extrabold text-red tabular-nums"
-                >
+                <span className="font-display text-4xl leading-none font-extrabold text-red tabular-nums">
                     {event.goingCount}
+                    <span className="sr-only"> trainers going</span>
                 </span>
                 <span
                     aria-hidden="true"

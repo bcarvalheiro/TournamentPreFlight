@@ -43,7 +43,9 @@ describe('PairingsSheet', () => {
 
         expect(markup).toContain('Carta Alta');
         expect(markup).toContain('Cup · Porto');
-        expect(markup).toContain('aria-label="12 trainers going"');
+        expect(markup).toContain(
+            '12<span class="sr-only"> trainers going</span>',
+        );
     });
 
     it('shows month, then weekday and day, then time (Lisbon), or NOW and LIVE while it runs', () => {

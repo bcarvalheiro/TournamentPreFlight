@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–14 done. Next: /verify, /ui-check /, /rethink-tests, /review, /wrap-up.
+- **State**: Slices 1–15 done. Next: /rethink-tests, /review, /wrap-up.
 
 ### Plan (M05)
 
@@ -34,6 +34,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
 - [x] Slice 14: `FilterSheet` in `ResponsiveDialog` (When presets + Pick dates, Type toggles, Host shop checkboxes with counts, Clear all, Show n events), applies as you tick (Inertia visit, `preserveState`, `preserveScroll`, `replace`, `only` list props); `urlFor` moves to `lib/home-filters.ts`; the bar owns the open state (`pf/filter-sheet.tsx`, `lib/home-filters.ts`, `pf/filter-bar.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters; `time.test.ts` `lisbonDate` for the date inputs' min) · AC8
   - Changed (Bruno, 20 Nov): one slice, not split into 14a/14b.
+- [x] Slice 15: UI check fixes: filter sheet grows to ~85% height with the content scrolling and the footer fixed, left-aligned title and side-by-side buttons on phones; counts read as "12 trainers going" (sr-only text, not aria-label); tap targets 40px (pills, chips, footer links); day headers like the prototype; clearer punched holes; filter bar line as wide as its content (`responsive-dialog.tsx`, `filter-sheet.tsx`, `event-list-item.tsx`, `pairings-sheet.tsx`, `filter-bar.tsx`, `agenda.tsx`, `public-layout.tsx`; existing Vitest and browser tests updated) · from /ui-check
 
 ## Milestones
 

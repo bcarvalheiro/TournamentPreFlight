@@ -85,11 +85,12 @@ export function PairingsSheet({ events }: { events: EventCard[] }): ReactNode {
                                         {event.city}
                                     </span>
                                 </div>
-                                <span
-                                    aria-label={`${event.goingCount} trainers going`}
-                                    className="text-center text-xl font-semibold text-red tabular-nums"
-                                >
+                                <span className="text-center text-xl font-semibold text-red tabular-nums">
                                     {event.goingCount}
+                                    <span className="sr-only">
+                                        {' '}
+                                        trainers going
+                                    </span>
                                 </span>
                                 <GoingButton />
                             </li>

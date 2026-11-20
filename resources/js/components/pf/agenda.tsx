@@ -75,11 +75,12 @@ export function Agenda({ events, totalUpcoming }: AgendaProps): ReactNode {
                         aria-label={formatDay(group.day)}
                         className="space-y-3 min-[700px]:grid min-[700px]:grid-cols-[120px_1fr] min-[700px]:gap-4 min-[700px]:space-y-0"
                     >
-                        <h2 className="flex items-baseline gap-2 self-start border-l-4 border-red pl-2 min-[700px]:sticky min-[700px]:top-18 min-[700px]:flex-col min-[700px]:gap-0">
-                            <span className="font-display text-xl font-extrabold tracking-wide uppercase">
+                        {/* Like the prototype: "FRI 20 NOV · TODAY" on phones; from 700px the day is big and wraps in its column, the label under it. */}
+                        <h2 className="self-start border-l-5 border-red pl-2.5 font-display leading-none font-bold tracking-wide uppercase min-[700px]:sticky min-[700px]:top-20">
+                            <span className="text-2xl leading-none min-[700px]:block min-[700px]:text-[2rem] min-[700px]:leading-[0.95]">
                                 {formatDay(group.day)}
                             </span>
-                            <span className="text-sm text-muted">
+                            <span className="ml-1.5 text-base text-muted min-[700px]:ml-0">
                                 {formatRelativeDay(group.day)}
                             </span>
                         </h2>

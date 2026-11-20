@@ -17,10 +17,10 @@ type FilterBarProps = {
 };
 
 const pill =
-    'inline-flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-ink px-3.5 text-sm font-semibold whitespace-nowrap';
+    'inline-flex h-10 shrink-0 cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-ink px-3.5 text-sm font-semibold whitespace-nowrap';
 
 const chip =
-    'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border bg-bg pr-2.5 pl-3 text-sm font-semibold whitespace-nowrap after:text-base after:text-muted after:content-["×"]';
+    'inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border bg-bg pr-2.5 pl-3 text-sm font-semibold whitespace-nowrap after:text-base after:text-muted after:content-["×"]';
 
 /** A picked day ("2026-12-05") as "Sat 5 Dec"; midday UTC is the same day in Lisbon. */
 function pickedDay(day: string): string {
@@ -60,9 +60,9 @@ export function FilterBar({
 
     return (
         // -mx-4 px-4: the bar's background reaches the page edges on phones.
-        <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-line bg-bg-2/95 px-4 backdrop-blur-sm">
+        <div className="sticky top-0 z-10 -mx-4 mb-4 bg-bg-2/95 px-4 backdrop-blur-sm">
             {/* Scrolls sideways on phones; [scrollbar-width:none] hides the bar (no Tailwind utility). */}
-            <div className="mx-auto flex max-w-[760px] [scrollbar-width:none] items-center gap-2 overflow-x-auto py-2.5">
+            <div className="mx-auto flex max-w-[760px] [scrollbar-width:none] items-center gap-2 overflow-x-auto border-b border-line py-2.5">
                 <FilterSheet
                     filters={filters}
                     shops={shops}

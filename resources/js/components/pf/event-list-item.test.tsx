@@ -51,8 +51,10 @@ describe('EventListItem', () => {
         expect(markup).not.toContain('10:00');
     });
 
-    it('shows the going count, labelled for screen readers', () => {
-        expect(render(card())).toContain('aria-label="12 trainers going"');
+    it('shows the going count, read as "12 trainers going" by screen readers', () => {
+        expect(render(card())).toContain(
+            '12<span class="sr-only"> trainers going</span>',
+        );
     });
 
     it('warns only when the event may be cancelled', () => {
