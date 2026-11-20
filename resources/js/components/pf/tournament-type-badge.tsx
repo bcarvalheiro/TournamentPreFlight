@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { TournamentTypeIcon } from '@/components/tournament-type-icon';
+import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
 import { Badge } from '@/components/ui/badge';
 import { TOURNAMENT_TYPE_NAMES } from '@/lib/tournament-types';
 import type { TournamentType } from '@/lib/tournament-types';

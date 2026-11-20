@@ -113,6 +113,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-20 | M05: an event without a title is shown as "Cup at Carta Alta" (type and shop), built on the server | Bruno |
 | 2026-11-20 | M05: no shared default-layout rule in `app.tsx`; each public page sets `Page.layout = [PublicLayout, { … }]` | Closes the question left open in the M02 review; simpler and visible in the page |
 | 2026-11-20 | **Trademark names as few as possible on pages**: hero headline "Pre-Flight"; the hero line names "Pokémon TCG" once; footer notice "Independent fan project. Not affiliated with or endorsed by Nintendo or The Pokémon Company." Supersedes the 2026-11-12 "hero still reads Pokémon Pre-Flight" part of the app-name entry and the long notice in `product.md`. Updated: `product.md`, `design.md`, `CLAUDE.md` rule 7 | Bruno |
+| 2026-11-20 | M05: **our components live in `resources/js/components/pf/`** (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests; every new one goes there). The kit's components stay in `components/`, shadcn's in `components/ui/`. Supersedes "Files live flat in `resources/js/components/`" in the 2026-11-17 component-names entry | Bruno: ours are easy to tell from the kit's at a glance |
 
 ## Open questions
 

@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
-import AppLogo from '@/components/app-logo';
+import AppLogo from '@/components/pf/app-logo';
 import { home, login, logout, register } from '@/routes';
 
 type PublicLayoutProps = {

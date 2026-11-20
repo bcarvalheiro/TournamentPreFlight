@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vite-plus/test';
-import { TournamentTypeIcon } from '@/components/tournament-type-icon';
+import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
 import type { TournamentType } from '@/lib/tournament-types';
 
 /*
