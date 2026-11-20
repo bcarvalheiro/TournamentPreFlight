@@ -5,23 +5,24 @@ import { nextCoinRotation } from '@/lib/coin-flip';
 type Result = 'heads' | 'tails';
 
 const face =
-    'absolute inset-0 grid place-items-center rounded-full font-display text-base font-extrabold tracking-[0.04em] backface-hidden shadow-[inset_0_0_0_3px_rgba(255,255,255,.35),inset_0_-4px_0_rgba(0,0,0,.2)]';
+    'absolute inset-0 grid place-items-center rounded-full font-display text-base font-extrabold tracking-wide backface-hidden shadow-coin';
 
 /** Decoration only: six prize-card spaces, one showing GO (design.md, Band). */
 function PrizeZones(): ReactNode {
     return (
         <div aria-hidden="true" className="flex items-center gap-2">
-            <span className="rotate-180 font-mono text-[0.6rem] tracking-[0.14em] text-white/40 uppercase [writing-mode:vertical-rl]">
+            {/* Tailwind has no writing-mode utility, so it is written as [property:value]. */}
+            <span className="rotate-180 font-mono text-2xs tracking-widest text-white/40 uppercase [writing-mode:vertical-rl]">
                 Prizes
             </span>
-            <div className="grid grid-cols-3 gap-[5px]">
+            <div className="grid grid-cols-3 gap-1.25">
                 {[0, 1, 2, 3, 4, 5].map((zone) => (
                     <span
                         key={zone}
                         className={
                             zone === 2
-                                ? 'grid h-9 w-[26px] place-items-center rounded-[5px] border-[1.5px] border-red font-mono text-[0.5rem] text-red'
-                                : 'h-9 w-[26px] rounded-[5px] border-[1.5px] border-dashed border-white/18'
+                                ? 'grid h-9 w-6.5 place-items-center rounded border-[1.5px] border-red font-mono text-[0.5rem] text-red'
+                                : 'h-9 w-6.5 rounded border-[1.5px] border-dashed border-white/18'
                         }
                     >
                         {zone === 2 ? 'GO' : null}
@@ -52,17 +53,17 @@ export function CoinFlip(): ReactNode {
     }
 
     return (
-        <div className="mt-[18px] flex flex-wrap items-center gap-3.5">
+        <div className="mt-4.5 flex flex-wrap items-center gap-3.5">
             <PrizeZones />
-            <div className="flex items-center gap-2.5 text-[0.85rem] leading-[1.3] text-[#A9B4BF]">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5 text-sm leading-snug text-board-muted">
                 <button
                     type="button"
                     aria-label="Flip a coin: heads go, tails stay"
                     onClick={flip}
-                    className="size-[58px] flex-none cursor-pointer rounded-full perspective-[400px]"
+                    className="size-14.5 flex-none cursor-pointer rounded-full perspective-[400px]"
                 >
                     <span
-                        className="relative block size-full transition-transform duration-[1100ms] ease-[cubic-bezier(.2,.7,.2,1)] transform-3d"
+                        className="relative block size-full transition-transform duration-1100 ease-coin transform-3d"
                         style={{ transform: `rotateY(${rotation}deg)` }}
                         onTransitionEnd={showResult}
                     >

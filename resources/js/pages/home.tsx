@@ -1,35 +1,47 @@
+import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { CoinFlip } from '@/components/pf/coin-flip';
+import { PairingsSheet } from '@/components/pf/pairings-sheet';
 import PublicLayout from '@/layouts/public-layout';
 import type { EventCard } from '@/types';
 
 type HomeProps = {
     events: EventCard[];
+    upNext: EventCard[];
 };
 
-/** The band's hero (design.md, Band): headline, question, what the app is, coin flip. */
+/**
+ * The band's hero (design.md, Band): headline, question, what the app is and
+ * the coin flip, with the pairings sheet beside it. It is a static layout prop,
+ * so it reads the page props with usePage().
+ */
 function Hero(): ReactNode {
+    const { upNext } = usePage<HomeProps>().props;
+
     return (
-        <div className="grid gap-[22px] pt-3.5 pb-[26px] min-[900px]:grid-cols-[5fr_7fr] min-[900px]:items-center min-[900px]:pt-[30px] min-[900px]:pb-10">
+        // From 900px wide: text and sheet side by side, 5 parts to 7.
+        <div className="grid gap-5.5 pt-3.5 pb-6.5 min-[900px]:grid-cols-[5fr_7fr] min-[900px]:items-center min-[900px]:pt-7.5 min-[900px]:pb-10">
             <div>
-                <h1 className="font-display text-[clamp(2.4rem,10vw,4.2rem)] leading-[0.92] font-extrabold tracking-[0.01em] text-white uppercase">
+                {/* Grows with the screen: 2.4rem on phones up to 4.2rem. */}
+                <h1 className="font-display text-[clamp(2.4rem,10vw,4.2rem)] leading-none font-extrabold text-white uppercase">
                     Pre-Flight
                 </h1>
-                <p className="mt-2.5 text-[1.15rem] text-white">
+                <p className="mt-2.5 text-lg text-white">
                     Should I go or should I{' '}
                     <b className="text-red">stay at home?</b>
                 </p>
-                <p className="mt-2.5 max-w-[44ch] text-[0.9rem] text-[#A9B4BF]">
+                <p className="mt-2.5 max-w-[44ch] text-sm text-board-muted">
                     See how many players are heading to each Pokémon TCG
                     tournament in Portugal before you sleeve up.
                 </p>
                 <CoinFlip />
             </div>
+            <PairingsSheet events={upNext} />
         </div>
     );
 }
 
-/** Stub list until the agenda and pairings sheet land (M05 slices 10–14). */
+/** Stub list until the agenda lands (M05 slices 11–14). */
 export default function Home({ events }: HomeProps) {
     return (
         <ul className="space-y-1">

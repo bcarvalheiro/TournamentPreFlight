@@ -22,6 +22,8 @@ Define these once in `resources/css/app.css` as Tailwind 4 `@theme` variables an
 | `--color-paper` | `#FBFBF8` | Pairings sheet |
 | `--color-board-fg` | `#E9EEF3` | Text on the band |
 | `--color-amber` | `#F6C453` | Reserved for warnings ("possibly cancelled") |
+| `--color-board-muted` | `#A9B4BF` | Secondary text on the band |
+| `--color-sheet-line` | `#CDD4DB` | Dashed row lines on the pairings sheet |
 
 Fonts (Google Fonts, `display=swap`), loaded through the Laravel Vite plugin's `fonts` option and `@fonts`, so the files are self-hosted:
 
