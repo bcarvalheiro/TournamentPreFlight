@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M04 · Domain schema and seed data (review).
-- **Branch**: m04-domain-schema
-- **State**: Slices 1–10 done; all five ACs met; `/rethink-tests` and `/review` done, review fixes applied; `composer verify` green (23 Vitest, 118 Pest, Larastan 0 errors). Next: push and open the PR.
+- **Milestone**: M05 · Home page on seeded data (in progress).
+- **Branch**: m05-home-page
+- **State**: Plan proposed, waiting for Bruno's approval. No code yet.
 
 ### Plan (M04)
 
@@ -35,8 +35,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
-| M04 | Domain schema and seed data | review | All ACs met; reviewed; PR to open |
-| M05 | Home page on seeded data | todo | |
+| M04 | Domain schema and seed data | done | PR #6 merged |
+| M05 | Home page on seeded data | in progress | |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
