@@ -27,11 +27,13 @@ class HomeController extends Controller
     {
         $types = $request->types();
         $shopIds = $request->shopIds();
+        $dateRange = $request->dateRange();
 
         // The scopes match nothing for an empty list, so a filter applies only when chosen.
         $matching = Event::upcoming()
             ->when($types, fn (Builder $query) => $query->ofTypes($types))
-            ->when($shopIds, fn (Builder $query) => $query->atShops($shopIds));
+            ->when($shopIds, fn (Builder $query) => $query->atShops($shopIds))
+            ->when($dateRange, fn (Builder $query) => $query->between(...$dateRange));
 
         return Inertia::render('home', [
             'events' => $this->cards($matching->clone()->limit(self::LIST_CAP)),
@@ -43,6 +45,7 @@ class HomeController extends Controller
             'filters' => [
                 'type' => $types,
                 'shop' => $shopIds,
+                'when' => $request->datePreset(),
             ],
         ]);
     }
