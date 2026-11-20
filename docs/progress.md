@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–12a done. Next: Slice 12b (legend, disclaimer, footer notice).
+- **State**: Slices 1–12b done. Next: Slice 13 (filter bar).
 
 ### Plan (M05)
 
@@ -28,7 +28,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 11: `EventListItem` (type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/event-list-item.tsx`, `pf/going-button.tsx` `className`, `styleguide.tsx`; `event-list-item.test.tsx`) · AC5, AC9
   - Changed (Bruno, 20 Nov): named `EventListItem`, not `MatchSlip` (it is a row of the upcoming list); no tournament ID shown.
 - [x] Slice 12a: agenda grouped by Lisbon day (day header, relative label, sticky column from 700px), empty state with Clear filters or "Nothing on the calendar yet.", replaces the home stub list (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `pages/home.tsx`, `styleguide.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
-- [ ] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx` or `pages/home.tsx`, `public-layout.tsx`; Vitest) · design
+- [x] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx`, `public-layout.tsx`; `agenda.test.tsx`, `StyleguideTest`) · design
   - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
 - [ ] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips, count line (`pf/filter-bar.tsx`; `filter-bar.test.tsx`) · AC4
 - [ ] Slice 14: `FilterSheet` in `ResponsiveDialog`, applies as you tick (Inertia visit, `preserveScroll`, `only` list props) (`pf/filter-sheet.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters) · AC8

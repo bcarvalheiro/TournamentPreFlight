@@ -50,7 +50,7 @@ it('renders every component without horizontal scroll', function (int $width, in
         ->assertSee('Responsive dialog')
         ->assertSee('Toast')
         ->assertSee('Empty state')
-        ->assertSee('Not affiliated with')
+        ->assertSee('Independent fan project. Not affiliated with, endorsed or sponsored by Nintendo or The Pokémon Company.')
         ->assertScript('document.documentElement.scrollWidth <= window.innerWidth')
         ->assertNoJavaScriptErrors();
 })->with('widths');

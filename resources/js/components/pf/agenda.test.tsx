@@ -64,4 +64,17 @@ describe('Agenda', () => {
         expect(markup).toContain('Nothing on the calendar yet.');
         expect(markup).not.toContain('Clear filters');
     });
+
+    it('shows the type legend from Common to Rare', () => {
+        expect(render([card()])).toMatch(
+            /Common.*Casual.*Prerelease.*Challenge.*Cup.*Rare/,
+        );
+    });
+
+    it('shows the headcount disclaimer, also when nothing is listed', () => {
+        const disclaimer = 'A headcount, not a registration.';
+
+        expect(render([card()])).toContain(disclaimer);
+        expect(render([], 0)).toContain(disclaimer);
+    });
 });

@@ -80,8 +80,8 @@ function Footer() {
         <footer className="mx-auto w-full max-w-[1100px] px-4 pt-6 pb-10 text-[0.8rem] text-muted">
             <div className="mx-auto max-w-[760px] space-y-2">
                 <p>
-                    Not affiliated with, endorsed or sponsored by Nintendo, The
-                    Pokémon Company or Play! Pokémon.
+                    Independent fan project. Not affiliated with, endorsed or sponsored by
+                    Nintendo or The Pokémon Company.
                 </p>
                 <nav aria-label="Footer">
                     <ul className="flex flex-wrap gap-x-4 gap-y-1">
