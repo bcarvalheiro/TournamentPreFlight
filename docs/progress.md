@@ -6,27 +6,24 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Plan proposed, waiting for Bruno's approval. No code yet.
+- **State**: Plan approved (20 Nov), decisions logged. Next: Slice 1.
 
-### Plan (M04)
+### Plan (M05)
 
-- [x] Slice 1: shops and events tables, enums EventType/EventStatus/EventSourceKey (string columns + casts), models, factories, unique keys (`shops` + `events` migrations, `app/Enums/*`, `Shop`, `Event`, factories; `EventUniqueKeysTest`: official_guid, official_url, shops.official_name_key; `MigrationsTest`: roll back everything, migrate again) · AC1, AC2
-- [x] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
-- [x] Slice 3: scopes `upcoming()`, `ofTypes()`, `atShops()`, `between()`, plural, taking lists (`Event`; `EventScopesTest`) · AC3
-- [x] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory, `User` casts and relations; `PlayerProfileTest`: unique Player ID across accounts, several profiles per account, deleting the account deletes its profiles; `UserDefaultsTest`: not admin, reminders on) · AC1, AC2
-  - Changed (Bruno, 19 Nov): the factory's child state moves to Slice 5, where it is used; defaults get their own test; `notification_settings` keeps only `reminders`; the Player ID column is `pop_id`.
-- [x] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook, factory `child()` state; `PlayerProfileChildTest`) · AC5
-  - Changed (Bruno, 19 Nov): account holders must be 13+, confirmed by a sign-up checkbox (`users.age_confirmed_at`), added to M06; `is_child` keeps its name.
-- [x] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
-- [x] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories, `User::socialAccounts()`; `AuthTablesTest`: unique provider identity, compound key, cascade on account deletion, unique token hash) · AC1, AC2
-  - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
-- [x] Slice 8: event_follows and event_reports (migrations, models, factories; `EventFollowsAndReportsTest`: one follow per user per event, compound key, account deletion removes follows and reports) · AC1, AC2
-  - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
-- [x] Slice 9: import_runs (migration, `ImportRun` model, factory; `MigrationsTest` extended: the table goes on rollback and comes back) · AC1
-  - Changed (Bruno, 19 Nov): counters named `events_created`, `events_updated`, `events_flagged`, `events_unchanged` (not `created`/`updated`, which read like timestamps); `finished_at` required; `source` a plain string, not `EventSourceKey`. No behaviour of its own yet, so no new test; M10 tests writing runs and the abort rule.
-- [x] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), a crowd of 60 players for the counts, solo, parent (two children, aged 11 and 12 this year) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
-  - Changed (19 Nov): `WithoutModelEvents` removed from `DatabaseSeeder` (it muted the saving hooks); demo accounts `solo@`, `family@`, `admin@preflight.test`, password `password`; their 5 answers add to the prototype counts (315 rows).
-  - Changed (review, 19 Nov): children's birth years relative to the current year (fixed years aged out on 1 Jan); crowd 60, each event takes the next block so no player is at two events on one day; seeder tests freeze time.
+- [ ] Slice 1: move our components into `components/pf/` (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, imports, `architecture.md` Code layout, `decisions.md`; existing Vitest tests + `tsc`) · groundwork
+- [ ] Slice 2: types casual/prerelease/challenge/cup with long names, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
+- [ ] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
+- [ ] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
+- [ ] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
+- [ ] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC3
+- [ ] Slice 7: date presets week/weekend/7/30/custom in Lisbon days, applied before the cap (`HomeFilterRequest::dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, Saturday, weekday, month end) · AC3, AC4
+- [ ] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`; `HomeShopsTest`) · AC6
+- [ ] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
+- [ ] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9
+- [ ] Slice 11: `MatchSlip` (ID, type badge, shop, city, Starts / Happening now, count, quick button, amber possibly cancelled line) (`pf/match-slip.tsx`; `match-slip.test.tsx`) · AC5, AC9
+- [ ] Slice 12: agenda grouped by Lisbon day, empty state with Clear filters, legend, disclaimer, short footer notice (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `public-layout.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
+- [ ] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips, count line (`pf/filter-bar.tsx`; `filter-bar.test.tsx`) · AC4
+- [ ] Slice 14: `FilterSheet` in `ResponsiveDialog`, applies as you tick (Inertia visit, `preserveScroll`, `only` list props) (`pf/filter-sheet.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters) · AC8
 
 ## Milestones
 

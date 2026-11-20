@@ -63,7 +63,7 @@ A small legend under the filter bar shows the four icons from "Common" to "Rare"
 
 ## Brand mark
 
-Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `AppLogo` component. The hero headline stays "Pokémon Pre-Flight".
+Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `AppLogo` component. The hero headline is "Pre-Flight" too.
 
 ## Home page, top to bottom
 
@@ -71,7 +71,7 @@ Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in
 Dark radial gradient on `ink`, with two faint dashed card outlines as decoration. Contains:
 
 - **Navbar** (50px): brand left; right side signed out: "Sign in" (text) and "Sign up" (red pill); signed in: "Profiles (n)" and "Sign out".
-- **Hero** (left column on desktop, 5/12): h1 "Pokémon Pre-Flight" on two lines, display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Play! Pokémon tournament in Portugal before you sleeve up. Independent fan project."
+- **Hero** (left column on desktop, 5/12): h1 "Pre-Flight", display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Pokémon TCG tournament in Portugal before you sleeve up."
 - **Coin flip** (decorative fun, keep it): a red "GO" / light "STAY" coin that flips on tap with the line "Still can't decide? Flip for it. Heads you go." The prize-zone grid next to it is decoration, `aria-hidden`.
 - **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: day and time (or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "I'm going" button. Footer: "Headcount, not registration · Register at the shop".
 
@@ -88,7 +88,7 @@ Grouped by day. Day header: red left border, "SAT 15 NOV" in display font plus a
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 
 ### 4. Disclaimer and footer
-Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual." Footer: non-affiliation notice, links to privacy, terms, contact, "Add a missing event".
+Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual." Footer: the short non-affiliation notice (`product.md`, Privacy and brand), links to privacy, terms, contact, "Add a missing event".
 
 ## Shared components
 

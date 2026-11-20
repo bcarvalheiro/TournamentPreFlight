@@ -54,7 +54,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 See `design.md` for the visual spec. Content:
 
 - Small navbar: signed out shows Sign in and Sign up; signed in shows Profiles (n) and Sign out.
-- Hero: "Pokémon Pre-Flight" and "Should I go or should I stay at home?", one line saying what the app is.
+- Hero: "Pre-Flight" and "Should I go or should I stay at home?", one line saying what the app is (the only place the page names Pokémon).
 - **Up next** (the pairings sheet): the next 5 upcoming or ongoing events by start time, ignoring filters.
 - **Event list**: up to 25 upcoming and ongoing events, grouped by day, after filters. The count line says "12 of 29 events" or "First 25 of 31".
 - Filters, all multi-select and combined with AND between groups: type (Casual, Prerelease, Challenge, Cup), host shop (only shops with upcoming events, with their counts), date range (Any time, This week, This weekend, Next 7 days, Next 30 days, Pick dates with From and To). The date filter applies before the 25 cap. Filters live in the URL query string so a filtered view can be shared.
@@ -86,7 +86,8 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 - Past answers are anonymised 90 days after the event (the profile link is removed, counts stay).
 - Account deletion removes the account, its profiles and answers.
 - Privacy policy and terms pages (English), a contact address for data requests.
-- Not affiliated notice on every page: "Not affiliated with, endorsed or sponsored by Nintendo, Creatures, GAME FREAK, The Pokémon Company or Play! Pokémon."
+- Not affiliated notice on every page: "Independent fan project. Not affiliated with or endorsed by Nintendo or The Pokémon Company."
+- Trademark names (Pokémon, Nintendo, Play! Pokémon and so on) appear on pages only where strictly needed: once in the hero line and in the notice.
 - No official artwork or logos, except the type icons, which use the official-looking ball designs (Bruno's decision).
 
 ## Out of scope for v1

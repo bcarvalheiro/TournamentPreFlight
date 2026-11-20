@@ -28,7 +28,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 4. **Times stored in UTC, shown in Europe/Lisbon.**
 5. **One answer per profile per event.** A row means going; not going means no row.
 6. **The sync writes only to events; players write only to their own attendances.**
-7. **No official Pokémon artwork or logos.** The one exception, decided by Bruno: the type icons use the official-looking ball designs in `docs/design.md`. Every page footer carries the non-affiliation notice. The app name is "Pre-Flight".
+7. **No official brands mention.** The one exception, decided by Bruno: the type icons use the official-looking ball designs in `docs/design.md`. Every page footer carries the short non-affiliation notice (`docs/product.md`); page copy names Pokémon or its companies only where strictly needed. The app name is "Pre-Flight".
 8. **UI copy is English.** Audience is Portuguese, so dates and places are Portuguese, but the language is English.
 
 ## How to work
