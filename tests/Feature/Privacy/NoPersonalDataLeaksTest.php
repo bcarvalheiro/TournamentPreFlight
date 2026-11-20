@@ -37,7 +37,10 @@ it('shows no player name, Player ID or birth year', function (string $url, bool 
     // The leaky player's answer is counted, so the test is not passing on an empty page.
     expect($response->inertiaProps('events.0.goingCount'))->toBe(1);
 
-    $response->assertDontSee('Zzleak')->assertDontSee('9988776655');
+    // Lower-cased first: assertDontSee matches exact case, and the owner's email is lower case.
+    expect(mb_strtolower($response->getContent()))
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655');
 
     // Birth years are plain numbers that could match a date by chance, so check the keys instead.
     expect(array_keys(Arr::dot($response->inertiaProps())))
