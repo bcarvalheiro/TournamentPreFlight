@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M04 · Domain schema and seed data (in progress).
+- **Milestone**: M04 · Domain schema and seed data (review).
 - **Branch**: m04-domain-schema
-- **State**: Slices 1–10 done; all M04 ACs covered. Next: `/rethink-tests`, then `/review`.
+- **State**: Slices 1–10 done; all five ACs met; `/rethink-tests` and `/review` done, review fixes applied; `composer verify` green (23 Vitest, 118 Pest, Larastan 0 errors). Next: push and open the PR.
 
 ### Plan (M04)
 
@@ -35,7 +35,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
-| M04 | Domain schema and seed data | in progress | |
+| M04 | Domain schema and seed data | review | All ACs met; reviewed; PR to open |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
@@ -53,6 +53,54 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-19 · M04 · Domain schema and seed data
+
+**Outcome.** All five acceptance criteria met. Ten v1 tables with models, enums, factories and their keys; `ends_at` and `is_child` computed by model saving hooks; four event scopes; a demo seeder mirroring the prototype. `composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 23 Vitest, 118 Pest (7,962 assertions). Run in ten slices, each proposed, built test-first and committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- `ab3ab31` drop divisions, seasons and "maybe" from the docs; estimates on EventType · `f81c2b1` start m04: slice plan
+- `eb3102f` shops and events tables, enums, factories, unique keys (Slice 1)
+- `50f896b` ends_at from the type's estimated hours on every save (Slice 2)
+- `9c6bae7` upcoming, ofTypes, atShops, between scopes (Slice 3)
+- `fc59382`, `2cf78a0` player profiles (`pop_id`), `is_admin` and reminders setting on users; docs (Slice 4)
+- `9aef37e`, `f348d3c` child profiles need consent; 13+ account gate recorded for M06 (Slice 5)
+- `60cc883` attendances (Slice 6) · `1048dfa` social accounts and magic login tokens (Slice 7)
+- `f4d9a43` event follows and reports (Slice 8) · `c3cfe36` note: alerts as topics, grouped reports
+- `8088365` import runs (Slice 9) · `3190f50` demo seeder (Slice 10)
+- `7759e79` seeded Lisbon times stored in UTC (`/rethink-tests` P1) · `b97ca85` event deletion cascades (P2)
+- Review fixes: `ec7d91c` Pint, `d017708` seeder children and crowd, `2717ab4` `between()` in UTC, `3b6522e` seeder guard, `f8e972d` saving-hook wording, `d5c7eda` user settings default, `3a02e59` safer under-13 rule, test gaps, Lisbon import time, shop deletion note
+
+**Decisions by Bruno** (all in `decisions.md`)
+- No divisions and no seasons (CLAUDE.md rule 3 rewritten); no "maybe": a row in attendances means going (rule 5 rewritten); `confirmed_at` kept for M12.
+- End-time estimates on `EventType::estimatedHours()`, not a config file; enums as string columns with casts; scopes plural, taking lists.
+- `notification_settings` holds only `reminders` (JSON, so it can grow); "event changed" and "possibly cancelled" are always sent; threshold emails stop by unfollowing.
+- Player ID column is `pop_id`; `event_reports.type` instead of `kind`; `import_runs` counters `events_*`.
+- Account holders must be 13+ (a sign-up checkbox, `users.age_confirmed_at`, built in M06); under-13s only as child profiles; `is_child` keeps its name.
+- `is_child` is true when the person turns 13 or younger this year (the safer reading), refreshed by a yearly 1 January routine (later).
+
+**Problems hit and how they were solved**
+- *`make:enum` nested files* in `app/Enums/Enums/`: deleted and written by hand.
+- *Migration tests passed before the code* (the `make:model -m` stubs already drop their tables): shown red by breaking a `down()` on purpose (Slices 1 and 9).
+- *MySQL reorders JSON keys*: the defaults test compared with `toBe`; switched while there were four keys, back to `toBe` with one.
+- *I staged files once* (`git add -N` to count lines): the call was denied; staging is Bruno's.
+- *The kit's `WithoutModelEvents`* in `DatabaseSeeder` would have switched off both saving hooks: removed, shown by seeding failing on `ends_at` with the trait back.
+- *The kit uses `CarbonImmutable`*: a `Carbon` return type in the seeder failed; typed `CarbonInterface`.
+- *The production-guard test passed before the guard*: `db:seed` asks "Are you sure?" in production and cancels in tests; the test now runs `db:seed --force`, as a deploy script would.
+- *Larastan rejected indexing the crowd* (`$crowd[$i]` may be null): replaced by slicing the crowd listed twice.
+
+**`/rethink-tests` outcome.** All 11 test files walked through. Accepted: P1 (seeded Lisbon times stored in UTC, tested in July, when Lisbon is UTC+1), P2 (deleting an event deletes its answers, follows and reports; shown red by removing each cascade). Deferred to M05: the scopes combined (P4). Rejected: seeding once in `DemoSeederTest` (P3).
+
+**Review outcome.** `code-reviewer` and `privacy-guard` (the `User` model is shared as `auth.user`); `ui-reviewer` not needed. privacy-guard: no leak today (no routes). Fixed: Pint failure; demo children aged out on 1 Jan (birth years now relative, seeder tests freeze time); `between()` ignored the bounds' time zone (Laravel binds the clock time); demo admin seeded anywhere (now `local`/`testing` only); hook guarantee narrowed to model saves; new users' settings `null` in memory (model `$attributes`); crowd at overlapping events (crowd of 60 in consecutive blocks); two test gaps; import time in Lisbon; shop-deletion behaviour recorded; seeder style. Moved to later milestones: duplicate Player ID errors and logs (M07), consenting-user rule and `consent_by_user_id` on delete (M07), `#[Hidden]` and a `CHECK` constraint (optional, later).
+
+**What is left**
+- Push and open the PR.
+- Bruno: `php artisan migrate:fresh --seed` locally (wipes the local database), then the signed-in `/ui-check` with `family@preflight.test` / `password`.
+
+**Surprising**
+- Laravel writes a date's clock time into SQL without converting its time zone; with Lisbon equal to UTC in winter, the `between()` bug and a missing seeder conversion would both have stayed hidden until March.
+- The kit's `DatabaseSeeder` mutes model events by default, which silently defeats model hooks.
+- `db:seed` in production refuses to run without `--force`, which made a guard test pass for the wrong reason.
 
 ### 2026-11-18/19 · M03 · pokedata.ovh spike
 
@@ -235,7 +283,7 @@ Status values: todo, in progress, review, done.
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the kit's password login works until M06). (Bruno, M04)
-- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M04/M05)
+- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M05; M04 had no UI work, Bruno)
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
