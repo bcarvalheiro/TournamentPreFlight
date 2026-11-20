@@ -10,6 +10,7 @@ Players sign in with an email magic link or Google. Passwords are gone.
 - Magic link: request page/sheet, `MagicLinkMail`, token stored hashed, 15-minute single use, rate limited, creates the account on first use.
 - Google via Socialite: redirect, callback, linking rules from `architecture.md`.
 - Sign-in UI: one sheet (from navbar and from quick buttons) and a full page fallback at `/login`, styled per `design.md`. Apple and Discord buttons are hidden until M13.
+- Age gate: an account is created only after the person ticks "I am 13 or older"; the time is stored in `users.age_confirmed_at` (new nullable column, added here). Applies to the magic link and Google alike. Under-13s only exist as child profiles on a parent's account (M07).
 - After first sign-in with no profiles, redirect to a placeholder "create your profile" route (M07 builds it).
 - Pending-intent plumbing: `return_to` and `intent` kept through the sign-in round trip (session), returned to the page as a prop. Acting on it is M08.
 
@@ -23,3 +24,4 @@ Profiles (M07), Apple and Discord (M13).
 4. No password routes remain (`/register`, `/forgot-password`, `/reset-password`) and no password column exists.
 5. Signing in from a quick button returns to the same URL with the intent prop.
 6. Sign out works and clears the session.
+7. No account is created without the age confirmation, for the magic link and for Google; with it, `age_confirmed_at` is set.

@@ -1,6 +1,6 @@
 # Pokémon Pre-Flight
 
-A web app where Pokémon TCG players in Portugal (TCG tournaments only) say "I'm going" or "Maybe" to sanctioned Play! Pokémon tournaments, so everyone can see the headcount before deciding to go. It is a headcount, not a registration. No payments. Independent fan project, not affiliated with Pokémon.
+A web app where Pokémon TCG players in Portugal (TCG tournaments only) say "I'm going" to sanctioned Play! Pokémon tournaments, so everyone can see the headcount before deciding to go. It is a headcount, not a registration. No payments. Independent fan project, not affiliated with Pokémon.
 
 ## Read before you work
 
@@ -24,9 +24,9 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 1. **Counts only.** No response, page, prop, email or log visible to another player contains a player's name, Player ID or birth year. Public data goes through the classes in `app/Data/Public/`, never raw models. There is a test for this; keep it green and extend it when you add a public endpoint.
 2. **Under-13s have no login.** A child profile belongs to a parent account, and the parent's consent is recorded.
-3. **Division is computed, never typed.** It comes from birth year and the season the event falls in (`seasons` table).
+3. **No divisions, no seasons.** Pre-Flight never computes or shows Junior/Senior/Masters. Birth year is kept only for the under-13 rule.
 4. **Times stored in UTC, shown in Europe/Lisbon.**
-5. **One answer per profile per event.** Changing it updates the row.
+5. **One answer per profile per event.** A row means going; not going means no row.
 6. **The sync writes only to events; players write only to their own attendances.**
 7. **No official Pokémon artwork or logos.** The one exception, decided by Bruno: the type icons use the official-looking ball designs in `docs/design.md`. Every page footer carries the non-affiliation notice. The app name is "Pre-Flight".
 8. **UI copy is English.** Audience is Portuguese, so dates and places are Portuguese, but the language is English.
@@ -53,6 +53,8 @@ In plans and slice proposals, name the doc page each choice comes from.
 - Stay inside the milestone; other work goes to "Found along the way" in `docs/progress.md`.
 - A decision the docs don't cover goes into `docs/decisions.md`.
 - When Bruno sets a name or rule, apply it everywhere it reaches (docs, schema, code names) without asking again; list the places changed.
+
+**Database diagram.** Any change to the schema (a migration that adds, removes or renames a table, column, key or foreign key, or changes a default or on-delete rule) updates the Mermaid diagram and the table description in `docs/architecture.md` (Data model) in the same commit. A slice proposal that touches the database lists `docs/architecture.md` among its files.
 
 **Tests.**
 - Test first: each acceptance criterion becomes a Pest test, shown failing before the code.

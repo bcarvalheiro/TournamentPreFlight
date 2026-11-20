@@ -13,7 +13,7 @@ Rethink the tests for the current milestone. This is a teaching conversation wit
 3. Then look for gaps:
    - acceptance criteria covered only by a manual check,
    - failure paths and edge cases (empty, invalid, unauthorised, boundary dates),
-   - `CLAUDE.md` rules the milestone touches (privacy, under-13s, division, UTC, one answer per profile),
+   - `CLAUDE.md` rules the milestone touches (privacy, under-13s, UTC, one answer per profile),
    - tests that are redundant and could go.
 4. Propose a short list: tests to add, change or remove, each with a one-line reason. Mark your recommendation.
 5. Wait for Bruno's decision. Apply only what he agrees to, one change at a time: explain each new or changed test the same way before running it, then suggest `git add <paths>` and a commit message, and wait until he has committed. Run `/verify` after the last one.

@@ -4,18 +4,29 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M03 · pokedata.ovh spike (review).
-- **Branch**: m03-pokedata-spike
-- **State**: Slices 1–3 done; all three ACs met; `/rethink-tests` and `/review` done; `composer verify` green (23 Vitest, 66 Pest, Larastan 0 errors). Next: push and open the PR.
+- **Milestone**: M04 · Domain schema and seed data (review).
+- **Branch**: m04-domain-schema
+- **State**: Slices 1–10 done; all five ACs met; `/rethink-tests` and `/review` done, review fixes applied; `composer verify` green (23 Vitest, 118 Pest, Larastan 0 errors). Next: push and open the PR.
 
-### Plan (M03)
+### Plan (M04)
 
-- [x] Slice 1: real pokedata responses saved as fixtures, 4 one-off requests approved by Bruno: `_tcg/_country/PT`, `_country/PT`, `_tcg/_country/PT/_start/2020-01-01/_end/2020-01-02`, `_tcg/cups/challenges/pre/_country/PT` (`tests/Fixtures/pokedata/*.json`, `tests/Unit/PokedataFixturesTest.php`; `PokedataFixturesTest`: every pokedata fixture is valid JSON, the upcoming fixture contains at least one event) · AC1
-  - Changed (Bruno, 18 Nov): the slice also records the request and filter contract in `docs/pokedata.md`, after 5 extra one-off requests (repeat, filter order, `ftcg`, two website POSTs) showed that a bare `_tcg` returns VG/GO events and that `product` must be checked.
-- [x] Slice 2: `docs/pokedata.md` (request and filter contract already there from Slice 1) maps every field to `ImportedEvent` or says what is missing; types (friendly, league, challenge, cup, prerelease, other), time zones incl. Madeira/Azores, end times, Guid, locator URL, venue, paging, edits after first retrieval, questions for the author (`docs/pokedata.md`; no test, Bruno reviews against AC2) · AC2
-  - Changed (Bruno, 18 Nov): one `guid` (no separate officialGuid), `shopName`/`shopAddress` instead of venue, no `endsAt`, `leagueId` kept, cost not used, `nonpremier TCG` = one casual type (League and Friendly collapsed, decided), `title` null when `name` is empty and shown as type + shop name, Azores only a warning for now.
-- [x] Slice 3: decisions and docs in line with the facts: pokedata open question ticked or updated, prerelease as its own type (Bruno, 18 Nov), the `ImportedEvent` shape from Slice 2 (guid, shop fields, no endsAt, leagueId), casual type replacing League and Friendly (decided; big events sanctioned as `nonpremier TCG` listed as casual is a known risk, open), "shops" instead of "venue" everywhere (Bruno, 18 Nov: `venues` table → `shops`, `events.venue_id` → `shop_id`, `Event::atVenues()` → `atShops()`, shop matching in M10), in `decisions.md`, `architecture.md` (events.type, shops, Event import, Time) and `product.md`; icons: casual keeps the Poké Ball, prerelease gets the Great Ball (Bruno, 18 Nov; code change goes to Found along the way) (`docs/decisions.md`, `docs/architecture.md`, `docs/product.md`, `docs/design.md`, `docs/pokedata.md`, `docs/milestones/M04`, `M05`, `M10` for the rename; no test) · AC3
-  - Changed (Bruno, 19 Nov): only `official_guid` (no `source_event_id`); end-time estimates Casual 2h, Prerelease 3h, Challenge 4h, Cup 6h.
+- [x] Slice 1: shops and events tables, enums EventType/EventStatus/EventSourceKey (string columns + casts), models, factories, unique keys (`shops` + `events` migrations, `app/Enums/*`, `Shop`, `Event`, factories; `EventUniqueKeysTest`: official_guid, official_url, shops.official_name_key; `MigrationsTest`: roll back everything, migrate again) · AC1, AC2
+- [x] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
+- [x] Slice 3: scopes `upcoming()`, `ofTypes()`, `atShops()`, `between()`, plural, taking lists (`Event`; `EventScopesTest`) · AC3
+- [x] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory, `User` casts and relations; `PlayerProfileTest`: unique Player ID across accounts, several profiles per account, deleting the account deletes its profiles; `UserDefaultsTest`: not admin, reminders on) · AC1, AC2
+  - Changed (Bruno, 19 Nov): the factory's child state moves to Slice 5, where it is used; defaults get their own test; `notification_settings` keeps only `reminders`; the Player ID column is `pop_id`.
+- [x] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook, factory `child()` state; `PlayerProfileChildTest`) · AC5
+  - Changed (Bruno, 19 Nov): account holders must be 13+, confirmed by a sign-up checkbox (`users.age_confirmed_at`), added to M06; `is_child` keeps its name.
+- [x] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
+- [x] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories, `User::socialAccounts()`; `AuthTablesTest`: unique provider identity, compound key, cascade on account deletion, unique token hash) · AC1, AC2
+  - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
+- [x] Slice 8: event_follows and event_reports (migrations, models, factories; `EventFollowsAndReportsTest`: one follow per user per event, compound key, account deletion removes follows and reports) · AC1, AC2
+  - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
+- [x] Slice 9: import_runs (migration, `ImportRun` model, factory; `MigrationsTest` extended: the table goes on rollback and comes back) · AC1
+  - Changed (Bruno, 19 Nov): counters named `events_created`, `events_updated`, `events_flagged`, `events_unchanged` (not `created`/`updated`, which read like timestamps); `finished_at` required; `source` a plain string, not `EventSourceKey`. No behaviour of its own yet, so no new test; M10 tests writing runs and the abort rule.
+- [x] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), a crowd of 60 players for the counts, solo, parent (two children, aged 11 and 12 this year) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
+  - Changed (19 Nov): `WithoutModelEvents` removed from `DatabaseSeeder` (it muted the saving hooks); demo accounts `solo@`, `family@`, `admin@preflight.test`, password `password`; their 5 answers add to the prototype counts (315 rows).
+  - Changed (review, 19 Nov): children's birth years relative to the current year (fixed years aged out on 1 Jan); crowd 60, each event takes the next block so no player is at two events on one day; seeder tests freeze time.
 
 ## Milestones
 
@@ -23,8 +34,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | --- | --- | --- | --- |
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
-| M03 | pokedata.ovh spike | review | All ACs met; reviewed; PR to open |
-| M04 | Domain schema and seed data | todo | |
+| M03 | pokedata.ovh spike | done | PR #5 merged |
+| M04 | Domain schema and seed data | review | All ACs met; reviewed; PR to open |
 | M05 | Home page on seeded data | todo | |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
@@ -42,6 +53,54 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-19 · M04 · Domain schema and seed data
+
+**Outcome.** All five acceptance criteria met. Ten v1 tables with models, enums, factories and their keys; `ends_at` and `is_child` computed by model saving hooks; four event scopes; a demo seeder mirroring the prototype. `composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 23 Vitest, 118 Pest (7,962 assertions). Run in ten slices, each proposed, built test-first and committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- `ab3ab31` drop divisions, seasons and "maybe" from the docs; estimates on EventType · `f81c2b1` start m04: slice plan
+- `eb3102f` shops and events tables, enums, factories, unique keys (Slice 1)
+- `50f896b` ends_at from the type's estimated hours on every save (Slice 2)
+- `9c6bae7` upcoming, ofTypes, atShops, between scopes (Slice 3)
+- `fc59382`, `2cf78a0` player profiles (`pop_id`), `is_admin` and reminders setting on users; docs (Slice 4)
+- `9aef37e`, `f348d3c` child profiles need consent; 13+ account gate recorded for M06 (Slice 5)
+- `60cc883` attendances (Slice 6) · `1048dfa` social accounts and magic login tokens (Slice 7)
+- `f4d9a43` event follows and reports (Slice 8) · `c3cfe36` note: alerts as topics, grouped reports
+- `8088365` import runs (Slice 9) · `3190f50` demo seeder (Slice 10)
+- `7759e79` seeded Lisbon times stored in UTC (`/rethink-tests` P1) · `b97ca85` event deletion cascades (P2)
+- Review fixes: `ec7d91c` Pint, `d017708` seeder children and crowd, `2717ab4` `between()` in UTC, `3b6522e` seeder guard, `f8e972d` saving-hook wording, `d5c7eda` user settings default, `3a02e59` safer under-13 rule, test gaps, Lisbon import time, shop deletion note
+
+**Decisions by Bruno** (all in `decisions.md`)
+- No divisions and no seasons (CLAUDE.md rule 3 rewritten); no "maybe": a row in attendances means going (rule 5 rewritten); `confirmed_at` kept for M12.
+- End-time estimates on `EventType::estimatedHours()`, not a config file; enums as string columns with casts; scopes plural, taking lists.
+- `notification_settings` holds only `reminders` (JSON, so it can grow); "event changed" and "possibly cancelled" are always sent; threshold emails stop by unfollowing.
+- Player ID column is `pop_id`; `event_reports.type` instead of `kind`; `import_runs` counters `events_*`.
+- Account holders must be 13+ (a sign-up checkbox, `users.age_confirmed_at`, built in M06); under-13s only as child profiles; `is_child` keeps its name.
+- `is_child` is true when the person turns 13 or younger this year (the safer reading), refreshed by a yearly 1 January routine (later).
+
+**Problems hit and how they were solved**
+- *`make:enum` nested files* in `app/Enums/Enums/`: deleted and written by hand.
+- *Migration tests passed before the code* (the `make:model -m` stubs already drop their tables): shown red by breaking a `down()` on purpose (Slices 1 and 9).
+- *MySQL reorders JSON keys*: the defaults test compared with `toBe`; switched while there were four keys, back to `toBe` with one.
+- *I staged files once* (`git add -N` to count lines): the call was denied; staging is Bruno's.
+- *The kit's `WithoutModelEvents`* in `DatabaseSeeder` would have switched off both saving hooks: removed, shown by seeding failing on `ends_at` with the trait back.
+- *The kit uses `CarbonImmutable`*: a `Carbon` return type in the seeder failed; typed `CarbonInterface`.
+- *The production-guard test passed before the guard*: `db:seed` asks "Are you sure?" in production and cancels in tests; the test now runs `db:seed --force`, as a deploy script would.
+- *Larastan rejected indexing the crowd* (`$crowd[$i]` may be null): replaced by slicing the crowd listed twice.
+
+**`/rethink-tests` outcome.** All 11 test files walked through. Accepted: P1 (seeded Lisbon times stored in UTC, tested in July, when Lisbon is UTC+1), P2 (deleting an event deletes its answers, follows and reports; shown red by removing each cascade). Deferred to M05: the scopes combined (P4). Rejected: seeding once in `DemoSeederTest` (P3).
+
+**Review outcome.** `code-reviewer` and `privacy-guard` (the `User` model is shared as `auth.user`); `ui-reviewer` not needed. privacy-guard: no leak today (no routes). Fixed: Pint failure; demo children aged out on 1 Jan (birth years now relative, seeder tests freeze time); `between()` ignored the bounds' time zone (Laravel binds the clock time); demo admin seeded anywhere (now `local`/`testing` only); hook guarantee narrowed to model saves; new users' settings `null` in memory (model `$attributes`); crowd at overlapping events (crowd of 60 in consecutive blocks); two test gaps; import time in Lisbon; shop-deletion behaviour recorded; seeder style. Moved to later milestones: duplicate Player ID errors and logs (M07), consenting-user rule and `consent_by_user_id` on delete (M07), `#[Hidden]` and a `CHECK` constraint (optional, later).
+
+**What is left**
+- Push and open the PR.
+- Bruno: `php artisan migrate:fresh --seed` locally (wipes the local database), then the signed-in `/ui-check` with `family@preflight.test` / `password`.
+
+**Surprising**
+- Laravel writes a date's clock time into SQL without converting its time zone; with Lisbon equal to UTC in winter, the `between()` bug and a missing seeder conversion would both have stayed hidden until March.
+- The kit's `DatabaseSeeder` mutes model events by default, which silently defeats model hooks.
+- `db:seed` in production refuses to run without `--force`, which made a guard test pass for the wrong reason.
 
 ### 2026-11-18/19 · M03 · pokedata.ovh spike
 
@@ -184,7 +243,7 @@ Status values: todo, in progress, review, done.
 - `.gitignore`: `CLAUDE.md` and `.claude/` are tracked; only `.claude/settings.local.json` is ignored.
 
 *Claude kit and docs*
-- `.claude/commands/rethink-tests.md` (new) and the `/rethink-tests` step in `workflow.md`, `start-milestone.md`, `CLAUDE.md`. `/wrap-up` now writes this kind of documentation-ready log.
+- `.claude/commands/rethink-tests.md` (new) and the `/rethink-tests` step in `workflow.md`, `start-milestone.md`, `CLAUDE.md`. `/wrap-up` now writes this type of documentation-ready log.
 - `.claude/hooks/format.sh`: formats TS/CSS/JSON with `vp fmt` (Prettier is not installed); Markdown no longer auto-formatted.
 - `CLAUDE.md`, `README.md`, `docs/architecture.md`, `docs/workflow.md`, `docs/milestones/M01-scaffold.md`: aligned with the installed kit (Pest 5, Larastan 7, Vite+, Tailwind kept, Herd + DBngin, `composer setup`); Tailwind-teaching and slow-tests notes in `CLAUDE.md`.
 - `docs/decisions.md`: 15+ entries (versions and every choice above).
@@ -223,10 +282,15 @@ Status values: todo, in progress, review, done.
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
-- **Signed-in `/ui-check`** of the M02 shell with the family demo account, once M04 seeds it (Bruno). (M04)
-- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M04/M05)
+- **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the kit's password login works until M06). (Bruno, M04)
+- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M05; M04 had no UI work, Bruno)
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)
+- **Yearly `is_child` refresh**: a scheduled command on 1 January (Lisbon) that saves every child profile through the model, so `is_child` turns false for those who have aged out (`decisions.md`, M04 review). (M10, with the scheduler)
+- **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players and followers, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
+- **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
+- **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
+- **"Maybe" button in the styleguide** (`resources/js/pages/styleguide.tsx`): there is no maybe any more (M04 decision); remove or relabel it. (M05)

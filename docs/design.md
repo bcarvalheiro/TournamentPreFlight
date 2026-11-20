@@ -95,7 +95,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 - **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
 - **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
 - **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
-- **ProfilePicker**: list of the account's profiles, each with name, division for this event and a going checkbox; "Save". Shows "Add a profile" link.
+- **ProfilePicker**: list of the account's profiles, each with name and a going checkbox; "Save". Shows "Add a profile" link.
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
@@ -104,11 +104,11 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 Use the same band (navbar only, no hero) and the same card language:
 
-- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Junior / Senior / Masters rows, Maybe, Confirmed), answer controls per profile, follow form, official link button, disclaimer.
+- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, follow form, official link button, disclaimer.
 - **Sign in / Sign up**: one sheet or page with Google, Apple, Discord buttons (provider icons from the providers' own brand guidelines) and an email field for the magic link.
-- **Profiles**: list of profile cards (name, Player ID, birth year, current division), add/edit form, consent checkbox for under-13s.
+- **Profiles**: list of profile cards (name, Player ID, birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.
 
 ## Copy rules
 
-English, short, friendly, trainer flavour without official terms: "trainers" for players in counts, "I'm going", "Maybe", "Still going?". Never imply registration or a reserved seat. Dates "Sat 15 Nov", times 24h "10:00".
+English, short, friendly, trainer flavour without official terms: "trainers" for players in counts, "I'm going", "Still going?". Never imply registration or a reserved seat. Dates "Sat 15 Nov", times 24h "10:00".

@@ -26,11 +26,11 @@ app/
   Actions/            one class per operation that changes state, one public `handle()` method; called from
                       controllers, jobs and commands: SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
-                      PokedataClient, DivisionResolver (birth year + event date -> Division)
+                      PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
   Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
-  Enums/              EventType, EventStatus, AttendanceStatus, Division, EventSourceKey
+  Enums/              EventType, EventStatus, EventSourceKey
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
 resources/js/
@@ -50,33 +50,149 @@ tests/
 
 All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), notification settings (json: reminders, changes, thresholds, moderation; all true by default), remember_token. No password column (drop it from the starter kit migration in M06).
+### Diagram
+
+Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens, passkeys) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
+
+```mermaid
+erDiagram
+    users ||--o{ player_profiles : "owns"
+    users |o--o{ player_profiles : "gave consent for"
+    users ||--o{ social_accounts : "signs in with"
+    users |o--o{ events : "added"
+    users ||--o{ event_follows : "follows"
+    users ||--o{ event_reports : "reports"
+    shops ||--o{ events : "hosts"
+    events ||--o{ attendances : "has going"
+    player_profiles |o--o{ attendances : "is going"
+    events ||--o{ event_follows : "is followed"
+    events ||--o{ event_reports : "is reported"
+
+    users {
+        bigint id PK
+        string name
+        string email UK
+        timestamp email_verified_at "nullable"
+        boolean is_admin "default false"
+        json notification_settings "default reminders true"
+        string password "starter kit, dropped in M06"
+        string remember_token "nullable"
+    }
+    player_profiles {
+        bigint id PK
+        bigint user_id FK "owner, cascade on delete"
+        string name
+        string pop_id UK "Player ID"
+        smallint birth_year
+        boolean is_child "set on save"
+        timestamp consent_given_at "nullable, required if child"
+        bigint consent_by_user_id FK "nullable"
+    }
+    social_accounts {
+        bigint id PK
+        bigint user_id FK "cascade on delete"
+        string provider "google, apple, discord; UK with provider_user_id"
+        string provider_user_id
+        string provider_email "nullable"
+    }
+    magic_login_tokens {
+        bigint id PK
+        string email "indexed"
+        string token_hash UK
+        timestamp expires_at
+        timestamp used_at "nullable"
+        string ip
+    }
+    shops {
+        bigint id PK
+        string name
+        string address "nullable"
+        string city
+        string district "nullable"
+        string official_name_key UK
+    }
+    events {
+        bigint id PK
+        bigint shop_id FK "delete refused while events exist"
+        string source "pokedata, player"
+        string official_guid UK "nullable"
+        string official_url UK "nullable"
+        string display_id "nullable"
+        string type "casual, prerelease, challenge, cup"
+        string title "nullable"
+        timestamp starts_at
+        timestamp ends_at "start plus the type's estimate"
+        string status "pending, listed, hidden, cancelled"
+        timestamp possibly_cancelled_at "nullable"
+        timestamp last_seen_at "nullable"
+        timestamp changed_at "nullable"
+        bigint added_by_user_id FK "nullable"
+        text moderation_note "nullable"
+    }
+    attendances {
+        bigint id PK
+        bigint event_id FK "cascade on delete; UK with player_profile_id"
+        bigint player_profile_id FK "nullable once anonymised"
+        timestamp confirmed_at "nullable"
+        timestamp anonymised_at "nullable"
+    }
+    event_follows {
+        bigint id PK
+        bigint event_id FK "cascade on delete; UK with user_id"
+        bigint user_id FK "cascade on delete"
+        smallint notify_at_count
+        boolean notify_on_drop "default false"
+        timestamp notified_at "nullable"
+    }
+    event_reports {
+        bigint id PK
+        bigint event_id FK "cascade on delete"
+        bigint user_id FK "cascade on delete"
+        string type "changed, cancelled, wrong"
+        text message
+    }
+    import_runs {
+        bigint id PK
+        string source "pokedata"
+        timestamp started_at
+        timestamp finished_at
+        string status "ok, failed, aborted"
+        int events_created "default 0"
+        int events_updated "default 0"
+        int events_flagged "default 0"
+        int events_unchanged "default 0"
+        text error "nullable"
+        json payload_sample "nullable"
+    }
+```
+
+How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none). The two-factor columns the starter kit added to users are left out until M06 decides on them.
+
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
 
 **social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 
 **magic_login_tokens**: email, token_hash, expires_at, used_at (nullable), ip. A link is valid once, for 15 minutes.
 
-**player_profiles**: user_id (owner), name, player_id (string of digits, unique), birth_year (smallint), is_child (bool, computed on save: under 13 this calendar year), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
-
-**seasons**: name ("2027"), starts_on, ends_on (dates), junior_born_from (e.g. 2015), senior_born_from (e.g. 2011). Masters is everything older. Seeded; edited by admin.
+**player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
-**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `config/preflight.php`; recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
+**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
-**attendances**: event_id, player_profile_id, status, confirmed_at (nullable), anonymised_at (nullable). Unique (event_id, player_profile_id). Removing an answer deletes the row. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs). Index (event_id, status). If there's a record, it's because it's atending.
+**attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 
 **event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
 
-**event_reports**: event_id, user_id, kind (changed, cancelled, wrong), message. For "Report a change".
+**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
 
-**import_runs**: source, started_at, finished_at, status (ok, failed, aborted), created, updated, flagged, unchanged (ints), error (text, nullable), payload_sample (json, nullable).
+**import_runs**: source, started_at, finished_at, status (ok, failed, aborted), events_created, events_updated, events_flagged, events_unchanged (ints, default 0), error (text, nullable), payload_sample (json, nullable).
 
 Plus the framework tables: sessions, jobs, failed_jobs, cache, notifications (not needed unless database notifications are used).
 
 ### Counts
 
-Computed with `withCount` filtered by status and joined to profiles for divisions. No denormalised counter in v1. If the home page query gets slow, add a cached counts table later, written by the `SetAttendance` action. Divisions are computed in SQL from `birth_year` and the event's season bounds, or in PHP for one event's page.
+Computed with `withCount` on attendances. No denormalised counter in v1. If the home page query gets slow, add a cached counts table later, written by the `SetAttendance` action.
 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
@@ -110,7 +226,7 @@ Player-submitted events go through the same matching (Guid, then URL) before the
 
 ## Notifications
 
-Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `thresholds:check` runs after every `SetAttendance` (dispatched job), not on a schedule; `attendances:anonymise` daily. Every notification respects the user's settings and includes a signed one-click unsubscribe per category.
+Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `thresholds:check` runs after every `SetAttendance` (dispatched job), not on a schedule; `attendances:anonymise` daily. Reminders respect `notification_settings.reminders` and carry a signed one-click unsubscribe. "Event changed" and "possibly cancelled" are always sent. Threshold emails stop by unfollowing; moderation emails are a one-off reply to the submitter.
 
 ## Auth flows
 
@@ -121,7 +237,7 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 ## Admin
 
-Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs, seasons. No admin package.
+Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs. No admin package.
 
 ## Environments and CI
 

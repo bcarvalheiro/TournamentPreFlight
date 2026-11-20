@@ -11,7 +11,7 @@ Counts people can trust: reminders, change alerts, thresholds.
 - `reminders:day-before` daily at 18:00 Lisbon for events starting tomorrow; one mail per account, not per profile; never twice for the same event.
 - `CheckThresholds` job: notify each follower once when going first reaches `notify_at_count`; if `notify_on_drop`, once when it falls back below; reset rules documented in code.
 - `PossiblyCancelled` and `SubmissionReviewed` mails (replace stubs).
-- Notification settings page (four toggles) and signed one-click unsubscribe per category.
+- Notification settings page (one toggle: reminders) and a signed one-click unsubscribe in reminder emails. "Event changed" and "possibly cancelled" are always sent, whatever the setting.
 - `attendances:anonymise` daily job (90 days after event end).
 
 ## Acceptance criteria
@@ -19,6 +19,6 @@ Counts people can trust: reminders, change alerts, thresholds.
 2. Signed Yes confirms, No removes; a tampered or expired link fails; links work signed out.
 3. Changed event: confirmations cleared and one mail per affected account saying what changed.
 4. Threshold: reaching 16 notifies once; going 16→15→16 does not re-notify unless notify_on_drop logic says so (test both settings).
-5. Unsubscribe and settings stop the matching category only.
+5. Turning reminders off (settings or unsubscribe link) stops reminder emails and nothing else.
 6. Anonymisation nulls the profile link after 90 days and counts stay the same.
 7. Every mail rendered in a test contains no other player's name.
