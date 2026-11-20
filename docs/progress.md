@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–7b done. Next: Slice 8 (`shops` prop with counts).
+- **State**: Slices 1–8 done (server side complete). Next: Slice 9 (hero and coin flip).
 
 ### Plan (M05)
 
@@ -21,7 +21,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 7a: date presets week/weekend/7/30 in Lisbon days, applied before the cap, `filters.when` (`HomeFilterRequest::when()`, `dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, weekday, year and month end, Lisbon summer time) · AC3, AC4
 - [x] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
   - Changed (Bruno, 20 Nov): Slice 7 split in two (~270 lines together).
-- [ ] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`; `HomeShopsTest`) · AC6
+- [x] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`, `app/Data/Public/ShopFilterData.php`; `HomeShopsTest`) · AC6
+  - Changed (20 Nov): the shops go out as `ShopFilterData` DTOs (rule 1: never raw models); the type and date filter moved into a typed private method so Larastan knows the event scopes.
 - [ ] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
 - [ ] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9
 - [ ] Slice 11: `MatchSlip` (ID, type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/match-slip.tsx`; `match-slip.test.tsx`) · AC5, AC9
