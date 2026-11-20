@@ -127,11 +127,9 @@ export default function Styleguide() {
                 </Section>
 
                 <Section title="Event list item">
-                    <div className="max-w-[760px] space-y-3">
-                        {SAMPLE_EVENTS.map((event) => (
-                            <EventListItem key={event.id} event={event} />
-                        ))}
-                    </div>
+                    {SAMPLE_EVENTS.map((event) => (
+                        <EventListItem key={event.id} event={event} />
+                    ))}
                 </Section>
 
                 <Section title="Buttons">

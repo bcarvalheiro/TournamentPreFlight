@@ -96,3 +96,29 @@ export function formatRelativeDay(
 
     return `In ${Math.floor(days / 7)} weeks`;
 }
+
+/**
+ * Splits events into Lisbon calendar days, keeping their order. The events
+ * must already be sorted by start (the server sends them that way); `day` is
+ * the first event's start, ready for formatDay and formatRelativeDay.
+ */
+export function groupByLisbonDay<T extends { startsAt: string }>(
+    events: T[],
+): { day: string; events: T[] }[] {
+    const groups: { day: string; events: T[] }[] = [];
+
+    for (const event of events) {
+        const last = groups.at(-1);
+
+        if (
+            last &&
+            lisbonDayNumber(last.day) === lisbonDayNumber(event.startsAt)
+        ) {
+            last.events.push(event);
+        } else {
+            groups.push({ day: event.startsAt, events: [event] });
+        }
+    }
+
+    return groups;
+}

@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
+import { Agenda } from '@/components/pf/agenda';
 import { CoinFlip } from '@/components/pf/coin-flip';
 import { PairingsSheet } from '@/components/pf/pairings-sheet';
 import PublicLayout from '@/layouts/public-layout';
@@ -8,6 +9,7 @@ import type { EventCard } from '@/types';
 type HomeProps = {
     events: EventCard[];
     upNext: EventCard[];
+    totals: { matched: number; all: number };
 };
 
 /**
@@ -41,17 +43,9 @@ function Hero(): ReactNode {
     );
 }
 
-/** Stub list until the agenda lands (M05 slices 11–14). */
-export default function Home({ events }: HomeProps) {
-    return (
-        <ul className="space-y-1">
-            {events.map((event) => (
-                <li key={event.id}>
-                    {event.title} · {event.goingCount}
-                </li>
-            ))}
-        </ul>
-    );
+/** The home page body: the agenda (the filter bar comes in M05 slices 13–14). */
+export default function Home({ events, totals }: HomeProps) {
+    return <Agenda events={events} totalUpcoming={totals.all} />;
 }
 
 Home.layout = [PublicLayout, { hero: <Hero /> }];
