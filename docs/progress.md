@@ -11,7 +11,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 ### Plan (M05)
 
 - [x] Slice 1: move our components into `components/pf/` (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, imports, `architecture.md` Code layout, `decisions.md`; existing Vitest tests + `tsc`) · groundwork
-- [ ] Slice 2: types casual/prerelease/challenge/cup with long names, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
+- [x] Slice 2: types casual/prerelease/challenge/cup, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
+  - Changed (Bruno, 20 Nov): long names ("League Challenge", "League Cup") move to Slice 11, where the slip first shows them.
 - [ ] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
 - [ ] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
 - [ ] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
@@ -20,7 +21,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [ ] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`; `HomeShopsTest`) · AC6
 - [ ] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
 - [ ] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9
-- [ ] Slice 11: `MatchSlip` (ID, type badge, shop, city, Starts / Happening now, count, quick button, amber possibly cancelled line) (`pf/match-slip.tsx`; `match-slip.test.tsx`) · AC5, AC9
+- [ ] Slice 11: `MatchSlip` (ID, type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/match-slip.tsx`; `match-slip.test.tsx`) · AC5, AC9
 - [ ] Slice 12: agenda grouped by Lisbon day, empty state with Clear filters, legend, disclaimer, short footer notice (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `public-layout.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
 - [ ] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips, count line (`pf/filter-bar.tsx`; `filter-bar.test.tsx`) · AC4
 - [ ] Slice 14: `FilterSheet` in `ResponsiveDialog`, applies as you tick (Inertia visit, `preserveScroll`, `only` list props) (`pf/filter-sheet.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters) · AC8
@@ -280,7 +281,7 @@ Status values: todo, in progress, review, done.
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the kit's password login works until M06). (Bruno, M04)
-- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M05; M04 had no UI work, Bruno)
+- ~~**Tournament types in code**~~: done in M05 Slice 2.
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
@@ -290,4 +291,4 @@ Status values: todo, in progress, review, done.
 - **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players and followers, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
 - **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
 - **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
-- **"Maybe" button in the styleguide** (`resources/js/pages/styleguide.tsx`): there is no maybe any more (M04 decision); remove or relabel it. (M05)
+- ~~**"Maybe" button in the styleguide**~~: relabelled "Going ✓" in M05 Slice 2.

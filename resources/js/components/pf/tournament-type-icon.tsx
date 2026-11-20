@@ -46,9 +46,9 @@ function BallTop({
     clipId: string;
 }): ReactNode {
     switch (type) {
-        case 'friendly':
+        case 'casual':
             return <path d="M1 12a11 11 0 0 1 22 0z" fill="#E3350D" />;
-        case 'league':
+        case 'prerelease':
             return (
                 <>
                     <path d="M1 12a11 11 0 0 1 22 0z" fill="#2F6BD8" />

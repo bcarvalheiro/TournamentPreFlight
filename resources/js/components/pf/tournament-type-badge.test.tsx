@@ -8,8 +8,8 @@ import { TournamentTypeBadge } from '@/components/pf/tournament-type-badge';
  */
 describe('TournamentTypeBadge', () => {
     it.each([
-        ['friendly', 'Friendly'],
-        ['league', 'League'],
+        ['casual', 'Casual'],
+        ['prerelease', 'Prerelease'],
         ['challenge', 'Challenge'],
         ['cup', 'Cup'],
     ] as const)(
