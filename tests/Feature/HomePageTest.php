@@ -71,6 +71,31 @@ it('shows at most 25 events', function () {
         );
 });
 
+it('shows the first 5 upcoming events as up next', function () {
+    eventAt('2026-12-05 09:00'); // ended at 11:00
+    $ongoing = eventAt('2026-12-05 11:00');
+    $next = collect(range(6, 11))->map(fn (int $day) => eventAt("2026-12-{$day} 10:00"));
+
+    $this->get(route('home'))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('upNext', 5)
+            ->where('upNext.0.id', $ongoing->id)
+            ->where('upNext.4.id', $next[3]->id)
+        );
+});
+
+it('counts every matching event, not only the 25 shown', function () {
+    foreach (range(0, 39) as $hours) {
+        eventAt(Carbon::parse('2026-12-06 10:00', 'UTC')->addHours($hours)->toDateTimeString());
+    }
+
+    $this->get(route('home'))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('events', 25)
+            ->where('totals', ['matched' => 40, 'all' => 40])
+        );
+});
+
 it('counts the going answers of each event', function () {
     $popular = eventAt('2026-12-06 10:00');
     eventAt('2026-12-07 10:00');
