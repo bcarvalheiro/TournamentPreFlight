@@ -2,14 +2,17 @@ import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { Agenda } from '@/components/pf/agenda';
 import { CoinFlip } from '@/components/pf/coin-flip';
+import { FilterBar } from '@/components/pf/filter-bar';
 import { PairingsSheet } from '@/components/pf/pairings-sheet';
 import PublicLayout from '@/layouts/public-layout';
-import type { EventCard } from '@/types';
+import type { EventCard, HomeFilters, ShopFilter } from '@/types';
 
 type HomeProps = {
     events: EventCard[];
     upNext: EventCard[];
     totals: { matched: number; all: number };
+    filters: HomeFilters;
+    shops: ShopFilter[];
 };
 
 /**
@@ -43,9 +46,20 @@ function Hero(): ReactNode {
     );
 }
 
-/** The home page body: the agenda (the filter bar comes in M05 slices 13–14). */
-export default function Home({ events, totals }: HomeProps) {
-    return <Agenda events={events} totalUpcoming={totals.all} />;
+/** The home page body: the sticky filter bar and the agenda. */
+export default function Home({ events, totals, filters, shops }: HomeProps) {
+    return (
+        <>
+            <FilterBar
+                filters={filters}
+                shops={shops}
+                listed={events.length}
+                totals={totals}
+                onOpen={() => {}} // Slice 14 opens the filter sheet here.
+            />
+            <Agenda events={events} totalUpcoming={totals.all} />
+        </>
+    );
 }
 
 Home.layout = [PublicLayout, { hero: <Hero /> }];

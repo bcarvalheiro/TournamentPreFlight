@@ -86,7 +86,7 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 - Past answers are anonymised 90 days after the event (the profile link is removed, counts stay).
 - Account deletion removes the account, its profiles and answers.
 - Privacy policy and terms pages (English), a contact address for data requests.
-- Not affiliated notice on every page: "Independent fan project. Not affiliated with or endorsed by Nintendo or The Pokémon Company."
+- Not affiliated notice on every page: "Independent fan project. Not affiliated with, endorsed or sponsored by Nintendo or The Pokémon Company."
 - Trademark names (Pokémon, Nintendo, Play! Pokémon and so on) appear on pages only where strictly needed: once in the hero line and in the notice.
 - No official artwork or logos, except the type icons, which use the official-looking ball designs (Bruno's decision).
 

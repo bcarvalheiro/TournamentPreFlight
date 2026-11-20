@@ -75,7 +75,7 @@ export function Agenda({ events, totalUpcoming }: AgendaProps): ReactNode {
                         aria-label={formatDay(group.day)}
                         className="space-y-3 min-[700px]:grid min-[700px]:grid-cols-[120px_1fr] min-[700px]:gap-4 min-[700px]:space-y-0"
                     >
-                        <h2 className="flex items-baseline gap-2 self-start border-l-4 border-red pl-2 min-[700px]:sticky min-[700px]:top-4 min-[700px]:flex-col min-[700px]:gap-0">
+                        <h2 className="flex items-baseline gap-2 self-start border-l-4 border-red pl-2 min-[700px]:sticky min-[700px]:top-18 min-[700px]:flex-col min-[700px]:gap-0">
                             <span className="font-display text-xl font-extrabold tracking-wide uppercase">
                                 {formatDay(group.day)}
                             </span>

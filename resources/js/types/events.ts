@@ -14,3 +14,20 @@ export type EventCard = {
     goingCount: number;
     possiblyCancelled: boolean;
 };
+
+/** The home page filters as the server read them (`filters` prop); dates are "YYYY-MM-DD". */
+export type HomeFilters = {
+    type: TournamentType[];
+    shop: number[];
+    when: 'any' | 'week' | 'weekend' | '7' | '30' | 'custom';
+    from: string | null;
+    to: string | null;
+};
+
+/** One shop of the filter sheet, as App\Data\Public\ShopFilterData sends it. */
+export type ShopFilter = {
+    id: number;
+    name: string;
+    city: string;
+    eventCount: number;
+};

@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–12b done. Next: Slice 13 (filter bar).
+- **State**: Slices 1–13 done. Next: Slice 14 (filter sheet).
 
 ### Plan (M05)
 
@@ -30,7 +30,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 12a: agenda grouped by Lisbon day (day header, relative label, sticky column from 700px), empty state with Clear filters or "Nothing on the calendar yet.", replaces the home stub list (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `pages/home.tsx`, `styleguide.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
 - [x] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx`, `public-layout.tsx`; `agenda.test.tsx`, `StyleguideTest`) · design
   - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
-- [ ] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips, count line (`pf/filter-bar.tsx`; `filter-bar.test.tsx`) · AC4
+- [x] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips (links to the page without that filter), count line (`pf/filter-bar.tsx`, `types/events.ts` `HomeFilters` `ShopFilter`, `pages/home.tsx`, `pf/agenda.tsx` sticky offset; `filter-bar.test.tsx`) · AC4
+  - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
 - [ ] Slice 14: `FilterSheet` in `ResponsiveDialog`, applies as you tick (Inertia visit, `preserveScroll`, `only` list props) (`pf/filter-sheet.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters) · AC8
 
 ## Milestones
