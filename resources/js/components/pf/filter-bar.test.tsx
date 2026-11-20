@@ -25,7 +25,6 @@ function render(
             shops={shops}
             listed={counts.listed}
             totals={{ matched: counts.matched, all: counts.all }}
-            onOpen={() => {}}
         />,
     );
 }

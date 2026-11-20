@@ -1,9 +1,11 @@
 import { Link } from '@inertiajs/react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
+import { FilterSheet } from '@/components/pf/filter-sheet';
 import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
+import { DATE_PRESETS, urlFor } from '@/lib/home-filters';
 import { formatDay } from '@/lib/time';
 import { TOURNAMENT_TYPE_NAMES } from '@/lib/tournament-types';
-import { home } from '@/routes';
 import type { HomeFilters, ShopFilter } from '@/types';
 
 type FilterBarProps = {
@@ -12,15 +14,6 @@ type FilterBarProps = {
     /** How many events the list shows (at most 25). */
     listed: number;
     totals: { matched: number; all: number };
-    /** Opens the filter sheet. */
-    onOpen: () => void;
-};
-
-const PRESET_NAMES: Record<string, string> = {
-    week: 'This week',
-    weekend: 'This weekend',
-    '7': 'Next 7 days',
-    '30': 'Next 30 days',
 };
 
 const pill =
@@ -37,7 +30,7 @@ function pickedDay(day: string): string {
 /** "This week", "Sat 5 Dec – Sat 12 Dec", "From Sat 5 Dec", "Until Sat 12 Dec". */
 function dateLabel({ when, from, to }: HomeFilters): string {
     if (when !== 'custom') {
-        return PRESET_NAMES[when];
+        return DATE_PRESETS.find((preset) => preset.when === when)?.name ?? '';
     }
 
     if (from && to) {
@@ -47,31 +40,19 @@ function dateLabel({ when, from, to }: HomeFilters): string {
     return from ? `From ${pickedDay(from)}` : `Until ${pickedDay(to ?? '')}`;
 }
 
-/** The home page URL for these filters; Wayfinder leaves out empty values. */
-function urlFor(filters: HomeFilters): string {
-    return home.url({
-        query: {
-            type: filters.type,
-            shop: filters.shop,
-            when: filters.when === 'any' ? undefined : filters.when,
-            from: filters.from,
-            to: filters.to,
-        },
-    });
-}
-
 /**
  * The sticky bar above the agenda (design.md, Sticky filter bar): the Filters
  * pill with the number of active filters, "Any time ▾" while no date is set,
  * one chip per active filter (each links to the page without it) and the count.
+ * Both pills open the filter sheet; the bar keeps whether it is open.
  */
 export function FilterBar({
     filters,
     shops,
     listed,
     totals,
-    onOpen,
 }: FilterBarProps): ReactNode {
+    const [sheetOpen, setSheetOpen] = useState(false);
     const hasDate = filters.when !== 'any';
     const active =
         filters.type.length + filters.shop.length + (hasDate ? 1 : 0);
@@ -82,18 +63,26 @@ export function FilterBar({
         <div className="sticky top-0 z-10 -mx-4 mb-4 border-b border-line bg-bg-2/95 px-4 backdrop-blur-sm">
             {/* Scrolls sideways on phones; [scrollbar-width:none] hides the bar (no Tailwind utility). */}
             <div className="mx-auto flex max-w-[760px] [scrollbar-width:none] items-center gap-2 overflow-x-auto py-2.5">
-                <button
-                    type="button"
-                    onClick={onOpen}
-                    className={`${pill} bg-ink text-white`}
-                >
-                    Filters
-                    {active > 0 && (
-                        <span className="rounded-full bg-red px-1.75 text-xs">
-                            {active}
-                        </span>
-                    )}
-                </button>
+                <FilterSheet
+                    filters={filters}
+                    shops={shops}
+                    matched={totals.matched}
+                    open={sheetOpen}
+                    onOpenChange={setSheetOpen}
+                    trigger={
+                        <button
+                            type="button"
+                            className={`${pill} bg-ink text-white`}
+                        >
+                            Filters
+                            {active > 0 && (
+                                <span className="rounded-full bg-red px-1.75 text-xs">
+                                    {active}
+                                </span>
+                            )}
+                        </button>
+                    }
+                />
                 {hasDate ? (
                     <Link
                         href={urlFor({ ...filters, ...noDate })}
@@ -105,7 +94,7 @@ export function FilterBar({
                 ) : (
                     <button
                         type="button"
-                        onClick={onOpen}
+                        onClick={() => setSheetOpen(true)}
                         className={`${pill} bg-bg`}
                     >
                         Any time ▾

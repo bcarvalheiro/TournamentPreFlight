@@ -4,6 +4,7 @@ import {
     formatRelativeDay,
     formatTime,
     groupByLisbonDay,
+    lisbonDate,
 } from '@/lib/time';
 
 /*
@@ -92,5 +93,12 @@ describe('groupByLisbonDay', () => {
             'Sat 10 Jul',
             'Sun 11 Jul',
         ]);
+    });
+});
+
+describe('lisbonDate', () => {
+    it('gives the Lisbon calendar day as "YYYY-MM-DD", a day ahead of UTC late on a summer night', () => {
+        expect(lisbonDate('2026-12-05T23:30:00Z')).toBe('2026-12-05');
+        expect(lisbonDate('2027-07-10T23:30:00Z')).toBe('2027-07-11');
     });
 });

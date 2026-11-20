@@ -1,0 +1,42 @@
+<?php
+
+use App\Enums\EventType;
+use App\Models\Event;
+use App\Models\Shop;
+
+/*
+ * M05 AC8: at phone width the filter sheet opens from the bar, and ticking
+ * Cup and a shop updates the list and the URL at once (apply as you tick).
+ * Opening that URL fresh keeps the filters. The count line in the bar
+ * stands for the list: Up next always shows every event, so shop names
+ * stay on the page whatever the filters.
+ */
+it('filters by type and shop from the sheet, and the URL keeps them', function () {
+    $alfa = Shop::factory()->create(['name' => 'Alfa']);
+    $zeta = Shop::factory()->create(['name' => 'Zeta']);
+    Event::factory()->create(['shop_id' => $alfa->id, 'type' => EventType::Cup, 'starts_at' => now()->addDays(2)]);
+    Event::factory()->create(['shop_id' => $zeta->id, 'type' => EventType::Cup, 'starts_at' => now()->addDays(3)]);
+    Event::factory()->create(['shop_id' => $alfa->id, 'type' => EventType::Casual, 'starts_at' => now()->addDays(4)]);
+
+    $page = visit('/')->resize(390, 844);
+
+    $page->assertSee('3 of 3 events')
+        ->click('Filters')
+        ->click('@type-cup')
+        ->assertSee('Show 2 events')
+        ->click("@shop-{$alfa->id}")
+        ->assertSee('Show 1 event')
+        ->click('Show 1 event')
+        ->assertSee('1 of 3 events');
+
+    // Read the query string as Laravel does: it writes arrays as type[0]=cup.
+    $queryString = (string) parse_url($page->url(), PHP_URL_QUERY);
+    parse_str($queryString, $query);
+    expect($query)->toMatchArray(['type' => ['cup'], 'shop' => [(string) $alfa->id]]);
+
+    $page->navigate('/?'.$queryString)
+        ->assertSee('1 of 3 events')
+        ->assertPresent('[aria-label="Remove Cup filter"]')
+        ->assertPresent('[aria-label="Remove Alfa filter"]')
+        ->assertNoJavaScriptErrors();
+});

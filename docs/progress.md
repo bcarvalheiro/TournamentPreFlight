@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–13 done. Next: Slice 14 (filter sheet).
+- **State**: Slices 1–14 done. Next: /verify, /ui-check /, /rethink-tests, /review, /wrap-up.
 
 ### Plan (M05)
 
@@ -32,7 +32,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
 - [x] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips (links to the page without that filter), count line (`pf/filter-bar.tsx`, `types/events.ts` `HomeFilters` `ShopFilter`, `pages/home.tsx`, `pf/agenda.tsx` sticky offset; `filter-bar.test.tsx`) · AC4
   - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
-- [ ] Slice 14: `FilterSheet` in `ResponsiveDialog`, applies as you tick (Inertia visit, `preserveScroll`, `only` list props) (`pf/filter-sheet.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters) · AC8
+- [x] Slice 14: `FilterSheet` in `ResponsiveDialog` (When presets + Pick dates, Type toggles, Host shop checkboxes with counts, Clear all, Show n events), applies as you tick (Inertia visit, `preserveState`, `preserveScroll`, `replace`, `only` list props); `urlFor` moves to `lib/home-filters.ts`; the bar owns the open state (`pf/filter-sheet.tsx`, `lib/home-filters.ts`, `pf/filter-bar.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters; `time.test.ts` `lisbonDate` for the date inputs' min) · AC8
+  - Changed (Bruno, 20 Nov): one slice, not split into 14a/14b.
 
 ## Milestones
 

@@ -55,7 +55,6 @@ export default function Home({ events, totals, filters, shops }: HomeProps) {
                 shops={shops}
                 listed={events.length}
                 totals={totals}
-                onOpen={() => {}} // Slice 14 opens the filter sheet here.
             />
             <Agenda events={events} totalUpcoming={totals.all} />
         </>
