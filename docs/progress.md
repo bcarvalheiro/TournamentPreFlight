@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–3 done. Next: Slice 4 (privacy test and Arch rule).
+- **State**: Slices 1–4 done. Next: Slice 5 (`upNext` and `totals`).
 
 ### Plan (M05)
 
@@ -14,7 +14,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 2: types casual/prerelease/challenge/cup, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
   - Changed (Bruno, 20 Nov): long names ("League Challenge", "League Cup") move to Slice 11, where the slip first shows them.
 - [x] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
-- [ ] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
+- [x] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
 - [ ] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
 - [ ] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC3
 - [ ] Slice 7: date presets week/weekend/7/30/custom in Lisbon days, applied before the cap (`HomeFilterRequest::dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, Saturday, weekday, month end) · AC3, AC4
