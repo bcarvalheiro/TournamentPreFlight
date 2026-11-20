@@ -60,7 +60,11 @@
       "Bash(git stash:*)",
       "Bash(git restore:*)",
       "Bash(git checkout --:*)",
-      "Bash(php artisan db:wipe:*)"
+      "Bash(php artisan db:wipe:*)",
+      "Bash(git rm:*)",
+      "Bash(git mv:*)",
+      "Bash(git update-index:*)",
+      "Bash(git apply:*)"
     ]
   },
   "hooks": {
