@@ -102,6 +102,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-19 | M04 review: `is_child` is true when the current Lisbon year minus the birth year is **13 or less** (the person turns 13 or younger this year), not 12 or less. Supersedes "12 or less" in the 19 Nov under-13 entry | Bruno: only the birth year is known; someone born late in 2013 is 12 for most of 2026. Over-asking for consent is harmless, under-asking breaks rule 2 |
 | 2026-11-19 | M04 review: `is_child` is only recomputed on save, so it goes stale on 1 January (it stays true for someone who has aged out, which errs towards protection). A yearly routine on 1 January recomputes it by saving each child profile through the model | Bruno's idea; built with the scheduler (see Found along the way) |
 | 2026-11-19 | M04 review: `events.shop_id` has no on-delete rule, so the database refuses to delete a shop that still has events. Intended: an admin (M11) moves or deletes the events first, or merges the shop | Found by the M04 code review; recorded so M11 is not surprised |
+| 2026-11-20 | M04: an entity diagram (Mermaid `erDiagram`) of the schema lives in `architecture.md` under Data model, next to the table descriptions; every schema change updates both in the same commit (CLAUDE.md, "Database diagram") | Bruno: one picture to follow the database; Mermaid is text, so it is reviewed in diffs and GitHub renders it |
 
 ## Open questions
 

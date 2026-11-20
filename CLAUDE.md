@@ -54,6 +54,8 @@ In plans and slice proposals, name the doc page each choice comes from.
 - A decision the docs don't cover goes into `docs/decisions.md`.
 - When Bruno sets a name or rule, apply it everywhere it reaches (docs, schema, code names) without asking again; list the places changed.
 
+**Database diagram.** Any change to the schema (a migration that adds, removes or renames a table, column, key or foreign key, or changes a default or on-delete rule) updates the Mermaid diagram and the table description in `docs/architecture.md` (Data model) in the same commit. A slice proposal that touches the database lists `docs/architecture.md` among its files.
+
 **Tests.**
 - Test first: each acceptance criterion becomes a Pest test, shown failing before the code.
 - One test per defect, at the lowest layer that can catch it (Vitest/unit before feature, feature before browser). Browser tests only for what needs a real browser.

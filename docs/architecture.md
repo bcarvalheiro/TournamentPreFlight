@@ -50,6 +50,124 @@ tests/
 
 All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
+### Diagram
+
+Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens, passkeys) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
+
+```mermaid
+erDiagram
+    users ||--o{ player_profiles : "owns"
+    users |o--o{ player_profiles : "gave consent for"
+    users ||--o{ social_accounts : "signs in with"
+    users |o--o{ events : "added"
+    users ||--o{ event_follows : "follows"
+    users ||--o{ event_reports : "reports"
+    shops ||--o{ events : "hosts"
+    events ||--o{ attendances : "has going"
+    player_profiles |o--o{ attendances : "is going"
+    events ||--o{ event_follows : "is followed"
+    events ||--o{ event_reports : "is reported"
+
+    users {
+        bigint id PK
+        string name
+        string email UK
+        timestamp email_verified_at "nullable"
+        boolean is_admin "default false"
+        json notification_settings "default reminders true"
+        string password "starter kit, dropped in M06"
+        string remember_token "nullable"
+    }
+    player_profiles {
+        bigint id PK
+        bigint user_id FK "owner, cascade on delete"
+        string name
+        string pop_id UK "Player ID"
+        smallint birth_year
+        boolean is_child "set on save"
+        timestamp consent_given_at "nullable, required if child"
+        bigint consent_by_user_id FK "nullable"
+    }
+    social_accounts {
+        bigint id PK
+        bigint user_id FK "cascade on delete"
+        string provider "google, apple, discord; UK with provider_user_id"
+        string provider_user_id
+        string provider_email "nullable"
+    }
+    magic_login_tokens {
+        bigint id PK
+        string email "indexed"
+        string token_hash UK
+        timestamp expires_at
+        timestamp used_at "nullable"
+        string ip
+    }
+    shops {
+        bigint id PK
+        string name
+        string address "nullable"
+        string city
+        string district "nullable"
+        string official_name_key UK
+    }
+    events {
+        bigint id PK
+        bigint shop_id FK "delete refused while events exist"
+        string source "pokedata, player"
+        string official_guid UK "nullable"
+        string official_url UK "nullable"
+        string display_id "nullable"
+        string type "casual, prerelease, challenge, cup"
+        string title "nullable"
+        timestamp starts_at
+        timestamp ends_at "start plus the type's estimate"
+        string status "pending, listed, hidden, cancelled"
+        timestamp possibly_cancelled_at "nullable"
+        timestamp last_seen_at "nullable"
+        timestamp changed_at "nullable"
+        bigint added_by_user_id FK "nullable"
+        text moderation_note "nullable"
+    }
+    attendances {
+        bigint id PK
+        bigint event_id FK "cascade on delete; UK with player_profile_id"
+        bigint player_profile_id FK "nullable once anonymised"
+        timestamp confirmed_at "nullable"
+        timestamp anonymised_at "nullable"
+    }
+    event_follows {
+        bigint id PK
+        bigint event_id FK "cascade on delete; UK with user_id"
+        bigint user_id FK "cascade on delete"
+        smallint notify_at_count
+        boolean notify_on_drop "default false"
+        timestamp notified_at "nullable"
+    }
+    event_reports {
+        bigint id PK
+        bigint event_id FK "cascade on delete"
+        bigint user_id FK "cascade on delete"
+        string type "changed, cancelled, wrong"
+        text message
+    }
+    import_runs {
+        bigint id PK
+        string source "pokedata"
+        timestamp started_at
+        timestamp finished_at
+        string status "ok, failed, aborted"
+        int events_created "default 0"
+        int events_updated "default 0"
+        int events_flagged "default 0"
+        int events_unchanged "default 0"
+        text error "nullable"
+        json payload_sample "nullable"
+    }
+```
+
+How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none). The two-factor columns the starter kit added to users are left out until M06 decides on them.
+
 **users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
 
 **social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
