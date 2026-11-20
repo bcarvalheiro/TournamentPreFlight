@@ -1,6 +1,6 @@
 # Design spec
 
-Visual direction: **Pre-Flight Pairings**, a TCG tournament hall. The top of the home page is a dark playmat; the next 5 events are a printed pairings sheet pinned to it; below, the event list is a day-by-day agenda of tear-off match slips with a sticky filter bar.
+Visual direction: **Pre-Flight Pairings**, a TCG tournament hall. The top of the home page is a dark playmat; the next 5 events are a printed pairings sheet pinned to it; below, the event list is a day-by-day agenda of tear-off event slips with a sticky filter bar.
 
 The working prototype is in `design/prototype/pairings.html` (with `app.js` for fake data and flows). Open it in a browser. It is the reference for layout, spacing, copy and interactions. Do not copy its code wholesale: rebuild it as typed React components with Tailwind. Where this document and the prototype differ, this document wins.
 
@@ -85,7 +85,7 @@ Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontall
 ### 3. Agenda
 Grouped by day. Day header: red left border, "SAT 15 NOV" in display font plus a relative label ("Tomorrow", "In 3 days", "Next week"). On ≥700px the header sits in a 120px left column and is sticky.
 
-**Match slip card** (one per event): white, 4px graphite top border, 6px radius. Left part: top row "ID 25-11-000123" in mono and the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
+**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
 
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 

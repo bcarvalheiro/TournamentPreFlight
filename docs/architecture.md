@@ -39,7 +39,7 @@ resources/js/
   components/         the starter kit's own components (app-header, app-sidebar, nav-*, ...), left as the kit ships them
   components/pf/      our components, kebab-case files like the kit, each with its test beside it: app-logo,
                       app-logo-icon, tournament-type-icon, tournament-type-badge, responsive-dialog; later
-                      pairings-sheet, match-slip, going-button, profile-picker, filter-bar
+                      pairings-sheet, event-list-item, going-button, profile-picker, filter-bar
   components/ui/      shadcn/ui files we own and restyle with the tokens (button, card, dialog, drawer, empty, sonner, ...)
   lib/time.ts         all date formatting, Europe/Lisbon, en-GB style
   lib/tournament-types.ts  tournament types (common to rare) and their display names

@@ -15,3 +15,11 @@ export const TOURNAMENT_TYPE_NAMES: Record<TournamentType, string> = {
     challenge: 'Challenge',
     cup: 'Cup',
 };
+
+/** The longer name in an event's details ("League Cup"). */
+export const TOURNAMENT_TYPE_LONG_NAMES: Record<TournamentType, string> = {
+    casual: 'Casual play',
+    prerelease: 'Prerelease',
+    challenge: 'League Challenge',
+    cup: 'League Cup',
+};

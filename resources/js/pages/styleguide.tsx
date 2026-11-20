@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import AppLogo from '@/components/pf/app-logo';
+import { EventListItem } from '@/components/pf/event-list-item';
 import { ResponsiveDialog } from '@/components/pf/responsive-dialog';
 import { TournamentTypeBadge } from '@/components/pf/tournament-type-badge';
 import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
@@ -14,6 +15,37 @@ import {
     TOURNAMENT_TYPE_NAMES,
     TOURNAMENT_TYPES,
 } from '@/lib/tournament-types';
+import type { EventCard } from '@/types';
+
+/** Two sample events: a normal one, and one running now that may be cancelled. */
+const SAMPLE_EVENTS: EventCard[] = [
+    {
+        id: 1,
+        displayId: '26-12-000123',
+        type: 'cup',
+        title: 'Cup at Carta Alta',
+        shopName: 'Carta Alta',
+        city: 'Porto',
+        startsAt: '2026-12-05T10:00:00Z',
+        endsAt: '2026-12-05T16:00:00Z',
+        isOngoing: false,
+        goingCount: 12,
+        possiblyCancelled: false,
+    },
+    {
+        id: 2,
+        displayId: '26-12-000124',
+        type: 'casual',
+        title: 'Casual at Dado Dourado',
+        shopName: 'Dado Dourado',
+        city: 'Lisboa',
+        startsAt: '2026-12-05T09:00:00Z',
+        endsAt: '2026-12-05T13:00:00Z',
+        isOngoing: true,
+        goingCount: 4,
+        possiblyCancelled: true,
+    },
+];
 
 /** A styleguide section: the app's Card with a title. */
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -92,6 +124,14 @@ export default function Styleguide() {
                         ))}
                         Rare
                     </p>
+                </Section>
+
+                <Section title="Event list item">
+                    <div className="max-w-[760px] space-y-3">
+                        {SAMPLE_EVENTS.map((event) => (
+                            <EventListItem key={event.id} event={event} />
+                        ))}
+                    </div>
                 </Section>
 
                 <Section title="Buttons">

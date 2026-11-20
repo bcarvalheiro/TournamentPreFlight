@@ -8,7 +8,7 @@ The real home page, matching the Pairings design, on seeded data. Quick buttons 
 ## Scope
 - `HomeController` (public) returning `EventCardData` objects only: id, url, display_id, type, title (type and shop name when null), shop name, city, starts_at, ends_at, is_ongoing, going_count, possibly_cancelled. Plus `filters` (current values) and `shops` (shops with upcoming events and counts) and `totals` (matched, all).
 - Query: upcoming events, filters from the query string (`type[]`, `shop[]`, `when=any|week|weekend|7|30|custom`, `from`, `to`), date presets computed in Lisbon time, cap 25 after filters. `upNext`: first 5 upcoming ignoring filters.
-- Page components: hero with coin flip, `PairingsSheet`, `FilterBar` (sticky), `FilterSheet`, agenda grouped by Lisbon day, `MatchSlip`, legend, disclaimer.
+- Page components: hero with coin flip, `PairingsSheet`, `FilterBar` (sticky), `FilterSheet`, agenda grouped by Lisbon day, `EventListItem`, legend, disclaimer.
 - Filter changes update the URL (Inertia visit with `preserveScroll`, `only` the list props).
 - Create `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` with the home page as its first route, and the Arch rule for public controllers.
 
