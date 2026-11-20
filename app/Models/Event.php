@@ -114,17 +114,18 @@ class Event extends Model
     }
 
     /**
-     * Events starting between the two moments, both included. The bounds may be
-     * in any time zone (M05 passes Lisbon days): they are converted to UTC, the
-     * zone starts_at is stored in, because Laravel writes a date's clock time
-     * into SQL without converting it.
+     * Events starting between the two moments, both included; without $to the
+     * range has no end. The bounds may be in any time zone (M05 passes Lisbon
+     * days): they are converted to UTC, the zone starts_at is stored in,
+     * because Laravel writes a date's clock time into SQL without converting it.
      *
      * @param  Builder<Event>  $query
      */
     #[Scope]
-    protected function between(Builder $query, CarbonInterface $from, CarbonInterface $to): void
+    protected function between(Builder $query, CarbonInterface $from, ?CarbonInterface $to): void
     {
-        $query->whereBetween('starts_at', [$from->copy()->utc(), $to->copy()->utc()]);
+        $query->where('starts_at', '>=', $from->copy()->utc())
+            ->when($to, fn (Builder $query) => $query->where('starts_at', '<=', $to->copy()->utc()));
     }
 
     /**

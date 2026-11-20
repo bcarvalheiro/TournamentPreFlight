@@ -46,6 +46,8 @@ class HomeController extends Controller
                 'type' => $types,
                 'shop' => $shopIds,
                 'when' => $request->datePreset(),
+                'from' => $request->from()?->toDateString(),
+                'to' => $request->to()?->toDateString(),
             ],
         ]);
     }

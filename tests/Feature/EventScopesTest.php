@@ -86,6 +86,15 @@ it('keeps events starting in the range, both ends included', function () {
     expect($found->pluck('id')->all())->toEqualCanonicalizing([$atFrom->id, $inside->id, $atTo->id]);
 });
 
+it('leaves the range open when no end is given', function () {
+    $nextWeek = casualAt('2026-12-12 10:00');
+    $nextYear = casualAt('2027-12-12 10:00');
+
+    $found = Event::between(Carbon::parse('2026-12-07 00:00', 'UTC'), null);
+
+    expect($found->pluck('id')->all())->toEqualCanonicalizing([$nextWeek->id, $nextYear->id]);
+});
+
 /*
  * CLAUDE.md rule 4: M05 computes date ranges in Lisbon time. In July Lisbon is
  * UTC+1, so Lisbon's 10 July runs from 23:00 UTC on the 9th to 22:59:59 UTC on

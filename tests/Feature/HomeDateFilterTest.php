@@ -116,3 +116,58 @@ it('shows every event for a "when" it does not know', function () {
             ->where('filters.when', 'any')
         );
 });
+
+it('keeps events from the start of From to the end of To', function () {
+    $this->travelTo(Carbon::parse('2026-12-05 12:00', 'UTC'));
+    datedEvent('2026-12-09 20:00');
+    $firstDay = datedEvent('2026-12-10 00:30');
+    $lastDay = datedEvent('2026-12-12 22:00');
+    datedEvent('2026-12-13 10:00');
+
+    $this->get(route('home', ['when' => 'custom', 'from' => '2026-12-10', 'to' => '2026-12-12']))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('events', 2)
+            ->where('events.0.id', $firstDay->id)
+            ->where('events.1.id', $lastDay->id)
+            ->where('filters.when', 'custom')
+            ->where('filters.from', '2026-12-10')
+            ->where('filters.to', '2026-12-12')
+        );
+});
+
+it('leaves the end open when only From is picked', function () {
+    $this->travelTo(Carbon::parse('2026-12-05 12:00', 'UTC'));
+    datedEvent('2026-12-11 10:00');
+    $fromDay = datedEvent('2026-12-12 10:00');
+    $farAway = datedEvent('2027-03-01 10:00');
+
+    expect(idsListedWith(['when' => 'custom', 'from' => '2026-12-12']))->toBe([$fromDay->id, $farAway->id]);
+});
+
+it('starts today when only To is picked', function () {
+    $this->travelTo(Carbon::parse('2026-12-05 12:00', 'UTC'));
+    $tomorrow = datedEvent('2026-12-06 10:00');
+    datedEvent('2026-12-08 10:00');
+
+    expect(idsListedWith(['when' => 'custom', 'to' => '2026-12-07']))->toBe([$tomorrow->id]);
+});
+
+it('drops picked dates it cannot use', function (array $query) {
+    $this->travelTo(Carbon::parse('2026-12-05 12:00', 'UTC'));
+    datedEvent('2026-12-06 10:00');
+    datedEvent('2026-12-20 10:00');
+
+    $this->get(route('home', ['when' => 'custom', ...$query]))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('events', 2)
+            ->where('filters.when', 'any')
+            ->where('filters.from', null)
+            ->where('filters.to', null)
+        );
+})->with([
+    'not a date' => [['from' => 'soon']],
+    'a day that does not exist' => [['to' => '2027-02-31']],
+    'From in the past' => [['from' => '2026-12-01']],
+    'To before From' => [['from' => '2026-12-12', 'to' => '2026-12-10']],
+    'no dates at all' => [[]],
+]);

@@ -38,20 +38,27 @@ class HomeFilterRequest extends FormRequest
     }
 
     /**
-     * The chosen date preset (`when`); anything else means any time.
+     * The chosen date preset (`when`); anything else means any time, and so
+     * does "custom" when no usable date was picked.
      */
     public function datePreset(): string
     {
         $when = $this->query('when');
+
+        if ($when === 'custom') {
+            return $this->from() || $this->to() ? 'custom' : 'any';
+        }
 
         return in_array($when, self::DATE_PRESETS, true) ? $when : 'any';
     }
 
     /**
      * The chosen dates in Lisbon calendar days: the start of the first day and
-     * the end of the last (architecture.md, "Time"). Null means any time.
+     * the end of the last (architecture.md, "Time"). Null means any time; a
+     * null end means no end. An open From starts today: ended events are
+     * never listed anyway.
      *
-     * @return array{CarbonImmutable, CarbonImmutable}|null
+     * @return array{CarbonImmutable, CarbonImmutable|null}|null
      */
     public function dateRange(): ?array
     {
@@ -63,8 +70,55 @@ class HomeFilterRequest extends FormRequest
             'weekend' => [$today->isWeekend() ? $today : $today->next(CarbonInterface::SATURDAY), $sundayNight],
             '7' => [$today, $today->addDays(6)->endOfDay()],
             '30' => [$today, $today->addDays(29)->endOfDay()],
+            'custom' => [$this->from() ?? $today, $this->to()?->endOfDay()],
             default => null,
         };
+    }
+
+    /**
+     * The picked From day (Lisbon midnight). Null when missing or unusable,
+     * or when To is before it (the range contradicts itself).
+     */
+    public function from(): ?CarbonImmutable
+    {
+        return $this->pickedDaysAreInOrder() ? $this->pickedDay('from') : null;
+    }
+
+    /**
+     * The picked To day (Lisbon midnight). Null when missing or unusable,
+     * or when it is before From.
+     */
+    public function to(): ?CarbonImmutable
+    {
+        return $this->pickedDaysAreInOrder() ? $this->pickedDay('to') : null;
+    }
+
+    /** True unless both days were picked and To comes before From. */
+    private function pickedDaysAreInOrder(): bool
+    {
+        $from = $this->pickedDay('from');
+        $to = $this->pickedDay('to');
+
+        return ! $from || ! $to || $to->gte($from);
+    }
+
+    /**
+     * A picked day as Lisbon midnight, or null when it is not a real
+     * YYYY-MM-DD day (the round trip catches days like 31 February) or is
+     * before today.
+     */
+    private function pickedDay(string $key): ?CarbonImmutable
+    {
+        $value = $this->query($key);
+
+        if (! is_string($value) || ! CarbonImmutable::canBeCreatedFromFormat($value, 'Y-m-d')) {
+            return null;
+        }
+
+        $day = CarbonImmutable::createFromFormat('!Y-m-d', $value, 'Europe/Lisbon');
+        $today = CarbonImmutable::now('Europe/Lisbon')->startOfDay();
+
+        return $day && $day->format('Y-m-d') === $value && $day->gte($today) ? $day : null;
     }
 
     /**

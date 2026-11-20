@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M05 · Home page on seeded data (in progress).
 - **Branch**: m05-home-page
-- **State**: Slices 1–7a done. Next: Slice 7b (Pick dates).
+- **State**: Slices 1–7b done. Next: Slice 8 (`shops` prop with counts).
 
 ### Plan (M05)
 
@@ -19,7 +19,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (20 Nov): no filters exist yet, so `matched` equals `all` here; Slice 6 adds the checks that up next ignores filters and that `matched` follows them.
 - [x] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop, up next unaffected, `totals.matched` follows the filters (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC2, AC3, AC4
 - [x] Slice 7a: date presets week/weekend/7/30 in Lisbon days, applied before the cap, `filters.when` (`HomeFilterRequest::when()`, `dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, weekday, year and month end, Lisbon summer time) · AC3, AC4
-- [ ] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
+- [x] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
   - Changed (Bruno, 20 Nov): Slice 7 split in two (~270 lines together).
 - [ ] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`; `HomeShopsTest`) · AC6
 - [ ] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design

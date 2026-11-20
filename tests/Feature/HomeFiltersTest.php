@@ -83,7 +83,7 @@ it('combines type and shop, and echoes the filters', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->has('events', 1)
             ->where('events.0.id', $cupAtA->id)
-            ->where('filters', ['type' => ['cup'], 'shop' => [$this->shopA->id], 'when' => 'any'])
+            ->where('filters', ['type' => ['cup'], 'shop' => [$this->shopA->id], 'when' => 'any', 'from' => null, 'to' => null])
         );
 });
 
@@ -108,6 +108,6 @@ it('drops filter values it does not know', function () {
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->has('events', 2)
-            ->where('filters', ['type' => [], 'shop' => [], 'when' => 'any'])
+            ->where('filters', ['type' => [], 'shop' => [], 'when' => 'any', 'from' => null, 'to' => null])
         );
 });
