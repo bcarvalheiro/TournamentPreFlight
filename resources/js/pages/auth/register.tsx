@@ -17,7 +17,7 @@ type Props = {
 export default function Register({ passwordRules }: Props) {
     return (
         <>
-            <Head title="Register" />
+            <Head title="Create account" />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -120,7 +120,7 @@ export default function Register({ passwordRules }: Props) {
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
                             <TextLink href={login()} tabIndex={7}>
-                                Log in
+                                Sign in
                             </TextLink>
                         </div>
                     </>
@@ -131,6 +131,6 @@ export default function Register({ passwordRules }: Props) {
 }
 
 Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+    title: 'Create account',
+    description: 'Join to say you are going to tournaments',
 };

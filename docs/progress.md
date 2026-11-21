@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M06 · Sign in: email and password, Google, Discord, X (in progress).
 - **Branch**: m06-auth
-- **State**: Slices 1a–6b done. Next: Slice 7.
+- **State**: Slices 1a–7a done. Next: Slice 7b.
 
 ### Plan (M06)
 
@@ -21,7 +21,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 6a: a new social identity is kept in the session (`social_signup`) and sent to `/welcome`, which shows the name prefilled and the email (fixed when the provider vouched for it) (`Auth\SocialAuthController`, `Auth\WelcomeController@show`, `pages/auth/welcome.tsx`, `routes/web.php`; `SocialSignUpTest`) · AC3
 - [x] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider vouched, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3, AC7
   - Changed (Bruno, 21 Nov): Slice 6 split in two (~300 lines together); account creation is its own Action, `CreateUserFromSocialIdentity`, so it can be tested on its own.
-- [ ] Slice 7: restyle the auth pages (login, register, forgot, reset, verify, confirm, welcome) in the Pre-Flight look with social buttons; providers without credentials hidden (`pages/auth/*`, `pf/social-buttons.tsx`, `HandleInertiaRequests`; `social-buttons.test.tsx`, `SocialButtonsTest`) · design
+- [x] Slice 7a: auth pages (sign in, register, forgot/reset, verify, confirm, welcome) in the Pre-Flight look: band, card, footer with the notice; "Sign in" copy (`layouts/auth/auth-simple-layout.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`; `auth-simple-layout.test.tsx`) · design, rule 7
+- [ ] Slice 7b: "Continue with Google / Discord / X" buttons on sign in and register, only for configured providers; icons from each provider's brand kit (`SocialProvider::enabled()`, `FortifyServiceProvider`, `pf/social-buttons.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`, `decisions.md`; `SocialButtonsTest`, `social-buttons.test.tsx`) · AC3 UI
+  - Changed (Bruno, 21 Nov): Slice 7 split in two (~250 lines together).
 
 ## Milestones
 
