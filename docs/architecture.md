@@ -53,7 +53,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 ### Diagram
 
-Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens, passkeys) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
+Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
 
 ```mermaid
 erDiagram
@@ -76,7 +76,7 @@ erDiagram
         timestamp email_verified_at "nullable"
         boolean is_admin "default false"
         json notification_settings "default reminders true"
-        string password "starter kit, dropped in M06"
+        string password "hashed"
         string remember_token "nullable"
     }
     player_profiles {
@@ -95,14 +95,6 @@ erDiagram
         string provider "google, apple, discord; UK with provider_user_id"
         string provider_user_id
         string provider_email "nullable"
-    }
-    magic_login_tokens {
-        bigint id PK
-        string email "indexed"
-        string token_hash UK
-        timestamp expires_at
-        timestamp used_at "nullable"
-        string ip
     }
     shops {
         bigint id PK
@@ -167,13 +159,11 @@ erDiagram
     }
 ```
 
-How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none). The two-factor columns the starter kit added to users are left out until M06 decides on them.
+How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none).
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed), remember_token. No two-factor columns (dropped in M06).
 
 **social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
-
-**magic_login_tokens**: email, token_hash, expires_at, used_at (nullable), ip. A link is valid once, for 15 minutes.
 
 **player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
