@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M06 · Sign in: email and password, Google, Discord, X (in progress).
 - **Branch**: m06-auth
-- **State**: Slices 1a–4 done. Next: Slice 5.
+- **State**: Slices 1a–5 done. Next: Slice 6.
 
 ### Plan (M06)
 
@@ -16,7 +16,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
 - [x] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `User::isPlayerReady()`, `EnsurePlayerReady`, `HandleInertiaRequests`, `pf/going-button.tsx` + callers, `types/global.d.ts`; `PendingIntentTest`, `event-list-item.test.tsx`, `pairings-sheet.test.tsx`) · AC5
   - Changed (21 Nov): `NoPersonalDataLeaksTest` not extended: the new route only redirects and renders no page, and `pendingIntent` holds only an event id; `User::isPlayerReady()` added so the gate and the prop share one check.
-- [ ] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links, unverified email refused politely; check X's official docs for email (`composer.json`, `config/services.php`, `.env.example`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`; `SocialSignInTest`) · AC3
+- [x] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x; `confirmsEmail()`), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links (an unverified local account is verified and its password cleared), unverified provider email refused politely, cancelled sign-in back to login (`composer.json`, `config/services.php`, `.env.example`, `bootstrap/providers.php`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`, `architecture.md` Code layout, `decisions.md`; `SocialSignInTest`) · AC3
+  - Changed (Bruno, 21 Nov): offered as 5a/5b, kept as one slice; the cancel case and clearing the password of an unverified account added.
 - [ ] Slice 6: social sign-up through `/welcome` (name prefilled, email if missing, age box); account created with no password, then the gate (`Auth\WelcomeController`, `pages/auth/welcome.tsx`, `SignInWithSocialAccount`, `routes/web.php`; `SocialSignUpTest`) · AC3
 - [ ] Slice 7: restyle the auth pages (login, register, forgot, reset, verify, confirm, welcome) in the Pre-Flight look with social buttons; providers without credentials hidden (`pages/auth/*`, `pf/social-buttons.tsx`, `HandleInertiaRequests`; `social-buttons.test.tsx`, `SocialButtonsTest`) · design
 

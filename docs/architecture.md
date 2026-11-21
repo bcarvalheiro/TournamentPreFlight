@@ -20,17 +20,17 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account, /Admin
+  Http/Controllers/Public, /Account, /Admin, /Auth (sign-in our code adds beside Fortify: social, pending intent)
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
-                      controllers, jobs and commands: SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+                      controllers, jobs and commands: SignInWithSocialAccount, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
   Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
-  Enums/              EventType, EventStatus, EventSourceKey
+  Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
 resources/js/
@@ -93,7 +93,7 @@ erDiagram
     social_accounts {
         bigint id PK
         bigint user_id FK "cascade on delete"
-        string provider "google, apple, discord; UK with provider_user_id"
+        string provider "google, discord, x (apple in M13); UK with provider_user_id"
         string provider_user_id
         string provider_email "nullable"
     }
@@ -164,7 +164,7 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account has none until the player sets one on the first-profile page), remember_token. No two-factor columns (dropped in M06).
 
-**social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
+**social_accounts**: user_id, provider (google, discord, x; apple in M13; cast to the `SocialProvider` enum), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 
 **player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
