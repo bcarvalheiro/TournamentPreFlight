@@ -171,3 +171,16 @@ it('drops picked dates it cannot use', function (array $query) {
     'To before From' => [['from' => '2026-12-12', 'to' => '2026-12-10']],
     'no dates at all' => [[]],
 ]);
+
+it('ignores picked dates unless "Pick dates" is chosen', function () {
+    $this->travelTo(Carbon::parse('2026-12-05 12:00', 'UTC'));
+    datedEvent('2026-12-06 10:00');
+    datedEvent('2026-12-30 10:00');
+
+    $this->get(route('home', ['from' => '2026-12-24']))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('events', 2)
+            ->where('filters.when', 'any')
+            ->where('filters.from', null)
+        );
+});
