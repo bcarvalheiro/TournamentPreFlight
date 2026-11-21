@@ -77,7 +77,7 @@ erDiagram
         timestamp age_confirmed_at "nullable, set at sign-up"
         boolean is_admin "default false"
         json notification_settings "default reminders true"
-        string password "hashed"
+        string password "hashed, nullable until a social account sets one"
         string remember_token "nullable"
     }
     player_profiles {
@@ -162,7 +162,7 @@ erDiagram
 
 How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none).
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed), remember_token. No two-factor columns (dropped in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account has none until the player sets one on the first-profile page), remember_token. No two-factor columns (dropped in M06).
 
 **social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 

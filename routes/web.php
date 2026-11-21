@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
+// Placeholder until M07 builds the form; the player gate sends new players here.
+Route::inertia('profiles/create', 'profiles/create')->middleware('auth')->name('profiles.create');
+
 // Developer page with every shared component; it does not exist outside local.
 if (app()->isLocal()) {
     Route::inertia('styleguide', 'styleguide')->name('styleguide');

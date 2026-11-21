@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $age_confirmed_at
  * @property bool $is_admin
  * @property array{reminders: bool} $notification_settings
- * @property string $password
+ * @property string|null $password
  * @property string|null $remember_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

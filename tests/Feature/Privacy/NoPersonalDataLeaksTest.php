@@ -37,7 +37,7 @@ beforeEach(function () {
 
 it('shows no player name, Player ID or birth year', function (string $url, bool $signedIn) {
     if ($signedIn) {
-        $this->actingAs(User::factory()->create());
+        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     }
 
     $response = $this->get($url)->assertOk();
