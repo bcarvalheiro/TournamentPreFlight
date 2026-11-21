@@ -6,6 +6,7 @@ import type { EventCard } from '@/types';
 // No Inertia app runs here, so usePage() (read by GoingButton) is replaced
 // by a fake page whose signed-in user each test sets; Link stays the real one.
 const page = vi.hoisted(() => ({
+    url: '/?type[]=cup',
     props: { auth: { user: null as { id: number } | null } },
 }));
 
@@ -56,16 +57,16 @@ describe('PairingsSheet', () => {
         expect(live).not.toContain('10:00');
     });
 
-    it('sends signed-out players to sign in from "I\'m going"', () => {
+    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
         expect(render([card()])).toMatch(
-            /<a[^>]*href="\/login"[^>]*>I(&#x27;|')m going<\/a>/,
+            /<a[^>]*href="\/events\/1\/going\?return_to=%2F%3Ftype%5B%5D%3Dcup"[^>]*>I(&#x27;|')m going<\/a>/,
         );
     });
 
     it('shows a plain button to signed-in players', () => {
         const markup = render([card()], true);
 
-        expect(markup).not.toContain('href="/login"');
+        expect(markup).not.toContain('/going');
         expect(markup).toMatch(/<button[^>]*>I(&#x27;|')m going<\/button>/);
     });
 

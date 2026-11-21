@@ -61,7 +61,10 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                 >
                     Trainers
                 </span>
-                <GoingButton className="h-10 w-full justify-center" />
+                <GoingButton
+                    eventId={event.id}
+                    className="h-10 w-full justify-center"
+                />
             </div>
         </Card>
     );

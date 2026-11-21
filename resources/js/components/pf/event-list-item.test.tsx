@@ -5,7 +5,10 @@ import type { EventCard } from '@/types';
 
 // No Inertia app runs here, so usePage() (read by GoingButton) is replaced
 // by a fake page with nobody signed in; Link stays the real one.
-const page = vi.hoisted(() => ({ props: { auth: { user: null } } }));
+const page = vi.hoisted(() => ({
+    url: '/?type[]=cup',
+    props: { auth: { user: null } },
+}));
 
 vi.mock('@inertiajs/react', async (importOriginal) => ({
     ...(await importOriginal<typeof import('@inertiajs/react')>()),
@@ -64,9 +67,9 @@ describe('EventListItem', () => {
         expect(render(card())).not.toContain(warning);
     });
 
-    it('sends signed-out players to sign in from "I\'m going"', () => {
+    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
         expect(render(card())).toMatch(
-            /<a[^>]*href="\/login"[^>]*>I(&#x27;|')m going<\/a>/,
+            /<a[^>]*href="\/events\/1\/going\?return_to=%2F%3Ftype%5B%5D%3Dcup"[^>]*>I(&#x27;|')m going<\/a>/,
         );
     });
 });

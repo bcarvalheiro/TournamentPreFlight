@@ -59,6 +59,15 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Whether this account may use the site (the player gate): a verified
+     * email, a password and at least one player profile.
+     */
+    public function isPlayerReady(): bool
+    {
+        return $this->hasVerifiedEmail() && $this->password !== null && $this->playerProfiles()->exists();
+    }
+
+    /**
      * The player profiles this account holds (its own and its children's).
      *
      * @return HasMany<PlayerProfile, $this>

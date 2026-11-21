@@ -37,7 +37,7 @@ class EnsurePlayerReady
             return redirect()->route('verification.notice');
         }
 
-        if (($user->password === null || ! $user->playerProfiles()->exists()) && ! $request->routeIs('profiles.create')) {
+        if (! $user->isPlayerReady() && ! $request->routeIs('profiles.create')) {
             return redirect()->route('profiles.create');
         }
 

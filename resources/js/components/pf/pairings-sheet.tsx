@@ -92,7 +92,7 @@ export function PairingsSheet({ events }: { events: EventCard[] }): ReactNode {
                                         trainers going
                                     </span>
                                 </span>
-                                <GoingButton />
+                                <GoingButton eventId={event.id} />
                             </li>
                         ))}
                     </ul>

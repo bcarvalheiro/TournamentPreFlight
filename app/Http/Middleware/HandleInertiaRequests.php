@@ -41,6 +41,11 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            // "I'm going" pressed while signed out (M06): handed over once, only
+            // when the player gate lets the player in.
+            'pendingIntent' => fn () => $request->user()?->isPlayerReady()
+                ? $request->session()->pull('pending_intent')
+                : null,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }

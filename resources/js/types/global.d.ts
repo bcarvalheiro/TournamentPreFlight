@@ -11,6 +11,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            pendingIntent: { event_id: number } | null;
             sidebarOpen: boolean;
             [key: string]: unknown;
         };
