@@ -8,7 +8,7 @@
 | Database | MySQL 8.4 LTS | Tests run on MySQL too (a `tournament_preflight_test` database), not SQLite, so JSON and date behaviour match production |
 | Frontend | Official React starter kit: Inertia, React 19, TypeScript, Tailwind 4, shadcn/ui | Check the installed Inertia version on day one and record it in `decisions.md` |
 | Routes in TS | Whatever the starter kit ships (Wayfinder or Ziggy) | Don't add a second one |
-| Auth | Starter kit auth (Fortify) for sessions; Socialite for Google; Socialite Providers for Apple and Discord; own magic-link flow | Password login and registration are removed |
+| Auth | Starter kit auth (Fortify): login, registration, email verification, password reset; Socialite for Google and X; Socialite Providers for Discord (M06) and Apple (M13) | No two-factor auth, no passkeys, no magic link |
 | Background | Scheduler + queues on the database driver | One `queue:work` process in production |
 | Mail | Laravel Mail, Markdown mailables; Mailpit locally | Provider is an open decision |
 | Tests | Pest 5 (+ browser plugin), Larastan level 7, Pint; Vite+ `vp check` for TS/React lint and format; Vitest (bundled in Vite+, `npm run test`) for pure JS logic and component markup, files `resources/js/**/*.test.ts(x)` | See `workflow.md` |
@@ -231,10 +231,10 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 ## Auth flows
 
-- Magic link: enter email, receive a link, click it; it signs in and creates the account if new. Rate limit 5 per hour per email and per IP.
-- Social: Socialite redirect and callback. Match by (provider, provider_user_id); if none, match an existing user by verified email and link; else create. Apple sends name only on first login; store it then.
-- After first sign-in with no profiles, go to "Create your player profile" before anything else, keeping the pending intent.
-- **Pending intent**: when a guest presses "I'm going", store `{event_id, return_to}` in the session, send them to sign in, and after sign-in redirect to `return_to?intent=going&event={id}`; the page opens the picker (several profiles) or applies it (one profile).
+- Email and password: Fortify login (rate limited), registration with the "I am 13 or older" box, email verification, password reset.
+- Social: generic routes `/auth/{provider}/redirect` and `/auth/{provider}/callback`, restricted with `whereIn` to the enabled providers (google, discord, x; apple in M13). One shared class does the work for every driver. Match by (provider, provider_user_id); if none, match an existing user by email and link, **only when the provider says the email is verified**; else send the person to the welcome page (name, email if the provider gave none, the age box) and create the account there. `email_verified_at` is set from the provider only when it says verified; otherwise Fortify's verification email applies. Social accounts start without a password and set one on the first-profile page (M07). Apple sends name only on first login; store it then.
+- **Player gate** (middleware): a signed-in user without a verified email, a password or a player profile is redirected (verify notice, or "Create your player profile") from every page except auth, settings and logout. Guests are not affected.
+- **Pending intent**: when a guest presses "I'm going", store `{event_id, return_to}` in the session (never in the URL, so a link cannot answer for someone) and send them to sign in. After sign-in and the gate, they return to `return_to` and the page receives the intent once as a prop. M08 acts on it: one profile applies it, several open the picker.
 
 ## Admin
 

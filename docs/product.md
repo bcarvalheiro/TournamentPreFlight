@@ -18,7 +18,8 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ## Accounts and profiles
 
-- Login methods: Google, Apple, Discord, email magic link. No passwords.
+- Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13).
+- A signed-in account can use the site only once it has a verified email, a password and at least one player profile (so only players answer). Social sign-ups set their password on the first-profile page.
 - Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Profile fields: name, Player ID, birth year. All required.

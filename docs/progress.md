@@ -4,9 +4,20 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M06 · Sign in: magic link and Google (in progress).
+- **Milestone**: M06 · Sign in: email and password, Google, Discord, X (in progress).
 - **Branch**: m06-auth
-- **State**: Plan proposed, waiting for Bruno's approval.
+- **State**: Plan approved (21 Nov). Next: Slice 1a.
+
+### Plan (M06)
+
+- [ ] Slice 1a: remove two-factor auth, passkeys and magic-login tokens: Fortify features, `User` traits, kit pages and components, tests; migration drops the 2FA columns, `passkeys` and `magic_login_tokens` (`config/fortify.php`, `FortifyServiceProvider`, `User.php`, `MagicLoginToken.php`, migration, `routes/settings.php`, `pages/auth/two-factor-challenge.tsx`, `pages/settings/security.tsx`, kit components, `architecture.md`; `NoTwoFactorOrPasskeysTest`) · AC4
+- [ ] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
+- [ ] Slice 2: "I am 13 or older" box on registration; migration adds `users.age_confirmed_at`; no box, no account (migration, `CreateNewUser`, `User.php`, `UserFactory`, `pages/auth/register.tsx`, `architecture.md`; `RegistrationTest`) · AC1
+- [ ] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
+- [ ] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `HandleInertiaRequests`, `pf/going-button.tsx`, `types/`; `PendingIntentTest`, `NoPersonalDataLeaksTest`) · AC5
+- [ ] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links, unverified email refused politely; check X's official docs for email (`composer.json`, `config/services.php`, `.env.example`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`; `SocialSignInTest`) · AC3
+- [ ] Slice 6: social sign-up through `/welcome` (name prefilled, email if missing, age box); account created with no password, then the gate (`Auth\WelcomeController`, `pages/auth/welcome.tsx`, `SignInWithSocialAccount`, `routes/web.php`; `SocialSignUpTest`) · AC3
+- [ ] Slice 7: restyle the auth pages (login, register, forgot, reset, verify, confirm, welcome) in the Pre-Flight look with social buttons; providers without credentials hidden (`pages/auth/*`, `pf/social-buttons.tsx`, `HandleInertiaRequests`; `social-buttons.test.tsx`, `SocialButtonsTest`) · design
 
 ## Milestones
 
@@ -17,14 +28,14 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
-| M06 | Sign in: magic link and Google | in progress | |
+| M06 | Sign in: email and password, Google, Discord, X | in progress | |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
 | M12 | Email notifications | todo | |
-| M13 | Apple and Discord login | todo | |
+| M13 | Apple login | todo | Discord moved to M06 |
 | M14 | Privacy, legal and account deletion | todo | |
 | M15 | Launch hardening | todo | |
 
@@ -368,7 +379,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
-- **Starter kit demo pages** (`dashboard`, `settings`, password auth pages and their 44 tests) are still in place; replace or remove in M06 with the new auth.
+- ~~**Starter kit demo pages**~~: handled in M06 (Slices 1a, 1b, 7).
 - ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.
 - **Kit dark mode leftovers**: the inline detection script and the `initializeTheme()` call are gone (M02 review), but the Settings → Appearance page, `HandleAppearance`, `use-appearance` and the kit's `dark:` classes remain, inert. Remove with the kit demo pages. (M06)
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
