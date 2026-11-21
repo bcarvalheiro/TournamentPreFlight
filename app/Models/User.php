@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $email
  * @property Carbon|null $email_verified_at
+ * @property Carbon|null $age_confirmed_at
  * @property bool $is_admin
  * @property array{reminders: bool} $notification_settings
  * @property string $password
@@ -24,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'age_confirmed_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -50,6 +51,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'age_confirmed_at' => 'datetime',
             'is_admin' => 'boolean',
             'notification_settings' => 'array',
             'password' => 'hashed',
