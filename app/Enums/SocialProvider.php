@@ -16,6 +16,19 @@ enum SocialProvider: string
     case X = 'x';
 
     /**
+     * The providers whose credentials are configured, so their buttons work.
+     *
+     * @return list<self>
+     */
+    public static function enabled(): array
+    {
+        return array_values(array_filter(
+            self::cases(),
+            fn (self $provider): bool => filled(config("services.{$provider->value}.client_id")),
+        ));
+    }
+
+    /**
      * Whether the provider vouches for the identity's email: Google and Discord
      * flag it in their raw data; X only ever sends a confirmed email.
      */

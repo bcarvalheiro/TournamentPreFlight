@@ -1,5 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
+import type { SocialProviderName } from '@/components/pf/social-buttons';
+import { SocialButtons } from '@/components/pf/social-buttons';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -12,12 +14,15 @@ import { store } from '@/routes/register';
 
 type Props = {
     passwordRules: string;
+    socialProviders: SocialProviderName[];
 };
 
-export default function Register({ passwordRules }: Props) {
+export default function Register({ passwordRules, socialProviders }: Props) {
     return (
         <>
             <Head title="Create account" />
+
+            <SocialButtons providers={socialProviders} />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}

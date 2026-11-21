@@ -1,5 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
+import type { SocialProviderName } from '@/components/pf/social-buttons';
+import { SocialButtons } from '@/components/pf/social-buttons';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
@@ -14,12 +16,19 @@ import { request } from '@/routes/password';
 type Props = {
     status?: string;
     canResetPassword: boolean;
+    socialProviders: SocialProviderName[];
 };
 
-export default function Login({ status, canResetPassword }: Props) {
+export default function Login({
+    status,
+    canResetPassword,
+    socialProviders,
+}: Props) {
     return (
         <>
             <Head title="Sign in" />
+
+            <SocialButtons providers={socialProviders} />
 
             <Form
                 {...store.form()}
