@@ -31,12 +31,14 @@ it('sends the player to the provider', function (string $provider) {
     $this->get(route('social.redirect', $provider))->assertRedirect();
 })->with('providers');
 
-it('signs in a known identity', function (string $provider) {
+it('signs in a known identity and returns to the intended page', function (string $provider) {
     $user = User::factory()->create();
     SocialAccount::factory()->for($user)->create(['provider' => $provider, 'provider_user_id' => 'id-123']);
     Socialite::fake($provider, SocialiteUser::fake(['id' => 'id-123', 'email' => 'someone-else@example.test']));
 
-    $this->get(route('social.callback', $provider))->assertRedirect(route('home'));
+    $this->withSession(['url.intended' => url('/?type[]=cup')])
+        ->get(route('social.callback', $provider))
+        ->assertRedirect(url('/?type[]=cup'));
 
     $this->assertAuthenticatedAs($user);
 })->with('providers');
