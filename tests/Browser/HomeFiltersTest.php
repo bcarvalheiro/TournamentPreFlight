@@ -3,6 +3,7 @@
 use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\Shop;
+use Illuminate\Support\Facades\DB;
 
 /*
  * M05 AC8: at phone width the filter sheet opens from the bar, and ticking
@@ -51,4 +52,24 @@ it('filters by type and shop from the sheet, keeps them in the URL, and clears t
         ->assertSee('3 of 3 events')
         ->assertScript('location.search === ""')
         ->assertNoJavaScriptErrors();
+});
+
+it('keeps every tick when ticking quickly', function () {
+    $alfa = Shop::factory()->create(['name' => 'Alfa']);
+    Event::factory()->create(['shop_id' => $alfa->id, 'type' => EventType::Cup, 'starts_at' => now()->addDays(2)]);
+    Event::factory()->create(['shop_id' => $alfa->id, 'type' => EventType::Challenge, 'starts_at' => now()->addDays(3)]);
+    Event::factory()->create(['shop_id' => $alfa->id, 'type' => EventType::Casual, 'starts_at' => now()->addDays(4)]);
+
+    // A slow server, like a phone on mobile data: the second tick goes out
+    // before the first answer is back. The browser server runs in this process.
+    DB::listen(fn () => usleep(150_000));
+
+    $page = visit('/')->resize(390, 844)
+        ->click('@open-filters')
+        ->click('@type-cup')
+        ->click('@type-challenge')
+        ->assertSee('Show 2 events');
+
+    parse_str((string) parse_url($page->url(), PHP_URL_QUERY), $query);
+    expect($query['type'] ?? [])->toEqualCanonicalizing(['cup', 'challenge']);
 });

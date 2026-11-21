@@ -5,7 +5,12 @@ import { ResponsiveDialog } from '@/components/pf/responsive-dialog';
 import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { DATE_PRESETS, NO_FILTERS, urlFor } from '@/lib/home-filters';
+import {
+    DATE_PRESETS,
+    isUsableDay,
+    NO_FILTERS,
+    urlFor,
+} from '@/lib/home-filters';
 import { lisbonDate } from '@/lib/time';
 import {
     TOURNAMENT_TYPE_NAMES,
@@ -63,12 +68,44 @@ export function FilterSheet({
     open,
     onOpenChange,
 }: FilterSheetProps): ReactNode {
+    // A draft of the filters: each tick builds on the last tick, not on the
+    // last server answer, so quick ticks are never lost. The typed dates are
+    // kept apart so a half-typed day stays in its box.
+    const [draft, setDraft] = useState(filters);
+    const [days, setDays] = useState({
+        from: filters.from ?? '',
+        to: filters.to ?? '',
+    });
+    const [answered, setAnswered] = useState(filters);
     const [picking, setPicking] = useState(filters.when === 'custom');
     const today = lisbonDate();
-    const showDates = picking || filters.when === 'custom';
+    const showDates = picking || draft.when === 'custom';
+
+    // A new server answer resets the draft (react.dev, "Adjusting some state when a prop changes").
+    if (filters !== answered) {
+        setAnswered(filters);
+        setDraft(filters);
+        setDays({ from: filters.from ?? '', to: filters.to ?? '' });
+    }
+
+    function change(next: HomeFilters): void {
+        setDraft(next);
+        apply(next);
+    }
 
     function pickDay(key: 'from' | 'to', day: string): void {
-        apply({ ...filters, when: 'custom', [key]: day || null });
+        setDays({ ...days, [key]: day });
+
+        if (day === '') {
+            change({ ...draft, when: 'custom', [key]: null });
+        } else if (
+            isUsableDay(day, key === 'to' ? (draft.from ?? today) : today)
+        ) {
+            // A From after the chosen To clears To, which the server would drop anyway.
+            const to =
+                key === 'from' && draft.to && draft.to < day ? null : draft.to;
+            change({ ...draft, when: 'custom', to, [key]: day });
+        }
     }
 
     return (
@@ -83,7 +120,7 @@ export function FilterSheet({
                         variant="outline"
                         onClick={() => {
                             setPicking(false);
-                            apply(NO_FILTERS);
+                            change(NO_FILTERS);
                         }}
                     >
                         Clear all
@@ -102,13 +139,11 @@ export function FilterSheet({
                             <button
                                 key={when}
                                 type="button"
-                                aria-pressed={
-                                    !showDates && filters.when === when
-                                }
+                                aria-pressed={!showDates && draft.when === when}
                                 onClick={() => {
                                     setPicking(false);
-                                    apply({
-                                        ...filters,
+                                    change({
+                                        ...draft,
                                         when,
                                         from: null,
                                         to: null,
@@ -136,7 +171,7 @@ export function FilterSheet({
                                 <input
                                     type="date"
                                     min={today}
-                                    value={filters.from ?? ''}
+                                    value={days.from}
                                     onChange={(e) =>
                                         pickDay('from', e.target.value)
                                     }
@@ -147,8 +182,8 @@ export function FilterSheet({
                                 To
                                 <input
                                     type="date"
-                                    min={filters.from ?? today}
-                                    value={filters.to ?? ''}
+                                    min={draft.from ?? today}
+                                    value={days.to}
                                     onChange={(e) =>
                                         pickDay('to', e.target.value)
                                     }
@@ -167,11 +202,11 @@ export function FilterSheet({
                                 key={type}
                                 type="button"
                                 data-testid={`type-${type}`}
-                                aria-pressed={filters.type.includes(type)}
+                                aria-pressed={draft.type.includes(type)}
                                 onClick={() =>
-                                    apply({
-                                        ...filters,
-                                        type: toggled(filters.type, type),
+                                    change({
+                                        ...draft,
+                                        type: toggled(draft.type, type),
                                     })
                                 }
                                 className={option}
@@ -191,12 +226,12 @@ export function FilterSheet({
                                 <label className="flex cursor-pointer items-center gap-3 py-2.5 text-sm">
                                     <Checkbox
                                         data-testid={`shop-${shop.id}`}
-                                        checked={filters.shop.includes(shop.id)}
+                                        checked={draft.shop.includes(shop.id)}
                                         onCheckedChange={() =>
-                                            apply({
-                                                ...filters,
+                                            change({
+                                                ...draft,
                                                 shop: toggled(
-                                                    filters.shop,
+                                                    draft.shop,
                                                     shop.id,
                                                 ),
                                             })

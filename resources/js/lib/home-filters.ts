@@ -37,3 +37,12 @@ export function urlFor(filters: HomeFilters): string {
         },
     });
 }
+
+/**
+ * Whether a date input's value can be applied: a whole "YYYY-MM-DD" day of
+ * `min` or later. Chrome reports every digit while a year is typed, and those
+ * half-typed days ("0002-12-05") would be dropped by the server.
+ */
+export function isUsableDay(value: string, min: string): boolean {
+    return /^\d{4}-\d{2}-\d{2}$/.test(value) && value >= min;
+}
