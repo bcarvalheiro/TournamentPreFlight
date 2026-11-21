@@ -67,7 +67,7 @@ describe('FilterBar', () => {
 
         expect(removeLink(markup, 'Cup')).toBe('/?shop[]=3&when=week');
         expect(removeLink(markup, 'Carta Alta')).toBe('/?type[]=cup&when=week');
-        expect(removeLink(markup, 'date')).toBe('/?type[]=cup&shop[]=3');
+        expect(removeLink(markup, 'This week')).toBe('/?type[]=cup&shop[]=3');
     });
 
     it.each([

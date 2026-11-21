@@ -87,7 +87,7 @@ export function FilterBar({
                 {hasDate ? (
                     <Link
                         href={urlFor({ ...filters, ...noDate })}
-                        aria-label="Remove date filter"
+                        aria-label={`Remove ${dateLabel(filters)} filter`}
                         className={`${chip} border-ink`}
                     >
                         {dateLabel(filters)}
