@@ -56,6 +56,14 @@ it('orders upcoming by start', function () {
         ->toBe([$afternoon->id, $evening->id, $tomorrow->id]);
 });
 
+it('breaks a tie in start time by id, so the order never flickers', function () {
+    // MySQL returns rows with equal starts_at in no fixed order, so check the query itself.
+    expect(Event::upcoming()->getQuery()->orders)->toBe([
+        ['column' => 'starts_at', 'direction' => 'asc'],
+        ['column' => 'id', 'direction' => 'asc'],
+    ]);
+});
+
 it('keeps only the given types', function () {
     Event::factory()->create(['type' => EventType::Casual]);
     $cup = Event::factory()->create(['type' => EventType::Cup]);

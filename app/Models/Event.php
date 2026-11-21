@@ -77,7 +77,8 @@ class Event extends Model
     }
 
     /**
-     * Listed events that have not ended yet (ongoing ones included), soonest first.
+     * Listed events that have not ended yet (ongoing ones included), soonest first,
+     * ties by id.
      *
      * @param  Builder<Event>  $query
      */
@@ -86,7 +87,8 @@ class Event extends Model
     {
         $query->where('status', EventStatus::Listed)
             ->where('ends_at', '>', now())
-            ->orderBy('starts_at');
+            ->orderBy('starts_at')
+            ->orderBy('id'); // equal starts would otherwise come back in any order
     }
 
     /**
