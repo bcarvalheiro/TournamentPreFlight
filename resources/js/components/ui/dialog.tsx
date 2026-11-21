@@ -61,7 +61,8 @@ function DialogContent({
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
+        {/* Pre-Flight: 40px like the drawer's close button; the global red focus outline applies. */}
+        <DialogPrimitive.Close className="absolute top-3 right-3 flex size-10 items-center justify-center rounded-full text-muted hover:text-ink disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0">
           <XIcon />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
