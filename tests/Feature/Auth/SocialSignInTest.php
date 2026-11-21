@@ -89,6 +89,18 @@ it('returns to sign in when the player cancels at the provider', function (strin
     $this->assertGuest();
 })->with('providers');
 
+it('returns to sign in when the sign-in expired or does not match', function (string $provider) {
+    // No fake: the real driver checks the `state` it stored before the
+    // redirect, finds none in this session, and refuses before any request.
+    config(["services.{$provider}" => ['client_id' => 'id', 'client_secret' => 'secret', 'redirect' => "/auth/{$provider}/callback"]]);
+
+    $this->get(route('social.callback', ['provider' => $provider, 'state' => 'forged', 'code' => 'abc']))
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => 'That sign-in expired. Please try again.']);
+
+    $this->assertGuest();
+})->with('providers');
+
 it('knows only Google, Discord and X', function () {
     $this->get('/auth/github/redirect')->assertNotFound();
 });

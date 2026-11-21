@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 use Symfony\Component\HttpFoundation\RedirectResponse as SymfonyRedirectResponse;
 
 /**
@@ -29,7 +30,14 @@ class SocialAuthController extends Controller
             return to_route('login')->withErrors(['email' => 'Sign-in was cancelled.']);
         }
 
-        $identity = Socialite::driver($provider->value)->user();
+        // The `state` Socialite stored before the redirect is missing or
+        // different: the session expired, or the callback came back to another
+        // host. Refused, but as a message instead of an error page.
+        try {
+            $identity = Socialite::driver($provider->value)->user();
+        } catch (InvalidStateException) {
+            return to_route('login')->withErrors(['email' => 'That sign-in expired. Please try again.']);
+        }
         $user = $signIn->handle($provider, $identity);
 
         // A new identity: it waits in the session until the welcome page's age box.
