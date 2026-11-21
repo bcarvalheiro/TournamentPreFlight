@@ -1,6 +1,6 @@
 # M08 · "I'm going"
 
-**Branch**: `m08-attendance` · **Read**: `product.md` (Attendance, quick button), `architecture.md` (Counts, Privacy enforcement, Auth flows: pending intent), `design.md` (Match slip, ProfilePicker)
+**Branch**: `m08-attendance` · **Read**: `product.md` (Attendance, quick button), `architecture.md` (Counts, Privacy enforcement, Auth flows: pending intent), `design.md` (Event list item, ProfilePicker)
 
 ## Goal
 The core loop: players answer for each of their profiles and the counts update.

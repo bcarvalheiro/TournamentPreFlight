@@ -1,6 +1,6 @@
 # Design spec
 
-Visual direction: **Pre-Flight Pairings**, a TCG tournament hall. The top of the home page is a dark playmat; the next 5 events are a printed pairings sheet pinned to it; below, the event list is a day-by-day agenda of tear-off match slips with a sticky filter bar.
+Visual direction: **Pre-Flight Pairings**, a TCG tournament hall. The top of the home page is a dark playmat; the next 5 events are a printed pairings sheet pinned to it; below, the event list is a day-by-day agenda of tear-off event slips with a sticky filter bar.
 
 The working prototype is in `design/prototype/pairings.html` (with `app.js` for fake data and flows). Open it in a browser. It is the reference for layout, spacing, copy and interactions. Do not copy its code wholesale: rebuild it as typed React components with Tailwind. Where this document and the prototype differ, this document wins.
 
@@ -22,6 +22,8 @@ Define these once in `resources/css/app.css` as Tailwind 4 `@theme` variables an
 | `--color-paper` | `#FBFBF8` | Pairings sheet |
 | `--color-board-fg` | `#E9EEF3` | Text on the band |
 | `--color-amber` | `#F6C453` | Reserved for warnings ("possibly cancelled") |
+| `--color-board-muted` | `#A9B4BF` | Secondary text on the band |
+| `--color-sheet-line` | `#CDD4DB` | Dashed row lines on the pairings sheet |
 
 Fonts (Google Fonts, `display=swap`), loaded through the Laravel Vite plugin's `fonts` option and `@fonts`, so the files are self-hosted:
 
@@ -63,7 +65,7 @@ A small legend under the filter bar shows the four icons from "Common" to "Rare"
 
 ## Brand mark
 
-Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `AppLogo` component. The hero headline stays "Pokémon Pre-Flight".
+Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in Barlow Condensed 800, uppercase. SVG in the prototype's `.brand`. The app name is **Pre-Flight** (`config('app.name')`), used in one `AppLogo` component. The hero headline is "Pre-Flight" too.
 
 ## Home page, top to bottom
 
@@ -71,24 +73,24 @@ Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in
 Dark radial gradient on `ink`, with two faint dashed card outlines as decoration. Contains:
 
 - **Navbar** (50px): brand left; right side signed out: "Sign in" (text) and "Sign up" (red pill); signed in: "Profiles (n)" and "Sign out".
-- **Hero** (left column on desktop, 5/12): h1 "Pokémon Pre-Flight" on two lines, display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Play! Pokémon tournament in Portugal before you sleeve up. Independent fan project."
+- **Hero** (left column on desktop, 5/12): h1 "Pre-Flight", display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Pokémon TCG tournament in Portugal before you sleeve up."
 - **Coin flip** (decorative fun, keep it): a red "GO" / light "STAY" coin that flips on tap with the line "Still can't decide? Flip for it. Heads you go." The prize-zone grid next to it is decoration, `aria-hidden`.
-- **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: day and time (or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "I'm going" button. Footer: "Headcount, not registration · Register at the shop".
+- **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: month, weekday and day, and time on three lines ("NOV" / "SAT 21" / "18:30"; or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "I'm going" button. Footer: "Headcount, not registration · Register at the shop".
 
 ### 2. Sticky filter bar
 Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontally scrollable on mobile: "Filters" pill (graphite, with a red badge showing the number of active filters), "Any time ▾" shortcut when no date filter is set, one removable chip per active filter (date, each type with its icon, each shop), and on the right "12 of 29 events" or "First 25 of 31 events".
 
-**Filter sheet** (bottom sheet on mobile, centred dialog on desktop): When (2-column grid of presets, Pick dates reveals From / To date inputs, To cannot be before From, no past dates), Type (2x2 toggles with icons), Host shop (checkbox list with event counts), footer "Clear all" and "Show n events" (live count).
+**Filter sheet** (bottom sheet on mobile, centred dialog on desktop, at most 85% of the screen tall with only the content scrolling; small grey letter-spaced section labels): When (2-column grid of presets, Pick dates reveals From / To date inputs, To cannot be before From, no past dates), Type (2x2 toggles with icons), Host shop (checkbox list with event counts), footer "Clear all" and "Show n events" (live count).
 
 ### 3. Agenda
-Grouped by day. Day header: red left border, "SAT 15 NOV" in display font plus a relative label ("Tomorrow", "In 3 days", "Next week"). On ≥700px the header sits in a 120px left column and is sticky.
+Grouped by day. Day header: 5px red left border, "SAT 15 NOV" in display font plus an uppercase relative label ("Tomorrow", "In 3 days", "Next week"), side by side on phones. On ≥700px the header sits in a 120px left column and is sticky: the day big (about 32px) on two lines ("SAT 15 / NOV"), the label under it, like the prototype.
 
-**Match slip card** (one per event): white, 4px graphite top border, 6px radius. Left part: top row "ID 25-11-000123" in mono and the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
+**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
 
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 
 ### 4. Disclaimer and footer
-Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual." Footer: non-affiliation notice, links to privacy, terms, contact, "Add a missing event".
+Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual." Footer: the short non-affiliation notice (`product.md`, Privacy and brand), links to privacy, terms, contact, "Add a missing event".
 
 ## Shared components
 

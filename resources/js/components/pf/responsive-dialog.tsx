@@ -63,8 +63,9 @@ export function ResponsiveDialog({
         return (
             <Dialog open={isOpen} onOpenChange={setOpen}>
                 <DialogTrigger asChild>{trigger}</DialogTrigger>
+                {/* A flex column at most 85% of the screen tall: only the content scrolls. */}
                 <DialogContent
-                    className="rounded-sheet border-line sm:max-w-md"
+                    className="flex max-h-[85vh] flex-col rounded-sheet border-line sm:max-w-md"
                     {...descriptionProps}
                 >
                     <DialogHeader>
@@ -75,7 +76,11 @@ export function ResponsiveDialog({
                             <DialogDescription>{description}</DialogDescription>
                         )}
                     </DialogHeader>
-                    {children}
+                    {children && (
+                        <div className="-mx-1 min-h-0 flex-1 overflow-y-auto px-1">
+                            {children}
+                        </div>
+                    )}
                     {footer && <DialogFooter>{footer}</DialogFooter>}
                 </DialogContent>
             </Dialog>
@@ -88,7 +93,7 @@ export function ResponsiveDialog({
         <Drawer open={isOpen} onOpenChange={setOpen} autoFocus>
             <DrawerTrigger asChild>{trigger}</DrawerTrigger>
             <DrawerContent
-                className="rounded-t-sheet border-line"
+                className="rounded-t-sheet border-line data-[vaul-drawer-direction=bottom]:max-h-[85vh]"
                 {...descriptionProps}
             >
                 <DrawerClose
@@ -97,7 +102,8 @@ export function ResponsiveDialog({
                 >
                     <XIcon className="size-5" />
                 </DrawerClose>
-                <DrawerHeader className="text-left">
+                {/* The kit centres bottom-drawer titles with this same variant; ours wins. */}
+                <DrawerHeader className="text-left group-data-[vaul-drawer-direction=bottom]/drawer-content:text-left">
                     <DrawerTitle className="font-display text-2xl font-bold">
                         {title}
                     </DrawerTitle>
@@ -105,8 +111,16 @@ export function ResponsiveDialog({
                         <DrawerDescription>{description}</DrawerDescription>
                     )}
                 </DrawerHeader>
-                {children && <div className="px-4">{children}</div>}
-                {footer && <DrawerFooter>{footer}</DrawerFooter>}
+                {children && (
+                    <div className="min-h-0 flex-1 overflow-y-auto px-4">
+                        {children}
+                    </div>
+                )}
+                {footer && (
+                    <DrawerFooter className="grid grid-cols-2">
+                        {footer}
+                    </DrawerFooter>
+                )}
             </DrawerContent>
         </Drawer>
     );

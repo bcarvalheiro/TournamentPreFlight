@@ -4,29 +4,37 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M04 · Domain schema and seed data (review).
-- **Branch**: m04-domain-schema
-- **State**: Slices 1–10 done; all five ACs met; `/rethink-tests` and `/review` done, review fixes applied; `composer verify` green (23 Vitest, 118 Pest, Larastan 0 errors). Next: push and open the PR.
+- **Milestone**: M05 · Home page on seeded data (review).
+- **Branch**: m05-home-page
+- **State**: Slices 1–15, `/rethink-tests` and `/review` done; `composer verify` green. Next: Bruno pushes and opens the PR.
 
-### Plan (M04)
+### Plan (M05)
 
-- [x] Slice 1: shops and events tables, enums EventType/EventStatus/EventSourceKey (string columns + casts), models, factories, unique keys (`shops` + `events` migrations, `app/Enums/*`, `Shop`, `Event`, factories; `EventUniqueKeysTest`: official_guid, official_url, shops.official_name_key; `MigrationsTest`: roll back everything, migrate again) · AC1, AC2
-- [x] Slice 2: ends_at is the type's estimate, recomputed when starts_at or type changes (`EventType::estimatedHours()`, `Event` saving hook; `EventEndsAtTest`) · scope
-- [x] Slice 3: scopes `upcoming()`, `ofTypes()`, `atShops()`, `between()`, plural, taking lists (`Event`; `EventScopesTest`) · AC3
-- [x] Slice 4: player profiles, `is_admin` and `notification_settings` on users, unique Player ID (migrations, `PlayerProfile` + factory, `User` casts and relations; `PlayerProfileTest`: unique Player ID across accounts, several profiles per account, deleting the account deletes its profiles; `UserDefaultsTest`: not admin, reminders on) · AC1, AC2
-  - Changed (Bruno, 19 Nov): the factory's child state moves to Slice 5, where it is used; defaults get their own test; `notification_settings` keeps only `reminders`; the Player ID column is `pop_id`.
-- [x] Slice 5: `is_child` set on save (Lisbon year); a child profile without consent throws `ValidationException` (`PlayerProfile` saving hook, factory `child()` state; `PlayerProfileChildTest`) · AC5
-  - Changed (Bruno, 19 Nov): account holders must be 13+, confirmed by a sign-up checkbox (`users.age_confirmed_at`), added to M06; `is_child` keeps its name.
-- [x] Slice 6: attendances without status: one row per profile per event, deleting a profile deletes its rows (migration, `Attendance` + factory, relations; `AttendanceTest`) · AC1, AC2
-- [x] Slice 7: social_accounts and magic_login_tokens (migrations, models, factories, `User::socialAccounts()`; `AuthTablesTest`: unique provider identity, compound key, cascade on account deletion, unique token hash) · AC1, AC2
-  - Changed (19 Nov): test renamed from `SocialAccountUniqueKeysTest`, since it covers both tables; `token_hash` unique (tested).
-- [x] Slice 8: event_follows and event_reports (migrations, models, factories; `EventFollowsAndReportsTest`: one follow per user per event, compound key, account deletion removes follows and reports) · AC1, AC2
-  - Changed (Bruno, 19 Nov): split; import_runs moves to Slice 9 (~290 lines together). Test renamed from `EventFollowUniqueKeysTest`.
-- [x] Slice 9: import_runs (migration, `ImportRun` model, factory; `MigrationsTest` extended: the table goes on rollback and comes back) · AC1
-  - Changed (Bruno, 19 Nov): counters named `events_created`, `events_updated`, `events_flagged`, `events_unchanged` (not `created`/`updated`, which read like timestamps); `finished_at` required; `source` a plain string, not `EventSourceKey`. No behaviour of its own yet, so no new test; M10 tests writing runs and the abort rule.
-- [x] Slice 10: DemoSeeder: 9 prototype shops, 30 events (29 from the prototype as Casual/Challenge/Cup plus one Prerelease, one ongoing, one ended), a crowd of 60 players for the counts, solo, parent (two children, aged 11 and 12 this year) and admin accounts, kit password until M06 (`DemoSeeder`, `DatabaseSeeder`; `DemoSeederTest`: counts per table) · AC4; bigger than ~150 lines because of the event table
-  - Changed (19 Nov): `WithoutModelEvents` removed from `DatabaseSeeder` (it muted the saving hooks); demo accounts `solo@`, `family@`, `admin@preflight.test`, password `password`; their 5 answers add to the prototype counts (315 rows).
-  - Changed (review, 19 Nov): children's birth years relative to the current year (fixed years aged out on 1 Jan); crowd 60, each event takes the next block so no player is at two events on one day; seeder tests freeze time.
+- [x] Slice 1: move our components into `components/pf/` (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, imports, `architecture.md` Code layout, `decisions.md`; existing Vitest tests + `tsc`) · groundwork
+- [x] Slice 2: types casual/prerelease/challenge/cup, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
+  - Changed (Bruno, 20 Nov): long names ("League Challenge", "League Cup") move to Slice 11, where the slip first shows them.
+- [x] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
+- [x] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
+- [x] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
+  - Changed (20 Nov): no filters exist yet, so `matched` equals `all` here; Slice 6 adds the checks that up next ignores filters and that `matched` follows them.
+- [x] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop, up next unaffected, `totals.matched` follows the filters (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC2, AC3, AC4
+- [x] Slice 7a: date presets week/weekend/7/30 in Lisbon days, applied before the cap, `filters.when` (`HomeFilterRequest::when()`, `dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, weekday, year and month end, Lisbon summer time) · AC3, AC4
+- [x] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
+  - Changed (Bruno, 20 Nov): Slice 7 split in two (~270 lines together).
+- [x] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`, `app/Data/Public/ShopFilterData.php`; `HomeShopsTest`) · AC6
+  - Changed (20 Nov): the shops go out as `ShopFilterData` DTOs (rule 1: never raw models); the type and date filter moved into a typed private method so Larastan knows the event scopes.
+- [x] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
+- [x] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`, `pf/going-button.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9. Also: GoingButton reads `auth` via `usePage()` (no prop passing); band classes use theme names (`app.css`) instead of `[…]` values.
+- [x] Slice 11: `EventListItem` (type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/event-list-item.tsx`, `pf/going-button.tsx` `className`, `styleguide.tsx`; `event-list-item.test.tsx`) · AC5, AC9
+  - Changed (Bruno, 20 Nov): named `EventListItem`, not `MatchSlip` (it is a row of the upcoming list); no tournament ID shown.
+- [x] Slice 12a: agenda grouped by Lisbon day (day header, relative label, sticky column from 700px), empty state with Clear filters or "Nothing on the calendar yet.", replaces the home stub list (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `pages/home.tsx`, `styleguide.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
+- [x] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx`, `public-layout.tsx`; `agenda.test.tsx`, `StyleguideTest`) · design
+  - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
+- [x] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips (links to the page without that filter), count line (`pf/filter-bar.tsx`, `types/events.ts` `HomeFilters` `ShopFilter`, `pages/home.tsx`, `pf/agenda.tsx` sticky offset; `filter-bar.test.tsx`) · AC4
+  - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
+- [x] Slice 14: `FilterSheet` in `ResponsiveDialog` (When presets + Pick dates, Type toggles, Host shop checkboxes with counts, Clear all, Show n events), applies as you tick (Inertia visit, `preserveState`, `preserveScroll`, `replace`, `only` list props); `urlFor` moves to `lib/home-filters.ts`; the bar owns the open state (`pf/filter-sheet.tsx`, `lib/home-filters.ts`, `pf/filter-bar.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters; `time.test.ts` `lisbonDate` for the date inputs' min) · AC8
+  - Changed (Bruno, 20 Nov): one slice, not split into 14a/14b.
+- [x] Slice 15: UI check fixes: filter sheet grows to ~85% height with the content scrolling and the footer fixed, left-aligned title and side-by-side buttons on phones; counts read as "12 trainers going" (sr-only text, not aria-label); tap targets 40px (pills, chips, footer links); day headers like the prototype; clearer punched holes; filter bar line as wide as its content (`responsive-dialog.tsx`, `filter-sheet.tsx`, `event-list-item.tsx`, `pairings-sheet.tsx`, `filter-bar.tsx`, `agenda.tsx`, `public-layout.tsx`; existing Vitest and browser tests updated) · from /ui-check
 
 ## Milestones
 
@@ -35,8 +43,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M01 | Scaffold, tooling and CI | done | PR #1 and #2 merged |
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
-| M04 | Domain schema and seed data | review | All ACs met; reviewed; PR to open |
-| M05 | Home page on seeded data | todo | |
+| M04 | Domain schema and seed data | done | PR #6 merged |
+| M05 | Home page on seeded data | review | PR to open |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
@@ -53,6 +61,118 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-20/21 · M05 · Home page on seeded data
+
+**Outcome.** All nine acceptance criteria met and tested. The public home page `/` has:
+- a hero with the coin flip, and the "Up next" pairings sheet;
+- a sticky filter bar with removable chips and counts;
+- the filter sheet (dates, types, shops), applied as you tick;
+- a day-by-day agenda of event list items, with the type legend, the disclaimer and the short footer notice.
+
+Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` DTOs, and `HomeFilterRequest` reads type, shop, date presets and picked dates in Lisbon days, dropping anything it can't use. `composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 64 Vitest, 162 Pest (8,530 assertions, browser tests included). Run in 15 planned slices (7 and 12 split, 13 and 14 kept whole on Bruno's call, 15 added from `/ui-check`), each proposed, built test-first and committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- Setup:
+  - `bb16787` plan
+  - `607d4e3` fewer trademark names (hero "Pre-Flight", short notice)
+- Groundwork:
+  - `fc8f2d2` components into `components/pf/` (Slice 1)
+  - `8ad81cd` casual/prerelease types (Slice 2)
+- Server:
+  - `bc10086` home controller and card DTO (Slice 3)
+  - `e9a2c9b` privacy test and Arch rules (Slice 4)
+  - `c29fbce` up next and totals (Slice 5)
+  - `5e6d218` type and shop filters (Slice 6)
+  - `d56cfa2` date presets (7a)
+  - `8488334` picked dates (7b)
+  - `73e7a0a` shop list with counts (Slice 8)
+- Band:
+  - `1c8a168` hero and coin flip (Slice 9)
+  - `0cb7ba2` pairings sheet, with readable band classes (Slice 10)
+- List:
+  - `f36afae` `EventListItem` (Slice 11)
+  - `9bdf077` agenda (12a)
+  - `8b7fd24` legend, disclaimer, footer notice (12b)
+- Filters:
+  - `5b429d0` sticky filter bar (Slice 13)
+  - `ed2e37f` filter sheet (Slice 14)
+- `28f47bf` UI check fixes (Slice 15)
+- `/rethink-tests`:
+  - `5c07831` explicit test days
+  - `8d79938` chip removal and Clear all in the browser test
+  - `cd2d3b6` case-blind privacy check
+- `/review`:
+  - `54958ac` nested, repeated and stale filter values dropped
+  - `64f4bb3` tie-breaker by id
+  - `9b5d616` filter sheet draft and typed dates
+  - `bab21fe` picked dates only with "Pick dates"
+  - `e0591da`, `20d8b2b`, `a975d91`, `0faa55d` accessibility touch-ups
+  - `f63c859` privacy test with a child and a birth year
+  - `ca9dc1a` notes for later
+- `c23d972` git deny rules in `.claude/settings.json` (outside the milestone, after I staged files)
+
+**Decisions by Bruno** (all in `decisions.md`)
+- **Structure:** DTOs in `app/Data/Public/` for public data; camelCase keys; our components in `components/pf/`.
+- **Filters:**
+  - apply as you tick;
+  - invalid values are dropped, never rejected;
+  - shop counts follow type and date, not the shop filter;
+  - date presets as in product.md.
+- **Trademarks:** names as few as possible.
+  - hero "Pre-Flight", with one "Pokémon TCG" mention;
+  - footer "Independent fan project. Not affiliated with, endorsed or sponsored by Nintendo or The Pokémon Company."
+- **The list item:** it is `EventListItem` (a row of the upcoming list). It shows type and shop, no tournament ID. The long type names are "Casual play", "Prerelease", "League Challenge" and "League Cup".
+- **Layout:**
+  - Up next shows month / weekday and day / time, with "Trainers" over the count;
+  - agenda day headers look like the prototype;
+  - the filter sheet has small grey section labels;
+  - the filter bar line is as wide as its content.
+- **Styling:** keep Tailwind, but name design values in `@theme` instead of long `[…]` values. `GoingButton` reads `auth` itself.
+
+**Problems hit and how they were solved**
+- *I staged files* with `git mv`/`git rm`. Bruno added deny rules for both (`c23d972`). Later a stray `git stash list` in a command was refused by the same list, and I reran it without that.
+- *`inertiaProps('events.*.id')` returns null*, because there is no wildcard support. Fixed by reading the list and using `pluck('id')`.
+- *A request method named `when()`* clashed with `Conditionable::when()` (fatal error). Renamed to `datePreset()`.
+- *Larastan ignores `@param` on closures*, so scopes inside `when()` were "undefined". Fixed with a typed private method, `upcomingOfTypeAndDate()`.
+- *The Playwright MCP needs Google Chrome*, which isn't installed. Screenshots went through the project's own Playwright in scratchpad scripts.
+- *The coin sat under the prize cards on narrow phones* before the first flip. Fixed with `min-w-0 flex-1` on the message group.
+- *JavaScript puts keys like "7" first in an object*, so the date presets came out of order. `DATE_PRESETS` is now a list.
+- *The URL ends up as `type[0]=cup`.* This comes from Laravel's `fullUrl()` (`http_build_query`), not Inertia. The browser test reads the query with `parse_str`. An Inertia option tried first changed nothing and was removed.
+- *A text click on "Filters" failed once the badge showed* ("Filters1"). Fixed with `data-testid="open-filters"`. An `aria-label` would have hidden the count from screen readers.
+- *Tailwind 4 `leading-*` doesn't reach child elements* (the variable isn't inherited), and `text-2xl` brings its own line height. Fixed with `leading-none` on the span itself.
+- *The ui-reviewer stopped on a network error* before its screenshots. It was resumed from where it stopped.
+- *The fast-tick browser test passed with the bug*, because the local server answers before the second click.
+  - Fix: `DB::listen(fn () => usleep(150_000))` slows the server like mobile data, which works because Pest's browser server runs in the test process.
+  - Result: the test went red, then green after the fix.
+
+**`/rethink-tests` outcome.** All 18 test files walked through.
+- **Accepted:**
+  - an explicit day in `filterableEvent()`, because a `static` counter was shared across tests;
+  - the browser test also removes a chip and clicks Clear all (shown red by breaking `NO_FILTERS`);
+  - the privacy check ignores letter case. `assertDontSee` is case-sensitive and the owner's email is lower case; shown red by leaking it.
+- **Rejected:** a browser test for Pick dates (the server is fully tested, and the test would be slow), and any removals.
+- **Moved to M06:** saving emails in lower case.
+
+**Review outcome.** `code-reviewer`, `privacy-guard` and `ui-reviewer` (a re-check after the UI fixes). privacy-guard found no leaks.
+- **Fixed:**
+  - a 500 on `/?type[0][]=cup`;
+  - repeated values giving duplicate chips, stale shop ids, and `from`/`to` echoed without "Pick dates";
+  - no tie-breaker on equal start times, so the list could flicker;
+  - quick ticks lost and typed dates wiped in the filter sheet. The sheet now keeps a draft, and typed dates apply once they're a whole day that isn't in the past;
+  - the desktop dialog's 16px close button, a day heading read as one word, the date chip's label, and a 36px list button;
+  - the privacy test now seeds a child profile and a birth year, and `architecture.md` describes the Arch tests accurately.
+- **Not changed:** the sort inside count queries, the logo link height, and commit housekeeping.
+- **Moved to later:** the card title naming (M09), and a partial-reload privacy case (when deferred props arrive).
+
+**What is left**
+- Push and open the PR.
+- Bruno: check by hand on a real phone (filter sheet, typing dates, chips).
+
+**Surprising**
+- Laravel rewrites the query string of the page URL (`type[]` becomes `type[0]`, keys sorted), so a shared link never looks exactly like the one clicked.
+- Inertia cancels a running visit when a new one starts, so "apply as you tick" needs a local draft or quick ticks are lost. It only shows on a slow network.
+- Chrome reports every digit typed into a date box as a full date (`0002-12-05`), which the server rightly drops.
 
 ### 2026-11-19 · M04 · Domain schema and seed data
 
@@ -282,15 +402,18 @@ Status values: todo, in progress, review, done.
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
+- **`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it. (M05 `/review`; M09)
+- **Privacy test and partial reloads**: `NoPersonalDataLeaksTest` makes full page loads only. When a page gets an `Inertia::optional()` or `Inertia::defer()` prop, add a partial-reload case (the `X-Inertia-Partial-*` headers) with the same scans. (M05 `/review`; later)
+- **Emails saved in lower case**: store and look up account emails lower-cased (`Zzleak@gmail.com` and `zzleak@gmail.com` are one inbox in practice; Laravel does not do it by default), wherever accounts are created and matched. (Bruno, M05 `/rethink-tests`; M06)
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the kit's password login works until M06). (Bruno, M04)
-- **Tournament types in code**: `TournamentTypeIcon` and `lib/tournament-types.ts` still have friendly and league. Change to casual (Poké Ball) and prerelease (Great Ball), with their tests. (M05; M04 had no UI work, Bruno)
+- ~~**Tournament types in code**~~: done in M05 Slice 2.
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)
 - **pokedata edits after first retrieval** (website warning): time or shop changes may never reach us; the change-detection flow in M10 should not rely on them alone. (M10)
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
-- **Our components into `resources/js/components/pf/`**: move `app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, update the imports, `architecture.md` (Code layout) and `decisions.md` (supersedes the flat layout from M02). The kit's own components and `ui/` stay where they are. Bruno's decision. (M05, first slice)
+- ~~**Our components into `resources/js/components/pf/`**~~: done in M05 Slice 1.
 - **Yearly `is_child` refresh**: a scheduled command on 1 January (Lisbon) that saves every child profile through the model, so `is_child` turns false for those who have aged out (`decisions.md`, M04 review). (M10, with the scheduler)
 - **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players and followers, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
 - **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
 - **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
-- **"Maybe" button in the styleguide** (`resources/js/pages/styleguide.tsx`): there is no maybe any more (M04 decision); remove or relabel it. (M05)
+- ~~**"Maybe" button in the styleguide**~~: relabelled "Going ✓" in M05 Slice 2.

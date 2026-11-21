@@ -56,6 +56,14 @@ it('orders upcoming by start', function () {
         ->toBe([$afternoon->id, $evening->id, $tomorrow->id]);
 });
 
+it('breaks a tie in start time by id, so the order never flickers', function () {
+    // MySQL returns rows with equal starts_at in no fixed order, so check the query itself.
+    expect(Event::upcoming()->getQuery()->orders)->toBe([
+        ['column' => 'starts_at', 'direction' => 'asc'],
+        ['column' => 'id', 'direction' => 'asc'],
+    ]);
+});
+
 it('keeps only the given types', function () {
     Event::factory()->create(['type' => EventType::Casual]);
     $cup = Event::factory()->create(['type' => EventType::Cup]);
@@ -84,6 +92,15 @@ it('keeps events starting in the range, both ends included', function () {
     $found = Event::between(Carbon::parse('2026-12-07 00:00', 'UTC'), Carbon::parse('2026-12-09 23:59', 'UTC'));
 
     expect($found->pluck('id')->all())->toEqualCanonicalizing([$atFrom->id, $inside->id, $atTo->id]);
+});
+
+it('leaves the range open when no end is given', function () {
+    $nextWeek = casualAt('2026-12-12 10:00');
+    $nextYear = casualAt('2027-12-12 10:00');
+
+    $found = Event::between(Carbon::parse('2026-12-07 00:00', 'UTC'), null);
+
+    expect($found->pluck('id')->all())->toEqualCanonicalizing([$nextWeek->id, $nextYear->id]);
 });
 
 /*

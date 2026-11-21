@@ -1,6 +1,6 @@
 import { usePage } from '@inertiajs/react';
 
-import AppLogoIcon from '@/components/app-logo-icon';
+import AppLogoIcon from '@/components/pf/app-logo-icon';
 import { cn } from '@/lib/utils';
 
 /**

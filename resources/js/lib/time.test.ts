@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vite-plus/test';
-import { formatDay, formatRelativeDay, formatTime } from '@/lib/time';
+import {
+    formatDay,
+    formatRelativeDay,
+    formatTime,
+    groupByLisbonDay,
+    lisbonDate,
+} from '@/lib/time';
 
 /*
  * CLAUDE.md rule 4: times are stored in UTC and shown in Europe/Lisbon.
@@ -60,5 +66,39 @@ describe('formatRelativeDay', () => {
         expect(
             formatRelativeDay(justAfterMidnightInLisbon, lateFridayInLisbon),
         ).toBe('Tomorrow');
+    });
+});
+
+describe('groupByLisbonDay', () => {
+    it('puts events of the same Lisbon day together, in order', () => {
+        const groups = groupByLisbonDay([
+            { id: 1, startsAt: '2026-12-05T10:00:00Z' },
+            { id: 2, startsAt: '2026-12-05T18:30:00Z' },
+            { id: 3, startsAt: '2026-12-06T10:00:00Z' },
+        ]);
+
+        expect(groups.map((group) => group.events.map((e) => e.id))).toEqual([
+            [1, 2],
+            [3],
+        ]);
+    });
+
+    it('uses the Lisbon day, not the UTC day, in summer', () => {
+        const groups = groupByLisbonDay([
+            { id: 1, startsAt: '2027-07-10T20:00:00Z' }, // Sat 21:00 in Lisbon
+            { id: 2, startsAt: '2027-07-10T23:30:00Z' }, // Sun 00:30 in Lisbon
+        ]);
+
+        expect(groups.map((group) => formatDay(group.day))).toEqual([
+            'Sat 10 Jul',
+            'Sun 11 Jul',
+        ]);
+    });
+});
+
+describe('lisbonDate', () => {
+    it('gives the Lisbon calendar day as "YYYY-MM-DD", a day ahead of UTC late on a summer night', () => {
+        expect(lisbonDate('2026-12-05T23:30:00Z')).toBe('2026-12-05');
+        expect(lisbonDate('2027-07-10T23:30:00Z')).toBe('2027-07-11');
     });
 });

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { TournamentTypeIcon } from '@/components/tournament-type-icon';
+import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
 import { Badge } from '@/components/ui/badge';
 import { TOURNAMENT_TYPE_NAMES } from '@/lib/tournament-types';
 import type { TournamentType } from '@/lib/tournament-types';
@@ -11,7 +11,7 @@ type TournamentTypeBadgeProps = {
 };
 
 /**
- * Ball icon + type name ("LEAGUE"). The name is real text, so screen readers
+ * Ball icon + type name ("CASUAL"). The name is real text, so screen readers
  * and colour-blind players get the type even though the icon is hidden from them.
  * Cup (the rarest) is filled graphite; the others are outlined.
  */

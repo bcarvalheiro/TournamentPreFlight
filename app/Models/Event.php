@@ -77,7 +77,8 @@ class Event extends Model
     }
 
     /**
-     * Listed events that have not ended yet (ongoing ones included), soonest first.
+     * Listed events that have not ended yet (ongoing ones included), soonest first,
+     * ties by id.
      *
      * @param  Builder<Event>  $query
      */
@@ -86,7 +87,8 @@ class Event extends Model
     {
         $query->where('status', EventStatus::Listed)
             ->where('ends_at', '>', now())
-            ->orderBy('starts_at');
+            ->orderBy('starts_at')
+            ->orderBy('id'); // equal starts would otherwise come back in any order
     }
 
     /**
@@ -114,17 +116,18 @@ class Event extends Model
     }
 
     /**
-     * Events starting between the two moments, both included. The bounds may be
-     * in any time zone (M05 passes Lisbon days): they are converted to UTC, the
-     * zone starts_at is stored in, because Laravel writes a date's clock time
-     * into SQL without converting it.
+     * Events starting between the two moments, both included; without $to the
+     * range has no end. The bounds may be in any time zone (M05 passes Lisbon
+     * days): they are converted to UTC, the zone starts_at is stored in,
+     * because Laravel writes a date's clock time into SQL without converting it.
      *
      * @param  Builder<Event>  $query
      */
     #[Scope]
-    protected function between(Builder $query, CarbonInterface $from, CarbonInterface $to): void
+    protected function between(Builder $query, CarbonInterface $from, ?CarbonInterface $to): void
     {
-        $query->whereBetween('starts_at', [$from->copy()->utc(), $to->copy()->utc()]);
+        $query->where('starts_at', '>=', $from->copy()->utc())
+            ->when($to, fn (Builder $query) => $query->where('starts_at', '<=', $to->copy()->utc()));
     }
 
     /**

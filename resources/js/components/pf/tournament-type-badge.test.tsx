@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vite-plus/test';
-import { TournamentTypeBadge } from '@/components/tournament-type-badge';
+import { TournamentTypeBadge } from '@/components/pf/tournament-type-badge';
 
 /*
  * The ball icon is decoration (aria-hidden), so the type name must always be
@@ -8,8 +8,8 @@ import { TournamentTypeBadge } from '@/components/tournament-type-badge';
  */
 describe('TournamentTypeBadge', () => {
     it.each([
-        ['friendly', 'Friendly'],
-        ['league', 'League'],
+        ['casual', 'Casual'],
+        ['prerelease', 'Prerelease'],
         ['challenge', 'Challenge'],
         ['cup', 'Cup'],
     ] as const)(

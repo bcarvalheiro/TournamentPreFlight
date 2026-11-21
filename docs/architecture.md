@@ -36,9 +36,10 @@ app/
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
-  components/         our components, flat, kebab-case files like the kit: app-logo, tournament-type-icon,
-                      tournament-type-badge, responsive-dialog; later pairings-sheet, match-slip, going-button,
-                      profile-picker, filter-bar
+  components/         the starter kit's own components (app-header, app-sidebar, nav-*, ...), left as the kit ships them
+  components/pf/      our components, kebab-case files like the kit, each with its test beside it: app-logo,
+                      app-logo-icon, tournament-type-icon, tournament-type-badge, responsive-dialog; later
+                      pairings-sheet, event-list-item, going-button, profile-picker, filter-bar
   components/ui/      shadcn/ui files we own and restyle with the tokens (button, card, dialog, drawer, empty, sonner, ...)
   lib/time.ts         all date formatting, Europe/Lisbon, en-GB style
   lib/tournament-types.ts  tournament types (common to rare) and their display names
@@ -197,8 +198,8 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
 - Public controllers return only `app/Data/Public` objects. These classes have no name, Player ID or birth-year fields by construction.
-- An Arch test forbids `App\Models` in public controller return values and Inertia props.
-- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds profiles named like `Zzleak Name 4711` with Player ID `9988776655`, visits every route in a dataset as guest and as another user, and asserts neither string appears in the HTML or the Inertia JSON. Each new public route is added to the dataset in the same PR.
+- Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
+- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Player IDs `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. Each new public route is added to the dataset in the same PR.
 - Logs never contain profile names or Player IDs.
 
 ## Time
