@@ -6,12 +6,12 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M06 · Sign in: email and password, Google, Discord, X (in progress).
 - **Branch**: m06-auth
-- **State**: Slice 1a done. Next: Slice 1b.
+- **State**: Slices 1a–1b done. Next: Slice 2.
 
 ### Plan (M06)
 
 - [x] Slice 1a: remove two-factor auth, passkeys and magic-login tokens: Fortify features, `User` traits, kit pages and components, tests; migration drops the 2FA columns, `passkeys` and `magic_login_tokens` (`config/fortify.php`, `FortifyServiceProvider`, `User.php`, `MagicLoginToken.php`, migration, `routes/settings.php`, `pages/auth/two-factor-challenge.tsx`, `pages/settings/security.tsx`, kit components, `architecture.md`; `NoTwoFactorOrPasskeysTest`) · AC4
-- [ ] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
+- [x] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
 - [ ] Slice 2: "I am 13 or older" box on registration; migration adds `users.age_confirmed_at`; no box, no account (migration, `CreateNewUser`, `User.php`, `UserFactory`, `pages/auth/register.tsx`, `architecture.md`; `RegistrationTest`) · AC1
 - [ ] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
 - [ ] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `HandleInertiaRequests`, `pf/going-button.tsx`, `types/`; `PendingIntentTest`, `NoPersonalDataLeaksTest`) · AC5

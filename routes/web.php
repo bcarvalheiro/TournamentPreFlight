@@ -10,8 +10,4 @@ if (app()->isLocal()) {
     Route::inertia('styleguide', 'styleguide')->name('styleguide');
 }
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'dashboard')->name('dashboard');
-});
-
 require __DIR__.'/settings.php';

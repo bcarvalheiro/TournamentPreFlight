@@ -18,7 +18,14 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
+});
+
+test('signed-in players have no dashboard or appearance page', function () {
+    $this->actingAs(User::factory()->create());
+
+    $this->get('/dashboard')->assertNotFound();
+    $this->get('/settings/appearance')->assertNotFound();
 });
 
 test('users can not authenticate with invalid password', function () {
