@@ -29,11 +29,20 @@ class SocialAuthController extends Controller
             return to_route('login')->withErrors(['email' => 'Sign-in was cancelled.']);
         }
 
-        $user = $signIn->handle($provider, Socialite::driver($provider->value)->user());
+        $identity = Socialite::driver($provider->value)->user();
+        $user = $signIn->handle($provider, $identity);
 
+        // A new identity: it waits in the session until the welcome page's age box.
         if ($user === null) {
-            // Slice 6 replaces this with the welcome page for new identities.
-            return to_route('login')->withErrors(['email' => 'No account uses this sign-in yet. Create an account with your email first.']);
+            $request->session()->put('social_signup', [
+                'provider' => $provider->value,
+                'provider_user_id' => $identity->getId(),
+                'name' => $identity->getName() ?? $identity->getNickname(),
+                'email' => $identity->getEmail(),
+                'email_verified' => $provider->confirmsEmail($identity),
+            ]);
+
+            return to_route('welcome');
         }
 
         Auth::login($user);

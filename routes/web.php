@@ -3,6 +3,7 @@
 use App\Enums\SocialProvider;
 use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\Auth\WelcomeController;
 use App\Http\Controllers\Public\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])
         ->whereIn('provider', $providers)
         ->name('social.callback');
+
+    // A new social identity confirms its details and age before its account exists.
+    Route::get('welcome', [WelcomeController::class, 'show'])->name('welcome');
 });
 
 // Developer page with every shared component; it does not exist outside local.
