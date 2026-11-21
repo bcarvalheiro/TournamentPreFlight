@@ -4,37 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M05 · Home page on seeded data (review).
-- **Branch**: m05-home-page
-- **State**: Slices 1–15, `/rethink-tests` and `/review` done; `composer verify` green. Next: Bruno pushes and opens the PR.
-
-### Plan (M05)
-
-- [x] Slice 1: move our components into `components/pf/` (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, imports, `architecture.md` Code layout, `decisions.md`; existing Vitest tests + `tsc`) · groundwork
-- [x] Slice 2: types casual/prerelease/challenge/cup, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
-  - Changed (Bruno, 20 Nov): long names ("League Challenge", "League Cup") move to Slice 11, where the slip first shows them.
-- [x] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
-- [x] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
-- [x] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
-  - Changed (20 Nov): no filters exist yet, so `matched` equals `all` here; Slice 6 adds the checks that up next ignores filters and that `matched` follows them.
-- [x] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop, up next unaffected, `totals.matched` follows the filters (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC2, AC3, AC4
-- [x] Slice 7a: date presets week/weekend/7/30 in Lisbon days, applied before the cap, `filters.when` (`HomeFilterRequest::when()`, `dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, weekday, year and month end, Lisbon summer time) · AC3, AC4
-- [x] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
-  - Changed (Bruno, 20 Nov): Slice 7 split in two (~270 lines together).
-- [x] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`, `app/Data/Public/ShopFilterData.php`; `HomeShopsTest`) · AC6
-  - Changed (20 Nov): the shops go out as `ShopFilterData` DTOs (rule 1: never raw models); the type and date filter moved into a typed private method so Larastan knows the event scopes.
-- [x] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
-- [x] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`, `pf/going-button.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9. Also: GoingButton reads `auth` via `usePage()` (no prop passing); band classes use theme names (`app.css`) instead of `[…]` values.
-- [x] Slice 11: `EventListItem` (type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/event-list-item.tsx`, `pf/going-button.tsx` `className`, `styleguide.tsx`; `event-list-item.test.tsx`) · AC5, AC9
-  - Changed (Bruno, 20 Nov): named `EventListItem`, not `MatchSlip` (it is a row of the upcoming list); no tournament ID shown.
-- [x] Slice 12a: agenda grouped by Lisbon day (day header, relative label, sticky column from 700px), empty state with Clear filters or "Nothing on the calendar yet.", replaces the home stub list (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `pages/home.tsx`, `styleguide.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
-- [x] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx`, `public-layout.tsx`; `agenda.test.tsx`, `StyleguideTest`) · design
-  - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
-- [x] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips (links to the page without that filter), count line (`pf/filter-bar.tsx`, `types/events.ts` `HomeFilters` `ShopFilter`, `pages/home.tsx`, `pf/agenda.tsx` sticky offset; `filter-bar.test.tsx`) · AC4
-  - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
-- [x] Slice 14: `FilterSheet` in `ResponsiveDialog` (When presets + Pick dates, Type toggles, Host shop checkboxes with counts, Clear all, Show n events), applies as you tick (Inertia visit, `preserveState`, `preserveScroll`, `replace`, `only` list props); `urlFor` moves to `lib/home-filters.ts`; the bar owns the open state (`pf/filter-sheet.tsx`, `lib/home-filters.ts`, `pf/filter-bar.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters; `time.test.ts` `lisbonDate` for the date inputs' min) · AC8
-  - Changed (Bruno, 20 Nov): one slice, not split into 14a/14b.
-- [x] Slice 15: UI check fixes: filter sheet grows to ~85% height with the content scrolling and the footer fixed, left-aligned title and side-by-side buttons on phones; counts read as "12 trainers going" (sr-only text, not aria-label); tap targets 40px (pills, chips, footer links); day headers like the prototype; clearer punched holes; filter bar line as wide as its content (`responsive-dialog.tsx`, `filter-sheet.tsx`, `event-list-item.tsx`, `pairings-sheet.tsx`, `filter-bar.tsx`, `agenda.tsx`, `public-layout.tsx`; existing Vitest and browser tests updated) · from /ui-check
+- **Milestone**: M06 · Sign in: magic link and Google (in progress).
+- **Branch**: m06-auth
+- **State**: Plan proposed, waiting for Bruno's approval.
 
 ## Milestones
 
@@ -44,8 +16,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
-| M05 | Home page on seeded data | review | PR to open |
-| M06 | Sign in: magic link and Google | todo | |
+| M05 | Home page on seeded data | done | PR #7 merged |
+| M06 | Sign in: magic link and Google | in progress | |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
