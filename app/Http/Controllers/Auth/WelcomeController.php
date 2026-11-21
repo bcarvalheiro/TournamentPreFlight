@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\CreateUserFromSocialIdentity;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,5 +30,23 @@ class WelcomeController extends Controller
             'email' => $signup['email'],
             'emailLocked' => $signup['email_verified'],
         ]);
+    }
+
+    public function store(Request $request, CreateUserFromSocialIdentity $create): RedirectResponse
+    {
+        /** @var array{provider: string, provider_user_id: string, name: string|null, email: string|null, email_verified: bool}|null $signup */
+        $signup = $request->session()->get('social_signup');
+
+        if ($signup === null) {
+            return to_route('login');
+        }
+
+        $user = $create->handle($signup, $request->only(['name', 'email', 'age_confirmed']));
+
+        $request->session()->forget('social_signup');
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('home'));
     }
 }

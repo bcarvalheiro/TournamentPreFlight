@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M06 · Sign in: email and password, Google, Discord, X (in progress).
 - **Branch**: m06-auth
-- **State**: Slices 1a–6a done. Next: Slice 6b.
+- **State**: Slices 1a–6b done. Next: Slice 7.
 
 ### Plan (M06)
 
@@ -19,7 +19,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x; `confirmsEmail()`), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links (an unverified local account is verified and its password cleared), unverified provider email refused politely, cancelled sign-in back to login (`composer.json`, `config/services.php`, `.env.example`, `bootstrap/providers.php`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`, `architecture.md` Code layout, `decisions.md`; `SocialSignInTest`) · AC3
   - Changed (Bruno, 21 Nov): offered as 5a/5b, kept as one slice; the cancel case and clearing the password of an unverified account added.
 - [x] Slice 6a: a new social identity is kept in the session (`social_signup`) and sent to `/welcome`, which shows the name prefilled and the email (fixed when the provider vouched for it) (`Auth\SocialAuthController`, `Auth\WelcomeController@show`, `pages/auth/welcome.tsx`, `routes/web.php`; `SocialSignUpTest`) · AC3
-- [ ] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider vouched, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3, AC7
+- [x] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider vouched, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3, AC7
   - Changed (Bruno, 21 Nov): Slice 6 split in two (~300 lines together); account creation is its own Action, `CreateUserFromSocialIdentity`, so it can be tested on its own.
 - [ ] Slice 7: restyle the auth pages (login, register, forgot, reset, verify, confirm, welcome) in the Pre-Flight look with social buttons; providers without credentials hidden (`pages/auth/*`, `pf/social-buttons.tsx`, `HandleInertiaRequests`; `social-buttons.test.tsx`, `SocialButtonsTest`) · design
 

@@ -28,6 +28,7 @@ Route::middleware('guest')->group(function () {
 
     // A new social identity confirms its details and age before its account exists.
     Route::get('welcome', [WelcomeController::class, 'show'])->name('welcome');
+    Route::post('welcome', [WelcomeController::class, 'store'])->name('welcome.store');
 });
 
 // Developer page with every shared component; it does not exist outside local.

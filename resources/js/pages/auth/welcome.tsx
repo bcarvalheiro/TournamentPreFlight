@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import WelcomeController from '@/actions/App/Http/Controllers/Auth/WelcomeController';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -14,14 +15,16 @@ type Props = {
 
 /**
  * Welcome page for a new social sign-in (M06): name, email and the age box.
- * Submitting creates the account (Slice 6b wires the form).
+ * Submitting creates the account, signs in and returns to the intended page.
  */
 export default function Welcome({ name, email, emailLocked }: Props) {
     return (
         <>
             <Head title="Welcome" />
-            {/* Slice 6b adds the Wayfinder action ({...store.form()}). */}
-            <Form className="flex flex-col gap-6">
+            <Form
+                {...WelcomeController.store.form()}
+                className="flex flex-col gap-6"
+            >
                 {({ processing, errors }) => (
                     <div className="grid gap-6">
                         <div className="grid gap-2">
