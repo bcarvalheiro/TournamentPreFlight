@@ -108,3 +108,26 @@ it('drops filter values it does not know', function () {
             ->where('filters', ['type' => [], 'shop' => [], 'when' => 'any', 'from' => null, 'to' => null])
         );
 });
+
+it('drops nested arrays and repeated values', function () {
+    filterableEvent(EventType::Cup, $this->shopA, day: 1);
+
+    $this->get('/?type[0][]=cup&type[]=cup&type[]=cup&shop[]='.$this->shopA->id.'&shop[]='.$this->shopA->id)
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('filters.type', ['cup'])
+            ->where('filters.shop', [$this->shopA->id])
+        );
+});
+
+it('drops a shop without upcoming events', function () {
+    filterableEvent(EventType::Cup, $this->shopA, day: 1);
+    filterableEvent(EventType::Casual, $this->shopB, day: 2);
+    Event::factory()->create(['shop_id' => $this->shopC->id, 'starts_at' => Carbon::parse('2026-12-01 10:00', 'UTC')]);
+
+    $this->get(route('home', ['shop' => [$this->shopC->id]]))
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->has('events', 2)
+            ->where('filters.shop', [])
+        );
+});

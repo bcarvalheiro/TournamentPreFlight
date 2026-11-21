@@ -28,13 +28,16 @@ class HomeFilterRequest extends FormRequest
     }
 
     /**
-     * The chosen tournament types; unknown types are dropped.
+     * The chosen tournament types, each once; unknown types and anything that
+     * is not a plain string (a nested `type[0][]=cup`) are dropped.
      *
      * @return list<EventType>
      */
     public function types(): array
     {
-        return array_values($this->enums('type', EventType::class));
+        $words = array_unique(array_filter($this->array('type'), is_string(...)));
+
+        return array_values(array_filter(array_map(EventType::tryFrom(...), $words)));
     }
 
     /**
@@ -122,8 +125,8 @@ class HomeFilterRequest extends FormRequest
     }
 
     /**
-     * The chosen shop ids. Only whole numbers are kept: MySQL would compare
-     * a word like "abc" as 0 (Laravel docs, Queries, "Where Clauses").
+     * The chosen shop ids, each once. Only whole numbers are kept: MySQL would
+     * compare a word like "abc" as 0 (Laravel docs, Queries, "Where Clauses").
      *
      * @return list<int>
      */
@@ -134,6 +137,6 @@ class HomeFilterRequest extends FormRequest
             fn (mixed $id): bool => is_string($id) && ctype_digit($id),
         );
 
-        return array_values(array_map(intval(...), $digitsOnly));
+        return array_values(array_unique(array_map(intval(...), $digitsOnly)));
     }
 }

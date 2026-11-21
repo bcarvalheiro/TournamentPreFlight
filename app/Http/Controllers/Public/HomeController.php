@@ -26,13 +26,21 @@ class HomeController extends Controller
     /**
      * The home page: upcoming and ongoing events, soonest first, as public cards only.
      * `upNext` never follows the filters; `totals` counts beyond the cap ("First 25 of 40");
-     * `shops` lists the shops for the filter sheet.
+     * `shops` lists the shops for the filter sheet; a chosen shop not in it is dropped.
      */
     public function __invoke(HomeFilterRequest $request): Response
     {
         $types = $request->types();
-        $shopIds = $request->shopIds();
         $dateRange = $request->dateRange();
+
+        // Shops with any upcoming event; the counts follow type and date, never the shop filter.
+        $shops = Shop::query()
+            ->whereHas('events', fn (Builder $query) => $query->upcoming())
+            ->withCount(['events' => fn (Builder $query) => $this->upcomingOfTypeAndDate($query, $types, $dateRange)])
+            ->orderBy('name')
+            ->get();
+        $shopIds = array_values(array_intersect($request->shopIds(), $shops->modelKeys()));
+        $pickedDates = $request->datePreset() === 'custom';
 
         $matching = $this->upcomingOfTypeAndDate(Event::query(), $types, $dateRange)
             ->when($shopIds, fn (Builder $query) => $query->atShops($shopIds));
@@ -44,19 +52,13 @@ class HomeController extends Controller
                 'matched' => $matching->count(),
                 'all' => Event::upcoming()->count(),
             ],
-            // Shops with any upcoming event; the counts follow type and date, never the shop filter.
-            'shops' => Shop::query()
-                ->whereHas('events', fn (Builder $query) => $query->upcoming())
-                ->withCount(['events' => fn (Builder $query) => $this->upcomingOfTypeAndDate($query, $types, $dateRange)])
-                ->orderBy('name')
-                ->get()
-                ->map(ShopFilterData::fromModel(...)),
+            'shops' => $shops->map(ShopFilterData::fromModel(...)),
             'filters' => [
                 'type' => $types,
                 'shop' => $shopIds,
                 'when' => $request->datePreset(),
-                'from' => $request->from()?->toDateString(),
-                'to' => $request->to()?->toDateString(),
+                'from' => $pickedDates ? $request->from()?->toDateString() : null,
+                'to' => $pickedDates ? $request->to()?->toDateString() : null,
             ],
         ]);
     }
