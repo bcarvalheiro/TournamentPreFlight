@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M05 · Home page on seeded data (in progress).
+- **Milestone**: M05 · Home page on seeded data (review).
 - **Branch**: m05-home-page
-- **State**: Slices 1–15 done. Next: /rethink-tests, /review, /wrap-up.
+- **State**: Slices 1–15, `/rethink-tests` and `/review` done; `composer verify` green. Next: Bruno pushes and opens the PR.
 
 ### Plan (M05)
 
@@ -44,7 +44,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
-| M05 | Home page on seeded data | in progress | |
+| M05 | Home page on seeded data | review | PR to open |
 | M06 | Sign in: magic link and Google | todo | |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
@@ -61,6 +61,118 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-20/21 · M05 · Home page on seeded data
+
+**Outcome.** All nine acceptance criteria met and tested. The public home page `/` has:
+- a hero with the coin flip, and the "Up next" pairings sheet;
+- a sticky filter bar with removable chips and counts;
+- the filter sheet (dates, types, shops), applied as you tick;
+- a day-by-day agenda of event list items, with the type legend, the disclaimer and the short footer notice.
+
+Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` DTOs, and `HomeFilterRequest` reads type, shop, date presets and picked dates in Lisbon days, dropping anything it can't use. `composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 64 Vitest, 162 Pest (8,530 assertions, browser tests included). Run in 15 planned slices (7 and 12 split, 13 and 14 kept whole on Bruno's call, 15 added from `/ui-check`), each proposed, built test-first and committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- Setup:
+  - `bb16787` plan
+  - `607d4e3` fewer trademark names (hero "Pre-Flight", short notice)
+- Groundwork:
+  - `fc8f2d2` components into `components/pf/` (Slice 1)
+  - `8ad81cd` casual/prerelease types (Slice 2)
+- Server:
+  - `bc10086` home controller and card DTO (Slice 3)
+  - `e9a2c9b` privacy test and Arch rules (Slice 4)
+  - `c29fbce` up next and totals (Slice 5)
+  - `5e6d218` type and shop filters (Slice 6)
+  - `d56cfa2` date presets (7a)
+  - `8488334` picked dates (7b)
+  - `73e7a0a` shop list with counts (Slice 8)
+- Band:
+  - `1c8a168` hero and coin flip (Slice 9)
+  - `0cb7ba2` pairings sheet, with readable band classes (Slice 10)
+- List:
+  - `f36afae` `EventListItem` (Slice 11)
+  - `9bdf077` agenda (12a)
+  - `8b7fd24` legend, disclaimer, footer notice (12b)
+- Filters:
+  - `5b429d0` sticky filter bar (Slice 13)
+  - `ed2e37f` filter sheet (Slice 14)
+- `28f47bf` UI check fixes (Slice 15)
+- `/rethink-tests`:
+  - `5c07831` explicit test days
+  - `8d79938` chip removal and Clear all in the browser test
+  - `cd2d3b6` case-blind privacy check
+- `/review`:
+  - `54958ac` nested, repeated and stale filter values dropped
+  - `64f4bb3` tie-breaker by id
+  - `9b5d616` filter sheet draft and typed dates
+  - `bab21fe` picked dates only with "Pick dates"
+  - `e0591da`, `20d8b2b`, `a975d91`, `0faa55d` accessibility touch-ups
+  - `f63c859` privacy test with a child and a birth year
+  - `ca9dc1a` notes for later
+- `c23d972` git deny rules in `.claude/settings.json` (outside the milestone, after I staged files)
+
+**Decisions by Bruno** (all in `decisions.md`)
+- **Structure:** DTOs in `app/Data/Public/` for public data; camelCase keys; our components in `components/pf/`.
+- **Filters:**
+  - apply as you tick;
+  - invalid values are dropped, never rejected;
+  - shop counts follow type and date, not the shop filter;
+  - date presets as in product.md.
+- **Trademarks:** names as few as possible.
+  - hero "Pre-Flight", with one "Pokémon TCG" mention;
+  - footer "Independent fan project. Not affiliated with, endorsed or sponsored by Nintendo or The Pokémon Company."
+- **The list item:** it is `EventListItem` (a row of the upcoming list). It shows type and shop, no tournament ID. The long type names are "Casual play", "Prerelease", "League Challenge" and "League Cup".
+- **Layout:**
+  - Up next shows month / weekday and day / time, with "Trainers" over the count;
+  - agenda day headers look like the prototype;
+  - the filter sheet has small grey section labels;
+  - the filter bar line is as wide as its content.
+- **Styling:** keep Tailwind, but name design values in `@theme` instead of long `[…]` values. `GoingButton` reads `auth` itself.
+
+**Problems hit and how they were solved**
+- *I staged files* with `git mv`/`git rm`. Bruno added deny rules for both (`c23d972`). Later a stray `git stash list` in a command was refused by the same list, and I reran it without that.
+- *`inertiaProps('events.*.id')` returns null*, because there is no wildcard support. Fixed by reading the list and using `pluck('id')`.
+- *A request method named `when()`* clashed with `Conditionable::when()` (fatal error). Renamed to `datePreset()`.
+- *Larastan ignores `@param` on closures*, so scopes inside `when()` were "undefined". Fixed with a typed private method, `upcomingOfTypeAndDate()`.
+- *The Playwright MCP needs Google Chrome*, which isn't installed. Screenshots went through the project's own Playwright in scratchpad scripts.
+- *The coin sat under the prize cards on narrow phones* before the first flip. Fixed with `min-w-0 flex-1` on the message group.
+- *JavaScript puts keys like "7" first in an object*, so the date presets came out of order. `DATE_PRESETS` is now a list.
+- *The URL ends up as `type[0]=cup`.* This comes from Laravel's `fullUrl()` (`http_build_query`), not Inertia. The browser test reads the query with `parse_str`. An Inertia option tried first changed nothing and was removed.
+- *A text click on "Filters" failed once the badge showed* ("Filters1"). Fixed with `data-testid="open-filters"`. An `aria-label` would have hidden the count from screen readers.
+- *Tailwind 4 `leading-*` doesn't reach child elements* (the variable isn't inherited), and `text-2xl` brings its own line height. Fixed with `leading-none` on the span itself.
+- *The ui-reviewer stopped on a network error* before its screenshots. It was resumed from where it stopped.
+- *The fast-tick browser test passed with the bug*, because the local server answers before the second click.
+  - Fix: `DB::listen(fn () => usleep(150_000))` slows the server like mobile data, which works because Pest's browser server runs in the test process.
+  - Result: the test went red, then green after the fix.
+
+**`/rethink-tests` outcome.** All 18 test files walked through.
+- **Accepted:**
+  - an explicit day in `filterableEvent()`, because a `static` counter was shared across tests;
+  - the browser test also removes a chip and clicks Clear all (shown red by breaking `NO_FILTERS`);
+  - the privacy check ignores letter case. `assertDontSee` is case-sensitive and the owner's email is lower case; shown red by leaking it.
+- **Rejected:** a browser test for Pick dates (the server is fully tested, and the test would be slow), and any removals.
+- **Moved to M06:** saving emails in lower case.
+
+**Review outcome.** `code-reviewer`, `privacy-guard` and `ui-reviewer` (a re-check after the UI fixes). privacy-guard found no leaks.
+- **Fixed:**
+  - a 500 on `/?type[0][]=cup`;
+  - repeated values giving duplicate chips, stale shop ids, and `from`/`to` echoed without "Pick dates";
+  - no tie-breaker on equal start times, so the list could flicker;
+  - quick ticks lost and typed dates wiped in the filter sheet. The sheet now keeps a draft, and typed dates apply once they're a whole day that isn't in the past;
+  - the desktop dialog's 16px close button, a day heading read as one word, the date chip's label, and a 36px list button;
+  - the privacy test now seeds a child profile and a birth year, and `architecture.md` describes the Arch tests accurately.
+- **Not changed:** the sort inside count queries, the logo link height, and commit housekeeping.
+- **Moved to later:** the card title naming (M09), and a partial-reload privacy case (when deferred props arrive).
+
+**What is left**
+- Push and open the PR.
+- Bruno: check by hand on a real phone (filter sheet, typing dates, chips).
+
+**Surprising**
+- Laravel rewrites the query string of the page URL (`type[]` becomes `type[0]`, keys sorted), so a shared link never looks exactly like the one clicked.
+- Inertia cancels a running visit when a new one starts, so "apply as you tick" needs a local draft or quick ticks are lost. It only shows on a slow network.
+- Chrome reports every digit typed into a date box as a full date (`0002-12-05`), which the server rightly drops.
 
 ### 2026-11-19 · M04 · Domain schema and seed data
 
