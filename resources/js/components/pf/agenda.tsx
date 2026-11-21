@@ -79,7 +79,8 @@ export function Agenda({ events, totalUpcoming }: AgendaProps): ReactNode {
                         <h2 className="self-start border-l-5 border-red pl-2.5 font-display leading-none font-bold tracking-wide uppercase min-[700px]:sticky min-[700px]:top-20">
                             <span className="text-2xl leading-none min-[700px]:block min-[700px]:text-[2rem] min-[700px]:leading-[0.95]">
                                 {formatDay(group.day)}
-                            </span>
+                            </span>{' '}
+                            {/* The space keeps "Sat 21 Nov Tomorrow" two words for screen readers. */}
                             <span className="ml-1.5 text-base text-muted min-[700px]:ml-0">
                                 {formatRelativeDay(group.day)}
                             </span>

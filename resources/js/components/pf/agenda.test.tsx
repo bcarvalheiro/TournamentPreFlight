@@ -49,6 +49,9 @@ describe('Agenda', () => {
         expect(markup).toMatch(
             /Sat 5 Dec.*Carta Alta.*Sun 6 Dec.*Dado Dourado/,
         );
+
+        // Day and label stay two words for screen readers ("Sat 5 Dec Today", not "DecToday").
+        expect(markup).toMatch(/Sat 5 Dec<\/span> <span/);
     });
 
     it('offers Clear filters when the filters hide every event', () => {
