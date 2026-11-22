@@ -29,7 +29,7 @@ enum SocialProvider: string
     }
 
     /**
-     * Whether the provider vouches for the identity's email: Google and Discord
+     * Whether the provider certifies for the identity's email: Google and Discord
      * flag it in their raw data; X only ever sends a confirmed email.
      */
     public function confirmsEmail(SocialiteUser $identity): bool

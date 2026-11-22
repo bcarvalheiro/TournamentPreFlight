@@ -1,17 +1,16 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Facades\Notification;
 use Inertia\Testing\AssertableInertia as Assert;
 use Laravel\Socialite\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 
 /*
- * M06 AC3 and AC7: a new social identity gets an account only through the
- * welcome page and its "I am 13 or older" box. The identity waits in the
- * session meanwhile. An email the provider vouches for is fixed; any other
- * email is typed and verified by email.
+ * M06 AC3: a new social identity gets an account only through the welcome
+ * page and its "I am 13 or older" box. The identity waits in the session
+ * meanwhile. Only an identity whose provider certifies for its email can sign
+ * up; the email is the provider's and cannot be changed.
  */
 
 /**
@@ -27,7 +26,6 @@ function pendingSignup(array $overrides = []): array
         'provider_user_id' => 'id-789',
         'name' => 'Ana Lima',
         'email' => 'ana@example.test',
-        'email_verified' => true,
         ...$overrides,
     ];
 }
@@ -48,33 +46,36 @@ it('keeps a new identity in the session and sends it to the welcome page', funct
         'provider_user_id' => 'id-789',
         'name' => 'Ana Lima',
         'email' => 'ana@example.test',
-        'email_verified' => true,
     ])->and(User::query()->count())->toBe(0);
     $this->assertGuest();
 })->with('new identities');
 
-it('shows the name prefilled and fixes an email the provider vouched for', function () {
-    $this->withSession(['social_signup' => [
-        'provider' => 'google', 'provider_user_id' => 'id-789', 'name' => 'Ana Lima',
-        'email' => 'ana@example.test', 'email_verified' => true,
-    ]]);
+it('shows the name prefilled and the email the provider certified for', function () {
+    $this->withSession(['social_signup' => pendingSignup()]);
 
     $this->get(route('welcome'))->assertInertia(fn (Assert $page) => $page
         ->component('auth/welcome')
         ->where('name', 'Ana Lima')
-        ->where('email', 'ana@example.test')
-        ->where('emailLocked', true));
+        ->where('email', 'ana@example.test'));
 });
 
-it('asks for an email when the provider sent none', function () {
-    Socialite::fake('x', SocialiteUser::fake(['id' => 'id-789', 'name' => 'Ana Lima', 'email' => null]));
+dataset('identities without a certified email', [
+    'x without an email' => ['x', 'X', ['email' => null]],
+    'discord unverified' => ['discord', 'Discord', ['verified' => false]],
+    'google unverified' => ['google', 'Google', ['email_verified' => false]],
+]);
 
-    $this->get(route('social.callback', 'x'));
+it('refuses a sign-up without an email the provider certifies for', function (string $provider, string $name, array $identity) {
+    Socialite::fake($provider, SocialiteUser::fake(['id' => 'id-789', 'name' => 'Ana Lima', 'email' => 'ana@example.test', ...$identity]));
 
-    $this->get(route('welcome'))->assertInertia(fn (Assert $page) => $page
-        ->where('email', null)
-        ->where('emailLocked', false));
-});
+    $this->get(route('social.callback', $provider))
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => "Your {$name} account has no confirmed email. Sign in another way, or register with your email and a password."]);
+
+    expect(session('social_signup'))->toBeNull()
+        ->and(User::query()->count())->toBe(0);
+    $this->assertGuest();
+})->with('identities without a certified email');
 
 it('sends anyone without a pending sign-up to the login page', function () {
     $this->get(route('welcome'))->assertRedirect(route('login'));
@@ -112,23 +113,12 @@ it('creates the account, links the identity and returns to the intended page', f
     Notification::assertNothingSent();
 });
 
-it('keeps the email the provider vouched for', function () {
+it('keeps the email the provider certified for', function () {
     $this->withSession(['social_signup' => pendingSignup()]);
 
     $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'email' => 'other@example.test', 'age_confirmed' => '1']);
 
     expect(User::query()->sole()->email)->toBe('ana@example.test');
-});
-
-it('verifies a typed email by email', function () {
-    Notification::fake();
-    $this->withSession(['social_signup' => pendingSignup(['provider' => 'x', 'email' => null, 'email_verified' => false])]);
-
-    $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'email' => 'ana@example.test', 'age_confirmed' => '1']);
-
-    $user = User::query()->sole();
-    expect($user->email_verified_at)->toBeNull();
-    Notification::assertSentTo($user, VerifyEmail::class);
 });
 
 it('creates nothing without a pending sign-up', function () {

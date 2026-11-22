@@ -8,16 +8,16 @@ import { Label } from '@/components/ui/label';
 
 type Props = {
     name: string | null;
-    email: string | null;
-    /** The provider vouched for this email, so it cannot be changed here. */
-    emailLocked: boolean;
+    /** The email the provider certified for; it cannot be changed here. */
+    email: string;
 };
 
 /**
- * Welcome page for a new social sign-in (M06): name, email and the age box.
+ * Welcome page for a new social sign-in (M06): name, the provider's email
+ * (read-only) and the age box.
  * Submitting creates the account, signs in and returns to the intended page.
  */
-export default function Welcome({ name, email, emailLocked }: Props) {
+export default function Welcome({ name, email }: Props) {
     return (
         <>
             <Head title="Welcome" />
@@ -43,12 +43,9 @@ export default function Welcome({ name, email, emailLocked }: Props) {
                             <Label htmlFor="email">Email address</Label>
                             <Input
                                 id="email"
-                                name="email"
                                 type="email"
-                                required
-                                autoComplete="email"
-                                defaultValue={email ?? ''}
-                                readOnly={emailLocked}
+                                value={email}
+                                readOnly
                             />
                             <InputError message={errors.email} />
                         </div>

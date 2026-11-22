@@ -73,7 +73,7 @@ it('never links an email the provider has not verified', function (string $provi
 
     $this->get(route('social.callback', $provider))
         ->assertRedirect(route('login'))
-        ->assertSessionHasErrors(['email' => 'An account with this email already exists. Sign in with your email and password.']);
+        ->assertSessionHasErrors(['email' => 'An account with this email already exists. Sign in the way you did before.']);
 
     $this->assertGuest();
     expect(SocialAccount::query()->count())->toBe(0);

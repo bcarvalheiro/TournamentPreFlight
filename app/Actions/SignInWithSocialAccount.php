@@ -42,7 +42,7 @@ class SignInWithSocialAccount
 
         if (! $provider->confirmsEmail($identity)) {
             throw ValidationException::withMessages([
-                'email' => 'An account with this email already exists. Sign in with your email and password.',
+                'email' => 'An account with this email already exists. Sign in the way you did before.',
             ])->redirectTo(route('login'));
         }
 

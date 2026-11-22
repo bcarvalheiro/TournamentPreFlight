@@ -40,6 +40,14 @@ class SocialAuthController extends Controller
         }
         $user = $signIn->handle($provider, $identity);
 
+        // A new identity signs up only with an email its provider certifies for,
+        // so a social login never sits on an email nobody has proven.
+        if ($user === null && ! $provider->confirmsEmail($identity)) {
+            return to_route('login')->withErrors([
+                'email' => "Your {$provider->name} account has no confirmed email. Sign in another way, or register with your email and a password.",
+            ]);
+        }
+
         // A new identity: it waits in the session until the welcome page's age box.
         if ($user === null) {
             $request->session()->put('social_signup', [
@@ -47,7 +55,6 @@ class SocialAuthController extends Controller
                 'provider_user_id' => $identity->getId(),
                 'name' => $identity->getName() ?? $identity->getNickname(),
                 'email' => $identity->getEmail(),
-                'email_verified' => $provider->confirmsEmail($identity),
             ]);
 
             return to_route('welcome');
