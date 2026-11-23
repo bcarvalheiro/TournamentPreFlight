@@ -116,3 +116,11 @@ it('asks the database nothing for the intent when there is none', function () {
     // The player gate's own check; the pendingIntent prop adds none.
     expect($profileQueries)->toBe(1);
 });
+
+it('tells the sign-in pages a guest is signing in to say they are going', function (string $page) {
+    $this->get(route($page))->assertInertia(fn (Assert $inertia) => $inertia->where('signingInToGo', false));
+
+    $this->post(route('events.going', Event::factory()->create()), ['return_to' => '/']);
+
+    $this->get(route($page))->assertInertia(fn (Assert $inertia) => $inertia->where('signingInToGo', true));
+})->with(['login', 'register']);

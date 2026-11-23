@@ -15,12 +15,25 @@ import { store } from '@/routes/register';
 type Props = {
     passwordRules: string;
     socialProviders: SocialProviderName[];
+    /** A guest pressed "I'm going" and was sent here to sign up. */
+    signingInToGo: boolean;
 };
 
-export default function Register({ passwordRules, socialProviders }: Props) {
+export default function Register({
+    passwordRules,
+    socialProviders,
+    signingInToGo,
+}: Props) {
     return (
         <>
             <Head title="Create account" />
+
+            {signingInToGo && (
+                <p className="mb-4 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
+                    <strong>Sign up to say you're going.</strong> It's a
+                    headcount, not a registration.
+                </p>
+            )}
 
             <SocialButtons providers={socialProviders} />
             <Form
@@ -106,6 +119,10 @@ export default function Register({ passwordRules, socialProviders }: Props) {
                                         I am 13 or older
                                     </Label>
                                 </div>
+                                <p className="text-sm text-muted-foreground">
+                                    Under 13? A parent or guardian adds you to
+                                    their account.
+                                </p>
                                 <InputError message={errors.age_confirmed} />
                             </div>
 

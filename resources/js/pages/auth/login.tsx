@@ -17,12 +17,15 @@ type Props = {
     status?: string;
     canResetPassword: boolean;
     socialProviders: SocialProviderName[];
+    /** A guest pressed "I'm going" and was sent here to sign in. */
+    signingInToGo: boolean;
 };
 
 export default function Login({
     status,
     canResetPassword,
     socialProviders,
+    signingInToGo,
 }: Props) {
     return (
         <>
@@ -35,6 +38,13 @@ export default function Login({
                 >
                     {status}
                 </div>
+            )}
+
+            {signingInToGo && (
+                <p className="mb-4 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
+                    <strong>Sign in to say you're going.</strong> It's a
+                    headcount, not a registration.
+                </p>
             )}
 
             <SocialButtons providers={socialProviders} />

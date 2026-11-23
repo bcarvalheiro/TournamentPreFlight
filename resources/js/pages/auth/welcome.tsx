@@ -10,6 +10,8 @@ type Props = {
     name: string | null;
     /** The email the provider certified for; it cannot be changed here. */
     email: string;
+    /** The provider's display name: Google, Discord or X. */
+    provider: string;
 };
 
 /**
@@ -17,7 +19,7 @@ type Props = {
  * (read-only) and the age box.
  * Submitting creates the account, signs in and returns to the intended page.
  */
-export default function Welcome({ name, email }: Props) {
+export default function Welcome({ name, email, provider }: Props) {
     return (
         <>
             <Head title="Welcome" />
@@ -46,7 +48,14 @@ export default function Welcome({ name, email }: Props) {
                                 type="email"
                                 value={email}
                                 readOnly
+                                aria-describedby="email-hint"
                             />
+                            <p
+                                id="email-hint"
+                                className="text-sm text-muted-foreground"
+                            >
+                                The email on your {provider} account.
+                            </p>
                             <InputError message={errors.email} />
                         </div>
 
@@ -64,6 +73,10 @@ export default function Welcome({ name, email }: Props) {
                                     I am 13 or older
                                 </Label>
                             </div>
+                            <p className="text-sm text-muted-foreground">
+                                Under 13? A parent or guardian adds you to their
+                                account.
+                            </p>
                             <InputError message={errors.age_confirmed} />
                         </div>
 

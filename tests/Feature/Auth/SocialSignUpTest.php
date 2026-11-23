@@ -59,7 +59,8 @@ it('shows the name prefilled and the email the provider certified for', function
     $this->get(route('welcome'))->assertInertia(fn (Assert $page) => $page
         ->component('auth/welcome')
         ->where('name', 'Ana Lima')
-        ->where('email', 'ana@example.test'));
+        ->where('email', 'ana@example.test')
+        ->where('provider', 'Google'));
 });
 
 dataset('identities without a certified email', [

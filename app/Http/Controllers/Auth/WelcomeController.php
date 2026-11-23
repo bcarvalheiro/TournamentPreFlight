@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Actions\CreateUserFromSocialIdentity;
+use App\Enums\SocialProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ class WelcomeController extends Controller
         return Inertia::render('auth/welcome', [
             'name' => $signup['name'],
             'email' => $signup['email'],
+            'provider' => SocialProvider::from($signup['provider'])->name,
         ]);
     }
 

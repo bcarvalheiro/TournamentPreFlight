@@ -53,6 +53,8 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
             'socialProviders' => SocialProvider::enabled(),
+            // A guest who pressed "I'm going" (M06 pending intent) is told why.
+            'signingInToGo' => $request->session()->has('pending_intent'),
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
@@ -71,9 +73,10 @@ class FortifyServiceProvider extends ServiceProvider
             'socialProviders' => SocialProvider::enabled(),
         ]));
 
-        Fortify::registerView(fn () => Inertia::render('auth/register', [
+        Fortify::registerView(fn (Request $request) => Inertia::render('auth/register', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
             'socialProviders' => SocialProvider::enabled(),
+            'signingInToGo' => $request->session()->has('pending_intent'),
         ]));
 
         Fortify::confirmPasswordView(fn () => Inertia::render('auth/confirm-password'));
