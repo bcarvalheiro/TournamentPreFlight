@@ -19,7 +19,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 ## Accounts and profiles
 
 - Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13). A social sign-up needs an email the provider confirms; without one the player registers with email and a password.
-- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Player ID is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Player ID, then back to the page. A password is optional for social sign-ups; they can add one in Settings.
+- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Player ID is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Player ID, then back to the page. A password is optional for social sign-ups; they can add one in Settings. A signed-in account without a profile is not redirected: it lands on the home page, and every page shows a notice linking to "Create your player profile". The navbar links to Profiles and Settings.
 - Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Profile fields: name, Player ID, birth year. All required.

@@ -4,27 +4,20 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M06 · Sign in: email and password, Google, Discord, X (review).
-- **Branch**: m06-auth
-- **State**: All slices, `/rethink-tests` and the `/review` fixes done; `composer verify` green. Next: Bruno opens the PR.
+- **Milestone**: M07 · Player profiles (in progress).
+- **Branch**: m07-profiles
+- **State**: Plan approved (23 Nov). Next: Slice 1.
 
-### Plan (M06)
+### Plan (M07)
 
-- [x] Slice 1a: remove two-factor auth, passkeys and magic-login tokens: Fortify features, `User` traits, kit pages and components, tests; migration drops the 2FA columns, `passkeys` and `magic_login_tokens` (`config/fortify.php`, `FortifyServiceProvider`, `User.php`, `MagicLoginToken.php`, migration, `routes/settings.php`, `pages/auth/two-factor-challenge.tsx`, `pages/settings/security.tsx`, kit components, `architecture.md`; `NoTwoFactorOrPasskeysTest`) · AC4
-- [x] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
-- [x] Slice 2: "I am 13 or older" box on registration; migration adds `users.age_confirmed_at`; no box, no account (migration, `CreateNewUser`, `User.php`, `UserFactory`, `pages/auth/register.tsx`, `architecture.md`; `RegistrationTest`) · AC1
-- [x] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
-- [x] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `User::isPlayerReady()`, `EnsurePlayerReady`, `HandleInertiaRequests`, `pf/going-button.tsx` + callers, `types/global.d.ts`; `PendingIntentTest`, `event-list-item.test.tsx`, `pairings-sheet.test.tsx`) · AC5
-  - Changed in review (23 Nov): the button is a POST form for upcoming events only (a link cannot set an intent), `pending_intent` is just `{event_id}` and the page is kept as Laravel's intended URL, which the gate keeps with `redirect()->guest()`.
-  - Changed (21 Nov): `NoPersonalDataLeaksTest` not extended: the new route only redirects and renders no page, and `pendingIntent` holds only an event id; `User::isPlayerReady()` added so the gate and the prop share one check.
-- [x] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x; `confirmsEmail()`), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links (an unverified local account is verified and its password cleared), unverified provider email refused politely, cancelled sign-in back to login (`composer.json`, `config/services.php`, `.env.example`, `bootstrap/providers.php`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`, `architecture.md` Code layout, `decisions.md`; `SocialSignInTest`) · AC3
-  - Changed (Bruno, 21 Nov): offered as 5a/5b, kept as one slice; the cancel case and clearing the password of an unverified account added.
-- [x] Slice 6a: a new social identity is kept in the session (`social_signup`) and sent to `/welcome`, which shows the name prefilled and the email (fixed when the provider certified for it) (`Auth\SocialAuthController`, `Auth\WelcomeController@show`, `pages/auth/welcome.tsx`, `routes/web.php`; `SocialSignUpTest`) · AC3
-- [x] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider certified, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3. Changed in review: only a provider-vouched email signs up, so the account always starts verified; "AC7" corrected (M06 has six)
-  - Changed (Bruno, 21 Nov): Slice 6 split in two (~300 lines together); account creation is its own Action, `CreateUserFromSocialIdentity`, so it can be tested on its own.
-- [x] Slice 7a: auth pages (sign in, register, forgot/reset, verify, confirm, welcome) in the Pre-Flight look: band, card, footer with the notice; "Sign in" copy (`layouts/auth/auth-simple-layout.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`; `auth-simple-layout.test.tsx`) · design, rule 7
-- [x] Slice 7b: "Continue with Google / Discord / X" buttons on sign in and register, only for configured providers; icons from each provider's brand kit (`SocialProvider::enabled()`, `FortifyServiceProvider`, `pf/social-buttons.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`, `decisions.md`; `SocialButtonsTest`, `social-buttons.test.tsx`) · AC3 UI
-  - Changed (Bruno, 21 Nov): Slice 7 split in two (~250 lines together).
+- [ ] Slice 1: save an adult profile: name required, Player ID 1–10 digits and unique across accounts ("This Player ID is already on another profile."), birth year 1920 to this Lisbon year; profile routes behind `auth` + `verified`; the first profile redirects with `redirect()->intended(route('home'))`, later ones to the list; a social account without a password saves too (`routes/web.php`, `Account\PlayerProfileController@store`, `StorePlayerProfileRequest`, `Actions\CreatePlayerProfile`, `architecture.md` Code layout; `CreatePlayerProfileTest`) · AC2, AC4, AC5
+- [ ] Slice 2: child consent: one "is a child" rule on `PlayerProfile` used by the model and the request; no consent, no profile; with consent `consent_given_at` and `consent_by_user_id` (the signed-in owner) are stored (`PlayerProfile.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`; `ChildProfileConsentTest`) · AC3
+- [ ] Slice 3: the create form: name, Player ID, birth year; consent box shown for a child birth year (the server sends the cut-off year); "Not now" kept; heading "Create your player profile" or "Add a profile" (`PlayerProfileController@create`, `pages/profiles/create.tsx`; `create.test.tsx`, props in `CreatePlayerProfileTest`) · AC3, AC4
+- [ ] Slice 4: profile list: cards with name, Player ID, birth year, only the account's own (`PlayerProfileController@index`, `app/Data/Own/OwnProfileData.php`, `pages/profiles/index.tsx`, `NoPersonalDataLeaksTest` dataset; `PlayerProfileListTest`) · AC1
+- [ ] Slice 5: signed-in navbar "Profiles (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add your Player ID to say you're going." + "Create your profile"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`; `public-layout.test.tsx`, `ProfileNoticeTest`) · AC4, AC5
+- [ ] Slice 6: edit a profile: Player ID unique except itself; turning into a child asks consent, an existing child keeps its consent; `PlayerProfilePolicy` gives 403 to anyone but the owner (`PlayerProfileController@edit/update`, `UpdatePlayerProfileRequest`, `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `pages/profiles/edit.tsx`, `architecture.md`; `UpdatePlayerProfileTest`) · AC1, AC2, AC3
+- [ ] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`; `DeletePlayerProfileTest`) · AC1, AC6
+- [ ] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`) · scope (takeover)
 
 ## Milestones
 
@@ -35,8 +28,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
-| M06 | Sign in: email and password, Google, Discord, X | review | PR to open |
-| M07 | Player profiles | todo | |
+| M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
+| M07 | Player profiles | in progress | |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
