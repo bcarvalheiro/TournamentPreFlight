@@ -1,27 +1,32 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Form, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import { login } from '@/routes';
+import { going } from '@/routes/events';
 
 const goingClasses =
-    'inline-flex h-8 items-center rounded-md border-[1.5px] border-red bg-red px-2.5 font-sans text-sm font-bold whitespace-nowrap text-white';
+    'inline-flex h-10 items-center rounded-md border-[1.5px] border-red bg-red px-2.5 font-sans text-sm font-bold whitespace-nowrap text-white';
 
 /**
- * The quick "I'm going" button (product.md). Signed out, it opens sign-in;
- * signed in, it does nothing yet: M08 makes it toggle the going answer.
- * It reads the signed-in user from the shared `auth` prop, like nav-user.tsx.
+ * The quick "I'm going" button (product.md). It posts the event (a form, so a
+ * link cannot set the intent): a guest signs in first, a user without a
+ * verified email or a Player ID is walked through them, and the page comes
+ * back with the intent. M08 makes it toggle the going answer for players.
  */
-export function GoingButton({ className }: { className?: string }): ReactNode {
-    const { auth } = usePage().props;
-    const classes = cn(goingClasses, className);
+export function GoingButton({
+    eventId,
+    className,
+}: {
+    eventId: number;
+    className?: string;
+}): ReactNode {
+    const { url } = usePage();
 
-    return auth.user ? (
-        <button type="button" className={classes}>
-            I'm going
-        </button>
-    ) : (
-        <Link href={login()} className={classes}>
-            I'm going
-        </Link>
+    return (
+        <Form {...going.form({ event: eventId })} className="contents">
+            <input type="hidden" name="return_to" value={url} />
+            <button type="submit" className={cn(goingClasses, className)}>
+                I'm going
+            </button>
+        </Form>
     );
 }

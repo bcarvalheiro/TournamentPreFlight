@@ -1,13 +1,12 @@
 <?php
 
-use App\Models\MagicLoginToken;
 use App\Models\SocialAccount;
 use App\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 
 /*
  * The tables sign-in needs (M06, M13). One provider identity belongs to one
- * account (AC2), and one magic link token opens one login.
+ * account (AC2).
  */
 it('refuses the same provider identity on two accounts', function () {
     SocialAccount::factory()->for(User::factory())->create(['provider' => 'google', 'provider_user_id' => '104857600']);
@@ -30,12 +29,4 @@ it('deletes the linked logins when the account is deleted', function () {
     $user->delete();
 
     expect(SocialAccount::query()->count())->toBe(0);
-});
-
-it('refuses two magic link tokens with the same hash', function () {
-    $hash = hash('sha256', 'the-token-in-the-link');
-    MagicLoginToken::factory()->create(['token_hash' => $hash]);
-
-    expect(fn () => MagicLoginToken::factory()->create(['token_hash' => $hash]))
-        ->toThrow(UniqueConstraintViolationException::class);
 });

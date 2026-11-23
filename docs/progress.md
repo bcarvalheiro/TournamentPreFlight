@@ -4,37 +4,27 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M05 · Home page on seeded data (review).
-- **Branch**: m05-home-page
-- **State**: Slices 1–15, `/rethink-tests` and `/review` done; `composer verify` green. Next: Bruno pushes and opens the PR.
+- **Milestone**: M06 · Sign in: email and password, Google, Discord, X (review).
+- **Branch**: m06-auth
+- **State**: All slices, `/rethink-tests` and the `/review` fixes done; `composer verify` green. Next: Bruno opens the PR.
 
-### Plan (M05)
+### Plan (M06)
 
-- [x] Slice 1: move our components into `components/pf/` (`app-logo`, `app-logo-icon`, `tournament-type-icon`, `tournament-type-badge`, `responsive-dialog` and their tests, imports, `architecture.md` Code layout, `decisions.md`; existing Vitest tests + `tsc`) · groundwork
-- [x] Slice 2: types casual/prerelease/challenge/cup, Casual Poké Ball, Prerelease Great Ball, "Maybe" out of the styleguide (`lib/tournament-types.ts`, `pf/tournament-type-icon.tsx`, `styleguide.tsx`; `tournament-type-icon.test.tsx`, `tournament-type-badge.test.tsx`) · groundwork
-  - Changed (Bruno, 20 Nov): long names ("League Challenge", "League Cup") move to Slice 11, where the slip first shows them.
-- [x] Slice 3: `/` served by `Public\HomeController` with `events` as `EventCardData` DTOs: upcoming listed (ongoing included, ended never), by start, max 25, `going_count` via `withCount`; `welcome.tsx` replaced by a `home.tsx` stub (`HomeController`, `app/Data/Public/EventCardData.php`, `routes/web.php`, `pages/home.tsx`; `HomePageTest`) · AC1, AC5
-- [x] Slice 4: privacy test with the home page as first route (guest and another user) and the Arch rule for public controllers and DTOs (`tests/Feature/Privacy/NoPersonalDataLeaksTest.php`, `tests/Arch/ArchTest.php`) · AC7
-- [x] Slice 5: `upNext` (first 5 upcoming, ignoring filters) and `totals` {matched, all} (`HomeController`; `HomePageTest`) · AC2, AC4
-  - Changed (20 Nov): no filters exist yet, so `matched` equals `all` here; Slice 6 adds the checks that up next ignores filters and that `matched` follows them.
-- [x] Slice 6: type and shop filters from the query string, OR within a group, AND between groups, invalid values dropped, `filters` prop, up next unaffected, `totals.matched` follows the filters (`app/Http/Requests/HomeFilterRequest.php`, `HomeController`; `HomeFiltersTest`) · AC2, AC3, AC4
-- [x] Slice 7a: date presets week/weekend/7/30 in Lisbon days, applied before the cap, `filters.when` (`HomeFilterRequest::when()`, `dateRange()`; `HomeDateFilterTest`, frozen time: Sunday, weekday, year and month end, Lisbon summer time) · AC3, AC4
-- [x] Slice 7b: Pick dates `from`/`to`, either end open, bad, past or reversed dates dropped (`HomeFilterRequest`, `Event::between()` with open ends; `HomeDateFilterTest`, `EventScopesTest`) · AC3
-  - Changed (Bruno, 20 Nov): Slice 7 split in two (~270 lines together).
-- [x] Slice 8: `shops` prop: shops with upcoming events, counts following the type and date filters, zeros kept (`HomeController`, `app/Data/Public/ShopFilterData.php`; `HomeShopsTest`) · AC6
-  - Changed (20 Nov): the shops go out as `ShopFilterData` DTOs (rule 1: never raw models); the type and date filter moved into a typed private method so Larastan knows the event scopes.
-- [x] Slice 9: hero ("Pre-Flight", one Pokémon TCG mention) and coin flip in the band (`pages/home.tsx`, `pf/coin-flip.tsx`; `coin-flip.test.tsx`) · design
-- [x] Slice 10: `PairingsSheet` (up next, NOW/LIVE, counts, quick button to sign-in when signed out) (`pf/pairings-sheet.tsx`, `pf/going-button.tsx`; `pairings-sheet.test.tsx`) · AC2, AC9. Also: GoingButton reads `auth` via `usePage()` (no prop passing); band classes use theme names (`app.css`) instead of `[…]` values.
-- [x] Slice 11: `EventListItem` (type badge, shop, city, Starts / Happening now, long type name added to `lib/tournament-types.ts`, count, quick button, amber possibly cancelled line) (`pf/event-list-item.tsx`, `pf/going-button.tsx` `className`, `styleguide.tsx`; `event-list-item.test.tsx`) · AC5, AC9
-  - Changed (Bruno, 20 Nov): named `EventListItem`, not `MatchSlip` (it is a row of the upcoming list); no tournament ID shown.
-- [x] Slice 12a: agenda grouped by Lisbon day (day header, relative label, sticky column from 700px), empty state with Clear filters or "Nothing on the calendar yet.", replaces the home stub list (`pf/agenda.tsx`, `lib/time.ts` `groupByLisbonDay`, `pages/home.tsx`, `styleguide.tsx`; `time.test.ts`, `agenda.test.tsx`) · AC1
-- [x] Slice 12b: legend (Common → Rare), disclaimer box, footer notice as agreed (`pf/agenda.tsx`, `public-layout.tsx`; `agenda.test.tsx`, `StyleguideTest`) · design
-  - Changed (Bruno, 20 Nov): Slice 12 split in two (~230 lines together).
-- [x] Slice 13: sticky `FilterBar`: Filters pill with badge, "Any time ▾", removable chips (links to the page without that filter), count line (`pf/filter-bar.tsx`, `types/events.ts` `HomeFilters` `ShopFilter`, `pages/home.tsx`, `pf/agenda.tsx` sticky offset; `filter-bar.test.tsx`) · AC4
-  - Changed (Bruno, 20 Nov): kept as one slice, not split into 13a/13b; the pills open nothing until Slice 14.
-- [x] Slice 14: `FilterSheet` in `ResponsiveDialog` (When presets + Pick dates, Type toggles, Host shop checkboxes with counts, Clear all, Show n events), applies as you tick (Inertia visit, `preserveState`, `preserveScroll`, `replace`, `only` list props); `urlFor` moves to `lib/home-filters.ts`; the bar owns the open state (`pf/filter-sheet.tsx`, `lib/home-filters.ts`, `pf/filter-bar.tsx`, `pages/home.tsx`; browser `HomeFiltersTest` at 390px: Cup + a shop, list and URL update, reload keeps filters; `time.test.ts` `lisbonDate` for the date inputs' min) · AC8
-  - Changed (Bruno, 20 Nov): one slice, not split into 14a/14b.
-- [x] Slice 15: UI check fixes: filter sheet grows to ~85% height with the content scrolling and the footer fixed, left-aligned title and side-by-side buttons on phones; counts read as "12 trainers going" (sr-only text, not aria-label); tap targets 40px (pills, chips, footer links); day headers like the prototype; clearer punched holes; filter bar line as wide as its content (`responsive-dialog.tsx`, `filter-sheet.tsx`, `event-list-item.tsx`, `pairings-sheet.tsx`, `filter-bar.tsx`, `agenda.tsx`, `public-layout.tsx`; existing Vitest and browser tests updated) · from /ui-check
+- [x] Slice 1a: remove two-factor auth, passkeys and magic-login tokens: Fortify features, `User` traits, kit pages and components, tests; migration drops the 2FA columns, `passkeys` and `magic_login_tokens` (`config/fortify.php`, `FortifyServiceProvider`, `User.php`, `MagicLoginToken.php`, migration, `routes/settings.php`, `pages/auth/two-factor-challenge.tsx`, `pages/settings/security.tsx`, kit components, `architecture.md`; `NoTwoFactorOrPasskeysTest`) · AC4
+- [x] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
+- [x] Slice 2: "I am 13 or older" box on registration; migration adds `users.age_confirmed_at`; no box, no account (migration, `CreateNewUser`, `User.php`, `UserFactory`, `pages/auth/register.tsx`, `architecture.md`; `RegistrationTest`) · AC1
+- [x] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
+- [x] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `User::isPlayerReady()`, `EnsurePlayerReady`, `HandleInertiaRequests`, `pf/going-button.tsx` + callers, `types/global.d.ts`; `PendingIntentTest`, `event-list-item.test.tsx`, `pairings-sheet.test.tsx`) · AC5
+  - Changed in review (23 Nov): the button is a POST form for upcoming events only (a link cannot set an intent), `pending_intent` is just `{event_id}` and the page is kept as Laravel's intended URL, which the gate keeps with `redirect()->guest()`.
+  - Changed (21 Nov): `NoPersonalDataLeaksTest` not extended: the new route only redirects and renders no page, and `pendingIntent` holds only an event id; `User::isPlayerReady()` added so the gate and the prop share one check.
+- [x] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x; `confirmsEmail()`), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links (an unverified local account is verified and its password cleared), unverified provider email refused politely, cancelled sign-in back to login (`composer.json`, `config/services.php`, `.env.example`, `bootstrap/providers.php`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`, `architecture.md` Code layout, `decisions.md`; `SocialSignInTest`) · AC3
+  - Changed (Bruno, 21 Nov): offered as 5a/5b, kept as one slice; the cancel case and clearing the password of an unverified account added.
+- [x] Slice 6a: a new social identity is kept in the session (`social_signup`) and sent to `/welcome`, which shows the name prefilled and the email (fixed when the provider certified for it) (`Auth\SocialAuthController`, `Auth\WelcomeController@show`, `pages/auth/welcome.tsx`, `routes/web.php`; `SocialSignUpTest`) · AC3
+- [x] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider certified, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3. Changed in review: only a provider-vouched email signs up, so the account always starts verified; "AC7" corrected (M06 has six)
+  - Changed (Bruno, 21 Nov): Slice 6 split in two (~300 lines together); account creation is its own Action, `CreateUserFromSocialIdentity`, so it can be tested on its own.
+- [x] Slice 7a: auth pages (sign in, register, forgot/reset, verify, confirm, welcome) in the Pre-Flight look: band, card, footer with the notice; "Sign in" copy (`layouts/auth/auth-simple-layout.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`; `auth-simple-layout.test.tsx`) · design, rule 7
+- [x] Slice 7b: "Continue with Google / Discord / X" buttons on sign in and register, only for configured providers; icons from each provider's brand kit (`SocialProvider::enabled()`, `FortifyServiceProvider`, `pf/social-buttons.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`, `decisions.md`; `SocialButtonsTest`, `social-buttons.test.tsx`) · AC3 UI
+  - Changed (Bruno, 21 Nov): Slice 7 split in two (~250 lines together).
 
 ## Milestones
 
@@ -44,15 +34,15 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M02 | Design tokens and layout shell | done | PR #3 merged. Signed-in `/ui-check` after M04 |
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
-| M05 | Home page on seeded data | review | PR to open |
-| M06 | Sign in: magic link and Google | todo | |
+| M05 | Home page on seeded data | done | PR #7 merged |
+| M06 | Sign in: email and password, Google, Discord, X | review | PR to open |
 | M07 | Player profiles | todo | |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
 | M12 | Email notifications | todo | |
-| M13 | Apple and Discord login | todo | |
+| M13 | Apple login | todo | Discord moved to M06 |
 | M14 | Privacy, legal and account deletion | todo | |
 | M15 | Launch hardening | todo | |
 
@@ -61,6 +51,111 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-21/23 · M06 · Sign in: email and password, Google, Discord, X
+
+**Outcome.** All six acceptance criteria met and tested.
+- Email and password through Fortify (registration with the "I am 13 or older" box, email verification, password reset). Two-factor auth, passkeys, magic-login tokens, the dashboard and Settings → Appearance are gone.
+- "Continue with Google / Discord / X" through Socialite, with one pair of generic routes restricted by `whereIn`. Only providers with credentials show a button; X is ready but not configured.
+- The player gate: anyone may browse; only a player (verified email + player profile, password optional) answers. After "I'm going", a user who is not ready is walked through verifying and adding a Player ID, and the gate remembers the page.
+- The pending intent: a guest's "I'm going" is a POST that stores the event in the session, signs in, and returns to the same page, which receives the intent once. M08 acts on it.
+- The auth pages are in the Pre-Flight look.
+
+`composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 68 Vitest, 232 Pest (9,055 assertions). Built in 11 planned slices (6 and 7 split in two), then `/rethink-tests` and 13 review fixes, each committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- Plan: `e775106`, `6795a9e`
+- Slices:
+  - `e067c4d` no 2FA, passkeys or magic links (1a)
+  - `4686047` no dashboard or Appearance (1b)
+  - `857edb5` age box (2)
+  - `5c85653` player gate (3)
+  - `9a24db4` pending intent (4)
+  - `252c95c` social sign-in (5)
+  - `cde51a9` welcome page (6a)
+  - `a727e68` social sign-up (6b)
+  - `8dc9f86` auth look (7a)
+  - `b1b72a6` social buttons (7b)
+- `/rethink-tests`: `c5a0fed` social sign-in returns to the intended page; `321c1b5` expired or mismatched sign-in
+- `/review` fixes:
+  - `09a5e93` a social sign-up needs a provider-vouched email
+  - `eb81c6b` proving the email signs out unproven sessions
+  - `b343de9` guest "I'm going" is a POST for upcoming events, and shareable going links are planned
+  - `6180f18` Larastan type on `SocialProvider::values()`
+  - `af7eb07` the gate keeps the blocked page as the intended URL
+  - `2f88007` privacy test covers the sign-in pages
+  - `da29812` real logout and rate-limit tests
+  - `b0ffb4d` pending sign-ups expire; refused provider codes
+  - `772d2c9` gate opens `profiles.*` and the named `settings`; no extra intent query
+  - `50ddef1` focus outline and 3:1 field borders
+  - `6fa741c` tap targets, status text, copy
+  - `d52901c` "Sign in to say you're going" and sign-up hints
+- Housekeeping: `de2bcb0`, `08e99f9`, `fbf72d5` (Playwright output out of git)
+
+**Commit scope notes.**
+- `252c95c` (slice 5) also carries the Boost update that `composer require` ran (`CLAUDE.md` guidelines, `.claude/skills/socialite-development`).
+- The `/rethink-tests` and `.gitignore` commits have no Plan line.
+- `b343de9` accidentally added Playwright snapshots; `fbf72d5` removed them.
+- `09a5e93` contains an early `ProvenEmailTest.php` that only passes from `eb81c6b` on.
+
+**Decisions by Bruno** (all in `decisions.md`)
+- **Sign-in methods:** email and password, plus Google, Discord and X. Apple in M13. No magic link, no 2FA, no passkeys.
+- **Accounts:**
+  - `users.name` stays required.
+  - A password is optional for social accounts; they can add one in Settings → Security.
+  - A social sign-up needs an email the provider vouches for; otherwise register with email and a password.
+- **Gate:** anyone browses; the gate acts only on the way to answering. A password is optional for social accounts.
+- **Linking:**
+  - Link a social identity only when the provider vouches for the email.
+  - An account belongs to whoever proves its email: proving it signs out every session set up before.
+- **Pending intent:**
+  - It lives in the session, never in the URL.
+  - Shared going links (M09) open a pop-up; only a tap marks going.
+- **Sessions** stay on the database driver.
+- **WCAG** on the auth pages: focus outline, 3:1 borders, 40px targets.
+
+**Problems hit and how they were solved**
+- Wayfinder's `.form()` types broke after `wayfinder:generate` without `--with-form`. It must always run with `--with-form`.
+- Google OAuth accepts only `localhost`, so Google is tried locally through `php artisan serve` at `http://localhost:8000`. Herd's `.test` host works for the other providers.
+- `returnTo()` used `url('home')` (the path `/home`). Fixed to `route('home')`, with absolute URLs kept and checked against our host.
+- The mixed-case email test could not fail because of the case-insensitive collation, so Bruno dropped it.
+- A conflicted `git stash pop` kept the stash and staged files; resolved by hand and the stash dropped.
+- Testing a refused provider code: a driver built inside the test keeps the test's request (no session). A Guzzle `MockHandler` passed through the provider's `guzzle` config works.
+- Laravel's `full()` rebuilds `?type[]=cup` as `?type%5B0%5D=cup` when the gate saves the page. It's the same filters, and the tests build the expected value with `http_build_query`.
+- The kit's `outline-none` hid design.md's global focus outline on inputs and checkboxes; Tailwind 4's `transition-colors` faded the outline in on links.
+- `.gitignore` had `./playwright-mcp`, which ignores nothing.
+
+**`/rethink-tests` outcome.** All 19 changed test files walked through by acceptance criterion.
+- **Accepted:** the intended-page assertion for social sign-in; the expired/mismatched-state test with the real drivers, plus its fix.
+- **Tried and dropped:** the mixed-case email test (it could not fail).
+- **Kept:** exact-message and session-shape assertions.
+- **Noted for M07:** Settings → Security for social accounts.
+
+**Review outcome.** `code-reviewer`, `privacy-guard` and `ui-reviewer`; 25 findings.
+- **Fixed:**
+  - takeover paths: a typed email on the welcome page (prevented by the vouched-email rule); a claimer's session surviving (`RevokeUnprovenAccess`)
+  - GET intent planting (now POST, upcoming events only)
+  - the page lost through the gate
+  - the privacy test not covering the sign-in pages
+  - weak AC6 tests
+  - pending sign-up expiry, a 500 on a refused code, welcome throttle
+  - the gate blocking M07's routes and `/settings`
+  - an extra query per request
+  - focus, contrast, tap targets, status text, copy, and the context and age hints
+- **Dropped:** #14 (lower-case the typed email): there's no typed email now.
+- **Moved:**
+  - #22 `aria-invalid` / `aria-describedby` → M15
+  - #24 Inertia history encryption → M14
+- **Accepted as is:** #25, pre-M06 accounts without `age_confirmed_at` (there are no production accounts).
+
+**What is left**
+- Bruno opens the PR and merges it; then M07 (player profiles, the first-profile form, and the age question after a takeover).
+- X needs credentials before its button shows.
+- Screenshots and hand checks are listed in the PR text.
+
+**Surprising**
+- The strongest fix came from changing the flow rather than adding code. Requiring a vouched email removed a whole class of account takeover, and the welcome page shrank.
+- Chat previews and browser prefetch open links, so a link that changes state would inflate the counts. That shaped the share-link design for M09.
 
 ### 2026-11-20/21 · M05 · Home page on seeded data
 
@@ -395,17 +490,20 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
+- ~~**Settings → Security for social accounts**~~: done in M06 fix 10b ("Email me a link to set a password").
+- **Kit focus styles**: `ui/toggle.tsx`, `ui/select.tsx`, `ui/navigation-menu.tsx` and `app-header.tsx` still set `outline-none` with the kit's faint ring, hiding design.md's red focus outline; none is on a page players use yet. Fix when a page uses them. (M15)
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
-- **Starter kit demo pages** (`dashboard`, `settings`, password auth pages and their 44 tests) are still in place; replace or remove in M06 with the new auth.
+- ~~**Starter kit demo pages**~~: handled in M06 (Slices 1a, 1b, 7).
 - ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.
-- **Kit dark mode leftovers**: the inline detection script and the `initializeTheme()` call are gone (M02 review), but the Settings → Appearance page, `HandleAppearance`, `use-appearance` and the kit's `dark:` classes remain, inert. Remove with the kit demo pages. (M06)
+- ~~**Kit dark mode leftovers**~~: removed in M06 Slice 1b (Appearance page, `HandleAppearance`).
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
-- **Non-affiliation footer on every page** (CLAUDE.md rule 7): only `PublicLayout` has it; the kit's `welcome` page (`/`) and the auth and app layouts do not. Home page in M05, auth pages in M06. (from the M02 review)
-- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (M06, from privacy-guard)
+- ~~**Non-affiliation footer on every page**~~: auth pages use `PublicLayout` since M06 Slice 7a.
+- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M06, revisit in M07 when profiles arrive)
 - **`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it. (M05 `/review`; M09)
 - **Privacy test and partial reloads**: `NoPersonalDataLeaksTest` makes full page loads only. When a page gets an `Inertia::optional()` or `Inertia::defer()` prop, add a partial-reload case (the `X-Inertia-Partial-*` headers) with the same scans. (M05 `/review`; later)
-- **Emails saved in lower case**: store and look up account emails lower-cased (`Zzleak@gmail.com` and `zzleak@gmail.com` are one inbox in practice; Laravel does not do it by default), wherever accounts are created and matched. (Bruno, M05 `/rethink-tests`; M06)
-- **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the kit's password login works until M06). (Bruno, M04)
+- ~~**Emails saved in lower case**~~: not needed. `users.email` uses the case-insensitive `utf8mb4_unicode_ci` collation, so uniqueness and lookups already ignore case; social lookups also lower-case. Bruno dropped the mixed-case test in M06 because it could not fail.
+- **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the password login still works after M06). (Bruno, M04; later)
 - ~~**Tournament types in code**~~: done in M05 Slice 2.
 - **Bigger events sanctioned as `nonpremier TCG`** would be listed as casual; find a way to spot them. (later)
 - **Sync abort threshold**: "less than half the last good run" may trip on a seasonal lull (e.g. December); review when building it. (M10)

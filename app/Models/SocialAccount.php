@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SocialProvider;
 use Database\Factories\SocialAccountFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,11 +11,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * A Google, Apple or Discord identity linked to an account.
+ * A Google, Discord or X identity linked to an account (Apple from M13).
  *
  * @property int $id
  * @property int $user_id
- * @property string $provider google, apple or discord
+ * @property SocialProvider $provider
  * @property string $provider_user_id
  * @property string|null $provider_email
  * @property Carbon|null $created_at
@@ -25,6 +26,18 @@ class SocialAccount extends Model
 {
     /** @use HasFactory<SocialAccountFactory> */
     use HasFactory;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'provider' => SocialProvider::class,
+        ];
+    }
 
     /**
      * @return BelongsTo<User, $this>

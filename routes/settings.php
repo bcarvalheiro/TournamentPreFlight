@@ -2,33 +2,22 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
-use Illuminate\Auth\Middleware\RequirePassword;
+use App\Http\Middleware\ConfirmPasswordIfSet;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', '/settings/profile');
+Route::middleware('auth')->prefix('settings')->group(function () {
+    Route::redirect('/', '/settings/profile')->name('settings');
 
-    Route::get('settings/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('profile', 'edit')->name('profile.edit');
+        Route::patch('profile', 'update')->name('profile.update');
+        Route::delete('profile', 'destroy')->middleware('verified')->name('profile.destroy');
+    });
+
+    Route::controller(SecurityController::class)->middleware('verified')->group(function () {
+        Route::get('security', 'edit')->middleware(ConfirmPasswordIfSet::class)->name('security.edit');
+        Route::put('password', 'update')->middleware('throttle:6,1')->name('user-password.update');
+        // A social account without a password asks for a link to set one (M06).
+        Route::post('password/link', 'sendLink')->middleware('throttle:6,1')->name('user-password.link');
+    });
 });
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('settings/security', [SecurityController::class, 'edit'])
-        ->middleware(RequirePassword::class)
-        ->name('security.edit');
-
-    Route::put('settings/password', [SecurityController::class, 'update'])
-        ->middleware('throttle:6,1')
-        ->name('user-password.update');
-
-    Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
-});
-
-Route::get('.well-known/passkey-endpoints', function () {
-    return response()->json([
-        'enroll' => route('security.edit'),
-        'manage' => route('security.edit'),
-    ]);
-})->name('well-known.passkeys');

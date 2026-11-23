@@ -8,7 +8,7 @@
 | Database | MySQL 8.4 LTS | Tests run on MySQL too (a `tournament_preflight_test` database), not SQLite, so JSON and date behaviour match production |
 | Frontend | Official React starter kit: Inertia, React 19, TypeScript, Tailwind 4, shadcn/ui | Check the installed Inertia version on day one and record it in `decisions.md` |
 | Routes in TS | Whatever the starter kit ships (Wayfinder or Ziggy) | Don't add a second one |
-| Auth | Starter kit auth (Fortify) for sessions; Socialite for Google; Socialite Providers for Apple and Discord; own magic-link flow | Password login and registration are removed |
+| Auth | Starter kit auth (Fortify): login, registration, email verification, password reset; Socialite for Google and X; Socialite Providers for Discord (M06) and Apple (M13) | No two-factor auth, no passkeys, no magic link |
 | Background | Scheduler + queues on the database driver | One `queue:work` process in production |
 | Mail | Laravel Mail, Markdown mailables; Mailpit locally | Provider is an open decision |
 | Tests | Pest 5 (+ browser plugin), Larastan level 7, Pint; Vite+ `vp check` for TS/React lint and format; Vitest (bundled in Vite+, `npm run test`) for pure JS logic and component markup, files `resources/js/**/*.test.ts(x)` | See `workflow.md` |
@@ -20,17 +20,17 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account, /Admin
+  Http/Controllers/Public, /Account, /Admin, /Auth (sign-in our code adds beside Fortify: social, pending intent)
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
-                      controllers, jobs and commands: SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
   Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
-  Enums/              EventType, EventStatus, EventSourceKey
+  Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
 resources/js/
@@ -53,7 +53,7 @@ All timestamps UTC. `id` bigint, `timestamps()` on every table unless noted.
 
 ### Diagram
 
-Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens, passkeys) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
+Kept in step with the migrations (CLAUDE.md, "Database diagram"). `created_at`/`updated_at` are left out of each box. Framework and starter-kit tables (sessions, cache, jobs, failed_jobs, password_reset_tokens) are not shown. GitHub renders the diagram; elsewhere paste it into mermaid.live.
 
 ```mermaid
 erDiagram
@@ -74,9 +74,10 @@ erDiagram
         string name
         string email UK
         timestamp email_verified_at "nullable"
+        timestamp age_confirmed_at "nullable, set at sign-up"
         boolean is_admin "default false"
         json notification_settings "default reminders true"
-        string password "starter kit, dropped in M06"
+        string password "hashed, nullable: optional for social accounts"
         string remember_token "nullable"
     }
     player_profiles {
@@ -92,17 +93,9 @@ erDiagram
     social_accounts {
         bigint id PK
         bigint user_id FK "cascade on delete"
-        string provider "google, apple, discord; UK with provider_user_id"
+        string provider "google, discord, x (apple in M13); UK with provider_user_id"
         string provider_user_id
         string provider_email "nullable"
-    }
-    magic_login_tokens {
-        bigint id PK
-        string email "indexed"
-        string token_hash UK
-        timestamp expires_at
-        timestamp used_at "nullable"
-        string ip
     }
     shops {
         bigint id PK
@@ -167,13 +160,11 @@ erDiagram
     }
 ```
 
-How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none). The two-factor columns the starter kit added to users are left out until M06 decides on them.
+How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none).
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person confirms at sign-up that they are 13 or older, added in M06), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), remember_token. No password column (drop it from the starter kit migration in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account needs none and may add one in Settings → Security), remember_token. No two-factor columns (dropped in M06).
 
-**social_accounts**: user_id, provider (google, apple, discord), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
-
-**magic_login_tokens**: email, token_hash, expires_at, used_at (nullable), ip. A link is valid once, for 15 minutes.
+**social_accounts**: user_id, provider (google, discord, x; apple in M13; cast to the `SocialProvider` enum), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 
 **player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
@@ -199,7 +190,7 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 
 - Public controllers return only `app/Data/Public` objects. These classes have no name, Player ID or birth-year fields by construction.
 - Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
-- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Player IDs `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. Each new public route is added to the dataset in the same PR.
+- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Player IDs `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
 - Logs never contain profile names or Player IDs.
 
 ## Time
@@ -231,10 +222,10 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 ## Auth flows
 
-- Magic link: enter email, receive a link, click it; it signs in and creates the account if new. Rate limit 5 per hour per email and per IP.
-- Social: Socialite redirect and callback. Match by (provider, provider_user_id); if none, match an existing user by verified email and link; else create. Apple sends name only on first login; store it then.
-- After first sign-in with no profiles, go to "Create your player profile" before anything else, keeping the pending intent.
-- **Pending intent**: when a guest presses "I'm going", store `{event_id, return_to}` in the session, send them to sign in, and after sign-in redirect to `return_to?intent=going&event={id}`; the page opens the picker (several profiles) or applies it (one profile).
+- Email and password: Fortify login (rate limited), registration with the "I am 13 or older" box, email verification, password reset.
+- Social: generic routes `/auth/{provider}/redirect` and `/auth/{provider}/callback`, restricted with `whereIn` to the enabled providers (google, discord, x; apple in M13). One shared class does the work for every driver. Match by (provider, provider_user_id); if none, match an existing user by email and link, **only when the provider says the email is verified**; else, when the provider certifies for the email, send the person to the welcome page (name, the provider's email read-only, the age box) and create the account there, already verified. The pending sign-up waits in the session for 10 minutes at most; the welcome POST is throttled (6 a minute). An identity whose provider does not vouch for an email (X without one, Discord or Google unverified) never gets an account: back to sign-in with "Your X account has no confirmed email. Sign in another way, or register with your email and a password." So a social login only ever sits on a proven email. Social accounts start without a password and need none: the provider proved the email, and one email is one account. They may add one in Settings → Security: the page skips Laravel's password confirmation when there is no password (`ConfirmPasswordIfSet`, a subclass of `RequirePassword`) and offers "Email me a link to set a password", which sends Laravel's reset email and signs the player out, because Fortify's reset page opens only signed out. "Forgot password" works the same way. Apple sends name only on first login; store it then.
+- **Player gate** (middleware): anyone, signed in or not, may look at every page; only a player answers: a verified email and a player profile (its Player ID is required); a password is optional. The gate steps in only on the way to answering, when the session holds a pending "I'm going": a user who is not ready is redirected to the verify notice, then to "Create your player profile" (`redirect()->guest()` keeps the page). Auth pages, settings, logout, `events.going` and `profiles.*` stay open. It decides by route name, so every route it leaves open has one (the kit's `/settings` redirect is named `settings`). Guests are not affected.
+- **Pending intent**: when anyone presses "I'm going" (a form that POSTs to `events/{event}/going`, CSRF-protected; a GET is refused, so a link cannot answer for someone), store `{event_id}` in the session (never in the URL), keep the page as Laravel's intended URL (`return_to`, our host only) and send a guest to sign in; a signed-in user goes straight back to the page. On the profile page, "Not now" (`DELETE events/going`, `events.going.forget`) forgets the intent and returns to the saved page, so a pending intent never holds anyone there. The player gate saves the page it blocks the same way (`redirect()->guest()`, like the `auth` middleware), so verifying the email (Fortify calls `intended()`) and saving the first profile (M07) return there. Only upcoming events (listed, not ended) are accepted; any other gets a 404. After sign-in and the gate, they return to that page and it receives the intent once as a prop. M08 acts on it: one profile applies it, several open the picker.
 
 ## Admin
 

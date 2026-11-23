@@ -1,38 +1,33 @@
-import { Link } from '@inertiajs/react';
-import AppLogoIcon from '@/components/pf/app-logo-icon';
-import { home } from '@/routes';
+import { Card } from '@/components/ui/card';
+import PublicLayout from '@/layouts/public-layout';
 import type { AuthLayoutProps } from '@/types';
 
+/**
+ * Layout for every auth page (sign in, register, password, verification,
+ * welcome): the Pre-Flight band and footer, with the form in a card.
+ */
 export default function AuthSimpleLayout({
     children,
     title,
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
-                        <Link
-                            href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                            </div>
-                            <span className="sr-only">{title}</span>
-                        </Link>
-
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-medium">{title}</h1>
-                            <p className="text-center text-sm text-muted-foreground">
-                                {description}
-                            </p>
-                        </div>
+        <PublicLayout>
+            {/* Phones: full width. From 768px: up to 32rem, more air around it. */}
+            <div className="mx-auto w-full max-w-md py-4 md:max-w-lg md:py-12">
+                {/* Fields and buttons 44px tall with 16px text inside the card. */}
+                <Card className="gap-6 px-5 py-8 md:gap-8 md:px-10 md:py-10 [&_[data-slot=button]]:h-11 [&_[data-slot=button]]:text-base [&_[data-slot=input]]:h-11 [&_[data-slot=input]]:text-base">
+                    <div className="text-center">
+                        <h1 className="font-display text-4xl font-extrabold uppercase md:text-5xl">
+                            {title}
+                        </h1>
+                        <p className="mt-1 text-base text-muted">
+                            {description}
+                        </p>
                     </div>
                     {children}
-                </div>
+                </Card>
             </div>
-        </div>
+        </PublicLayout>
     );
 }

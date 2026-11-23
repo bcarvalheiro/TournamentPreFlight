@@ -22,12 +22,16 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),
+            'age_confirmed' => ['accepted'],
+        ], [
+            'age_confirmed.accepted' => 'Please confirm you are 13 or older.',
         ])->validate();
 
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => $input['password'],
+            'age_confirmed_at' => now(),
         ]);
     }
 }

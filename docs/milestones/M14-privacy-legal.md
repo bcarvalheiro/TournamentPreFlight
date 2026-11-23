@@ -12,6 +12,7 @@ The trust basics before real users arrive.
 - Cookie notice only if non-essential cookies exist (they should not).
 - Audit: walk every public route, mail and log line for personal data; extend the privacy test dataset to every public route now existing.
 - Non-affiliation notice confirmed on every page and mail.
+- Inertia history encryption (`Inertia::encryptHistory()` / `'history.encrypt' => true`) and `clearHistory` on sign-out, so the browser's back button cannot show a signed-in page after sign-out on a shared device. Needs HTTPS (the browser's crypto API). (M06 review #24)
 
 ## Acceptance criteria
 1. Deleting an account removes all its rows; event counts drop; the user is signed out.

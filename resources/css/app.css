@@ -24,6 +24,7 @@
     --color-ink-2: #2b3742;
     --color-muted: #5b6875;
     --color-line: #e1e7ed;
+    --color-line-strong: #848f9b;
     --color-red: #e63946;
     --color-paper: #fbfbf8;
     --color-board-fg: #e9eef3;
@@ -118,7 +119,7 @@
     --destructive: var(--color-red);
     --destructive-foreground: var(--color-red);
     --border: var(--color-line);
-    --input: var(--color-line);
+    --input: var(--color-line-strong);
     --ring: var(--color-red);
     --radius: 9px;
     --sidebar: var(--color-bg-2);

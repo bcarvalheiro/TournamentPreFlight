@@ -35,7 +35,7 @@ Milestones are ordered so each one stands on tested ground:
 2. **Visible product on fake data** (M05): the home page, built against seeded data, so Bruno sees the real UI early.
 3. **The core loop** (M06–M09): login, profiles, "I'm going", event page.
 4. **Real data** (M10–M11): nightly import and player-submitted events with moderation.
-5. **Trust and reach** (M12–M14): notifications, Apple and Discord login, privacy and legal.
+5. **Trust and reach** (M12–M14): notifications, Apple login, privacy and legal.
 6. **Launch** (M15).
 
 The full list with acceptance criteria is in `docs/milestones/`. Status is in `docs/progress.md`.
@@ -66,7 +66,7 @@ Subagents get a fresh, separate context. Use them where fresh eyes or a narrow j
 
 Do not use subagents to implement parts of the same milestone in parallel. They cannot see each other's choices and the pieces will not fit.
 
-**Parallel work, later.** Once M09 is merged, some milestones are independent (M11 moderation, M13 Apple/Discord, M14 legal pages). If Bruno wants speed, run them in separate git worktrees (`git worktree add ../preflight-m13 -b m13-apple-discord`), one Claude session each, merged one at a time with `composer verify` after each merge. Sequential is the default.
+**Parallel work, later.** Once M09 is merged, some milestones are independent (M11 moderation, M13 Apple, M14 legal pages). If Bruno wants speed, run them in separate git worktrees (`git worktree add ../preflight-m13 -b m13-apple`), one Claude session each, merged one at a time with `composer verify` after each merge. Sequential is the default.
 
 ## Hooks, commands and settings in this kit
 

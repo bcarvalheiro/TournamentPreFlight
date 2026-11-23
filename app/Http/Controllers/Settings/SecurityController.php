@@ -4,50 +4,29 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
-use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use App\Models\SocialAccount;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Inertia\Inertia;
 use Inertia\Response;
-use Laravel\Fortify\Features;
 
 class SecurityController extends Controller
 {
     /**
      * Show the user's security settings page.
      */
-    public function edit(TwoFactorAuthenticationRequest $request): Response
+    public function edit(Request $request): Response
     {
-        $props = [
-            'canManageTwoFactor' => Features::canManageTwoFactorAuthentication(),
-            'canManagePasskeys' => Features::canManagePasskeys(),
-            'passkeys' => Features::canManagePasskeys()
-                ? $request->user()
-                    ->passkeys()
-                    ->select(['id', 'name', 'credential', 'created_at', 'last_used_at'])
-                    ->latest()
-                    ->get()
-                    ->map(fn ($passkey) => [
-                        'id' => $passkey->id,
-                        'name' => $passkey->name,
-                        'authenticator' => $passkey->authenticator,
-                        'created_at_diff' => $passkey->created_at->diffForHumans(),
-                        'last_used_at_diff' => $passkey->last_used_at?->diffForHumans(),
-                    ])
-                    ->values()
-                    ->all()
-                : [],
-            'passwordRules' => Password::defaults()->toPasswordRulesString(),
-        ];
+        $user = $request->user();
 
-        if (Features::canManageTwoFactorAuthentication()) {
-            $request->ensureStateIsValid();
-
-            $props['twoFactorEnabled'] = $request->user()->hasEnabledTwoFactorAuthentication();
-            $props['requiresConfirmation'] = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
-        }
-
-        return Inertia::render('settings/security', $props);
+        return Inertia::render('settings/security', [
+            'passwordRules' => PasswordRule::defaults()->toPasswordRulesString(),
+            'hasPassword' => $user->password !== null,
+            'signInProviders' => $user->socialAccounts->map(fn (SocialAccount $account): string => $account->provider->name)->values()->all(),
+        ]);
     }
 
     /**
@@ -62,5 +41,28 @@ class SecurityController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 
         return back();
+    }
+
+    /**
+     * Email a link to set a password, for an account without one (M06). The
+     * inbox proves it is the owner; Fortify's reset page sets the password,
+     * and it opens only signed out, so the player is signed out here.
+     */
+    public function sendLink(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        abort_if($user->password !== null, 403);
+
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        if ($status !== Password::RESET_LINK_SENT) {
+            return back()->withErrors(['email' => __($status)]);
+        }
+
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return to_route('login')->with('status', 'Check your email to set your password.');
     }
 }

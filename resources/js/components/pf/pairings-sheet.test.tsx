@@ -6,6 +6,7 @@ import type { EventCard } from '@/types';
 // No Inertia app runs here, so usePage() (read by GoingButton) is replaced
 // by a fake page whose signed-in user each test sets; Link stays the real one.
 const page = vi.hoisted(() => ({
+    url: '/?type[]=cup',
     props: { auth: { user: null as { id: number } | null } },
 }));
 
@@ -56,17 +57,18 @@ describe('PairingsSheet', () => {
         expect(live).not.toContain('10:00');
     });
 
-    it('sends signed-out players to sign in from "I\'m going"', () => {
+    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
         expect(render([card()])).toMatch(
-            /<a[^>]*href="\/login"[^>]*>I(&#x27;|')m going<\/a>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,
         );
     });
 
-    it('shows a plain button to signed-in players', () => {
-        const markup = render([card()], true);
-
-        expect(markup).not.toContain('href="/login"');
-        expect(markup).toMatch(/<button[^>]*>I(&#x27;|')m going<\/button>/);
+    it('gives signed-in players the same "I\'m going" form', () => {
+        // M06: the server decides what comes next (verify, Player ID, or the
+        // intent handed back); M08 turns it into a toggle for ready players.
+        expect(render([card()], true)).toMatch(
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,
+        );
     });
 
     it('says so when nothing is coming up', () => {

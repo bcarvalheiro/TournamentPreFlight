@@ -12,6 +12,7 @@ Ready for real players.
 - Rate limits reviewed; security headers; `composer audit` and `npm audit` clean or documented.
 - Performance: query count on home and event page (no N+1, add a test using `DB::listen` or Laravel's lazy-loading prevention in non-production), indexes checked with EXPLAIN.
 - Accessibility pass with the `ui-reviewer` agent on home, event, sign-in, profiles: keyboard path, focus, labels, contrast.
+- Every form field with an error gets `aria-invalid` and `aria-describedby` pointing at its `InputError`, so screen readers announce the error with the field (the kit's `InputError` is a plain paragraph). (M06 review #22)
 - SEO: titles, descriptions, sitemap of upcoming events, robots.
 - Deploy script or instructions in `README.md`; first real `events:sync` run on production with `--dry-run` first.
 

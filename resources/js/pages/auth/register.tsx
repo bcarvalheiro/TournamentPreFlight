@@ -1,8 +1,11 @@
 import { Form, Head } from '@inertiajs/react';
 import InputError from '@/components/input-error';
+import type { SocialProviderName } from '@/components/pf/social-buttons';
+import { SocialButtons } from '@/components/pf/social-buttons';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -11,12 +14,28 @@ import { store } from '@/routes/register';
 
 type Props = {
     passwordRules: string;
+    socialProviders: SocialProviderName[];
+    /** A guest pressed "I'm going" and was sent here to sign up. */
+    signingInToGo: boolean;
 };
 
-export default function Register({ passwordRules }: Props) {
+export default function Register({
+    passwordRules,
+    socialProviders,
+    signingInToGo,
+}: Props) {
     return (
         <>
-            <Head title="Register" />
+            <Head title="Create account" />
+
+            {signingInToGo && (
+                <p className="mb-4 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
+                    <strong>Sign up to say you're going.</strong> It's a
+                    headcount, not a registration.
+                </p>
+            )}
+
+            <SocialButtons providers={socialProviders} />
             <Form
                 {...store.form()}
                 resetOnSuccess={['password', 'password_confirmation']}
@@ -33,7 +52,6 @@ export default function Register({ passwordRules }: Props) {
                                     type="text"
                                     required
                                     autoFocus
-                                    tabIndex={1}
                                     autoComplete="name"
                                     name="name"
                                     placeholder="Full name"
@@ -50,7 +68,6 @@ export default function Register({ passwordRules }: Props) {
                                     id="email"
                                     type="email"
                                     required
-                                    tabIndex={2}
                                     autoComplete="email"
                                     name="email"
                                     placeholder="email@example.com"
@@ -63,7 +80,6 @@ export default function Register({ passwordRules }: Props) {
                                 <PasswordInput
                                     id="password"
                                     required
-                                    tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
                                     placeholder="Password"
@@ -79,7 +95,6 @@ export default function Register({ passwordRules }: Props) {
                                 <PasswordInput
                                     id="password_confirmation"
                                     required
-                                    tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
                                     placeholder="Confirm password"
@@ -90,10 +105,30 @@ export default function Register({ passwordRules }: Props) {
                                 />
                             </div>
 
+                            <div className="grid gap-2">
+                                <div className="flex items-center gap-3">
+                                    <Checkbox
+                                        id="age_confirmed"
+                                        name="age_confirmed"
+                                        required
+                                    />
+                                    <Label
+                                        htmlFor="age_confirmed"
+                                        className="flex min-h-10 flex-1 items-center"
+                                    >
+                                        I am 13 or older
+                                    </Label>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    Under 13? A parent or guardian adds you to
+                                    their account.
+                                </p>
+                                <InputError message={errors.age_confirmed} />
+                            </div>
+
                             <Button
                                 type="submit"
                                 className="mt-2 w-full"
-                                tabIndex={5}
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
@@ -103,8 +138,11 @@ export default function Register({ passwordRules }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()} tabIndex={6}>
-                                Log in
+                            <TextLink
+                                href={login()}
+                                className="inline-flex min-h-10 items-center"
+                            >
+                                Sign in
                             </TextLink>
                         </div>
                     </>
@@ -115,6 +153,6 @@ export default function Register({ passwordRules }: Props) {
 }
 
 Register.layout = {
-    title: 'Create an account',
-    description: 'Enter your details below to create your account',
+    title: 'Create account',
+    description: 'Join to say you are going to tournaments',
 };
