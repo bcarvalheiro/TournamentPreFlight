@@ -24,7 +24,7 @@ app/
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
-                      controllers, jobs and commands: SignInWithSocialAccount, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData

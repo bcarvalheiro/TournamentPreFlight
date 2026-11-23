@@ -16,6 +16,8 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
  */
 class SignInWithSocialAccount
 {
+    public function __construct(private RevokeUnprovenAccess $revokeUnprovenAccess) {}
+
     /**
      * The account to sign in, or null when the identity is new (sign-up).
      *
@@ -46,10 +48,11 @@ class SignInWithSocialAccount
             ])->redirectTo(route('login'));
         }
 
-        // The provider proved who owns this email; a password set by whoever
-        // registered it without verifying must not keep working.
+        // The provider proved who owns this email: nothing set up by whoever
+        // registered it without verifying keeps working, their password included.
         if (! $user->hasVerifiedEmail()) {
-            $user->forceFill(['email_verified_at' => now(), 'password' => null])->save();
+            $this->revokeUnprovenAccess->handle($user);
+            $user->forceFill(['password' => null])->save();
         }
 
         $user->socialAccounts()->create([
