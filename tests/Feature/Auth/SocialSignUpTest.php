@@ -26,6 +26,7 @@ function pendingSignup(array $overrides = []): array
         'provider_user_id' => 'id-789',
         'name' => 'Ana Lima',
         'email' => 'ana@example.test',
+        'expires_at' => now()->addMinutes(10)->getTimestamp(),
         ...$overrides,
     ];
 }
@@ -37,6 +38,7 @@ dataset('new identities', [
 ]);
 
 it('keeps a new identity in the session and sends it to the welcome page', function (string $provider, array $verified) {
+    $this->freezeTime();
     Socialite::fake($provider, SocialiteUser::fake(['id' => 'id-789', 'name' => 'Ana Lima', 'email' => 'ana@example.test', ...$verified]));
 
     $this->get(route('social.callback', $provider))->assertRedirect(route('welcome'));
@@ -46,6 +48,7 @@ it('keeps a new identity in the session and sends it to the welcome page', funct
         'provider_user_id' => 'id-789',
         'name' => 'Ana Lima',
         'email' => 'ana@example.test',
+        'expires_at' => now()->addMinutes(10)->getTimestamp(),
     ])->and(User::query()->count())->toBe(0);
     $this->assertGuest();
 })->with('new identities');
@@ -125,5 +128,30 @@ it('creates nothing without a pending sign-up', function () {
     $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'age_confirmed' => '1'])
         ->assertRedirect(route('login'));
 
+    expect(User::query()->count())->toBe(0);
+});
+
+it('forgets a sign-up left unfinished for over 10 minutes', function () {
+    $this->withSession(['social_signup' => pendingSignup()]);
+    $this->travel(11)->minutes();
+
+    $this->get(route('welcome'))
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => 'That sign-in expired. Please try again.']);
+    $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'age_confirmed' => '1'])
+        ->assertRedirect(route('login'));
+
+    expect(session('social_signup'))->toBeNull()
+        ->and(User::query()->count())->toBe(0);
+});
+
+it('limits welcome page submissions', function () {
+    $this->withSession(['social_signup' => pendingSignup()]);
+
+    foreach (range(1, 6) as $attempt) {
+        $this->post(route('welcome.store'), ['name' => 'Ana Lima'])->assertSessionHasErrors('age_confirmed');
+    }
+
+    $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'age_confirmed' => '1'])->assertTooManyRequests();
     expect(User::query()->count())->toBe(0);
 });

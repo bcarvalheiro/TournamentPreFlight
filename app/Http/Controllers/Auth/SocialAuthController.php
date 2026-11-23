@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Actions\SignInWithSocialAccount;
 use App\Enums\SocialProvider;
 use App\Http\Controllers\Controller;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,11 +32,12 @@ class SocialAuthController extends Controller
         }
 
         // The `state` Socialite stored before the redirect is missing or
-        // different: the session expired, or the callback came back to another
-        // host. Refused, but as a message instead of an error page.
+        // different (the session expired, or the callback came back to another
+        // host), or the provider refused the code (used twice, e.g. a refreshed
+        // callback page). Refused, but as a message instead of an error page.
         try {
             $identity = Socialite::driver($provider->value)->user();
-        } catch (InvalidStateException) {
+        } catch (InvalidStateException|ClientException) {
             return to_route('login')->withErrors(['email' => 'That sign-in expired. Please try again.']);
         }
         $user = $signIn->handle($provider, $identity);
@@ -48,13 +50,15 @@ class SocialAuthController extends Controller
             ]);
         }
 
-        // A new identity: it waits in the session until the welcome page's age box.
+        // A new identity: it waits in the session for the welcome page's age box,
+        // for 10 minutes at most (a sign-up left open on a shared computer).
         if ($user === null) {
             $request->session()->put('social_signup', [
                 'provider' => $provider->value,
                 'provider_user_id' => $identity->getId(),
                 'name' => $identity->getName() ?? $identity->getNickname(),
                 'email' => $identity->getEmail(),
+                'expires_at' => now()->addMinutes(10)->getTimestamp(),
             ]);
 
             return to_route('welcome');

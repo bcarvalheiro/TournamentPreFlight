@@ -90,6 +90,7 @@ it('shows no player data on the sign-in pages', function (string $route, string 
         'guest' => null,
         'social sign-up' => $this->withSession(['social_signup' => [
             'provider' => 'google', 'provider_user_id' => 'id-789', 'name' => 'Ana Lima', 'email' => 'ana@example.test',
+            'expires_at' => now()->addMinutes(10)->getTimestamp(),
         ]]),
         'unverified user' => $this->actingAs(User::factory()->unverified()->create()),
         'user without a profile' => $this->actingAs(User::factory()->create()),

@@ -28,7 +28,7 @@ Route::middleware('guest')->group(function () {
     // A new social identity confirms its details and age before its account exists.
     Route::controller(WelcomeController::class)->group(function () {
         Route::get('welcome', 'show')->name('welcome');
-        Route::post('welcome', 'store')->name('welcome.store');
+        Route::post('welcome', 'store')->middleware('throttle:6,1')->name('welcome.store');
     });
 
     // A guest pressed "I'm going": remember it, then sign in (M06 pending intent).
@@ -43,4 +43,4 @@ if (app()->isLocal()) {
     Route::inertia('styleguide', 'styleguide')->name('styleguide');
 }
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';

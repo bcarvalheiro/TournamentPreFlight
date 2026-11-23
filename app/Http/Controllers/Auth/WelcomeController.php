@@ -19,11 +19,10 @@ class WelcomeController extends Controller
 {
     public function show(Request $request): Response|RedirectResponse
     {
-        /** @var array{name: string|null, email: string}|null $signup */
-        $signup = $request->session()->get('social_signup');
+        $signup = $this->pendingSignup($request);
 
         if ($signup === null) {
-            return to_route('login');
+            return $this->backToLogin($request);
         }
 
         return Inertia::render('auth/welcome', [
@@ -34,11 +33,10 @@ class WelcomeController extends Controller
 
     public function store(Request $request, CreateUserFromSocialIdentity $create): RedirectResponse
     {
-        /** @var array{provider: string, provider_user_id: string, name: string|null, email: string}|null $signup */
-        $signup = $request->session()->get('social_signup');
+        $signup = $this->pendingSignup($request);
 
         if ($signup === null) {
-            return to_route('login');
+            return $this->backToLogin($request);
         }
 
         $user = $create->handle($signup, $request->only(['name', 'age_confirmed']));
@@ -48,5 +46,32 @@ class WelcomeController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('home'));
+    }
+
+    /**
+     * The sign-up the callback stored, or null when there is none or it expired.
+     *
+     * @return array{provider: string, provider_user_id: string, name: string|null, email: string, expires_at: int}|null
+     */
+    private function pendingSignup(Request $request): ?array
+    {
+        /** @var array{provider: string, provider_user_id: string, name: string|null, email: string, expires_at: int}|null $signup */
+        $signup = $request->session()->get('social_signup');
+
+        return $signup !== null && $signup['expires_at'] > now()->getTimestamp() ? $signup : null;
+    }
+
+    /**
+     * Back to sign in: an expired sign-up is forgotten and says so.
+     */
+    private function backToLogin(Request $request): RedirectResponse
+    {
+        if (! $request->session()->has('social_signup')) {
+            return to_route('login');
+        }
+
+        $request->session()->forget('social_signup');
+
+        return to_route('login')->withErrors(['email' => 'That sign-in expired. Please try again.']);
     }
 }

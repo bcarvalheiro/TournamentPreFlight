@@ -2,6 +2,9 @@
 
 use App\Models\SocialAccount;
 use App\Models\User;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Laravel\Socialite\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use SocialiteProviders\Discord\Provider as DiscordProvider;
@@ -95,6 +98,24 @@ it('returns to sign in when the sign-in expired or does not match', function (st
     config(["services.{$provider}" => ['client_id' => 'id', 'client_secret' => 'secret', 'redirect' => "/auth/{$provider}/callback"]]);
 
     $this->get(route('social.callback', ['provider' => $provider, 'state' => 'forged', 'code' => 'abc']))
+        ->assertRedirect(route('login'))
+        ->assertSessionHasErrors(['email' => 'That sign-in expired. Please try again.']);
+
+    $this->assertGuest();
+})->with('providers');
+
+it('returns to sign in when the provider refuses the code', function (string $provider) {
+    // The state matches, so the real driver asks the provider for a token; the
+    // provider answers 400 (a code used twice, e.g. a refreshed callback page).
+    // Socialite builds its HTTP client from the provider's `guzzle` options.
+    $refused = new MockHandler([new GuzzleResponse(400, [], '{"error":"invalid_grant"}')]);
+    config(["services.{$provider}" => [
+        'client_id' => 'id', 'client_secret' => 'secret', 'redirect' => "/auth/{$provider}/callback",
+        'guzzle' => ['handler' => HandlerStack::create($refused)],
+    ]]);
+
+    $this->withSession(['state' => 'abc'])
+        ->get(route('social.callback', ['provider' => $provider, 'state' => 'abc', 'code' => 'used-twice']))
         ->assertRedirect(route('login'))
         ->assertSessionHasErrors(['email' => 'That sign-in expired. Please try again.']);
 
