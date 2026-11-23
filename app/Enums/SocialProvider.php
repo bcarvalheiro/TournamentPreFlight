@@ -47,6 +47,11 @@ enum SocialProvider: string
         };
     }
 
+    /**
+     * Every provider's value, for the routes' `whereIn`.
+     *
+     * @return list<string>
+     */
     public static function values(): array
     {
         return array_column(self::cases(), 'value');
