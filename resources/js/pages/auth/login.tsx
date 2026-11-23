@@ -28,6 +28,15 @@ export default function Login({
         <>
             <Head title="Sign in" />
 
+            {status && (
+                <div
+                    role="status"
+                    className="mb-4 text-center text-sm font-semibold text-ink"
+                >
+                    {status}
+                </div>
+            )}
+
             <SocialButtons providers={socialProviders} />
 
             <Form
@@ -58,7 +67,7 @@ export default function Login({
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto inline-flex min-h-10 items-center text-sm"
                                         >
                                             Forgot your password?
                                         </TextLink>
@@ -74,9 +83,14 @@ export default function Login({
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center gap-3">
                                 <Checkbox id="remember" name="remember" />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label
+                                    htmlFor="remember"
+                                    className="flex min-h-10 flex-1 items-center"
+                                >
+                                    Remember me
+                                </Label>
                             </div>
 
                             <Button
@@ -92,17 +106,16 @@ export default function Login({
 
                         <div className="text-center text-sm text-muted-foreground">
                             Don't have an account?{' '}
-                            <TextLink href={register()}>Sign up</TextLink>
+                            <TextLink
+                                href={register()}
+                                className="inline-flex min-h-10 items-center"
+                            >
+                                Sign up
+                            </TextLink>
                         </div>
                     </>
                 )}
             </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
         </>
     );
 }

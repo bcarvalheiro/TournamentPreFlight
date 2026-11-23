@@ -15,7 +15,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot password" />
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div
+                    role="status"
+                    className="mb-4 text-center text-sm font-semibold text-ink"
+                >
                     {status}
                 </div>
             )}
@@ -30,7 +33,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     id="email"
                                     type="email"
                                     name="email"
-                                    autoComplete="off"
+                                    autoComplete="email"
                                     autoFocus
                                     placeholder="email@example.com"
                                 />
@@ -54,9 +57,13 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     )}
                 </Form>
 
-                <div className="space-x-1 text-center text-sm text-muted-foreground">
-                    <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                <div className="text-center text-sm">
+                    <TextLink
+                        href={login()}
+                        className="inline-flex min-h-10 items-center"
+                    >
+                        Back to sign in
+                    </TextLink>
                 </div>
             </div>
         </>

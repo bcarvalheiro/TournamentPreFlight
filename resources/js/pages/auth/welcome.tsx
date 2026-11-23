@@ -57,7 +57,10 @@ export default function Welcome({ name, email }: Props) {
                                     name="age_confirmed"
                                     required
                                 />
-                                <Label htmlFor="age_confirmed">
+                                <Label
+                                    htmlFor="age_confirmed"
+                                    className="flex min-h-10 flex-1 items-center"
+                                >
                                     I am 13 or older
                                 </Label>
                             </div>

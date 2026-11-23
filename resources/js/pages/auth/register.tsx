@@ -99,7 +99,10 @@ export default function Register({ passwordRules, socialProviders }: Props) {
                                         name="age_confirmed"
                                         required
                                     />
-                                    <Label htmlFor="age_confirmed">
+                                    <Label
+                                        htmlFor="age_confirmed"
+                                        className="flex min-h-10 flex-1 items-center"
+                                    >
                                         I am 13 or older
                                     </Label>
                                 </div>
@@ -118,7 +121,12 @@ export default function Register({ passwordRules, socialProviders }: Props) {
 
                         <div className="text-center text-sm text-muted-foreground">
                             Already have an account?{' '}
-                            <TextLink href={login()}>Sign in</TextLink>
+                            <TextLink
+                                href={login()}
+                                className="inline-flex min-h-10 items-center"
+                            >
+                                Sign in
+                            </TextLink>
                         </div>
                     </>
                 )}

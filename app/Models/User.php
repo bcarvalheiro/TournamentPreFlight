@@ -78,7 +78,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * The Google, Apple or Discord identities linked to this account.
+     * The Google, Discord or X identities linked to this account.
      *
      * @return HasMany<SocialAccount, $this>
      */
