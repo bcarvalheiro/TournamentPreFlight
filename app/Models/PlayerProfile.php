@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\PlayerProfileFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,7 +21,7 @@ use Illuminate\Validation\ValidationException;
  * @property string $pop_id
  * @property int $birth_year
  * @property bool $is_child
- * @property Carbon|null $consent_given_at
+ * @property CarbonImmutable|null $consent_given_at
  * @property int|null $consent_by_user_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -40,7 +41,7 @@ class PlayerProfile extends Model
     protected static function booted(): void
     {
         static::saving(function (PlayerProfile $profile): void {
-            $profile->is_child = now('Europe/Lisbon')->year - $profile->birth_year <= 13;
+            $profile->is_child = self::needsParentalConsent($profile->birth_year);
 
             if ($profile->is_child && ($profile->consent_given_at === null || $profile->consent_by_user_id === null)) {
                 throw ValidationException::withMessages([
@@ -48,6 +49,16 @@ class PlayerProfile extends Model
                 ]);
             }
         });
+    }
+
+    /**
+     * Whether a profile born in this year needs a parent's consent: the person
+     * turns 13 or younger this Lisbon calendar year, so they count as a child.
+     * The model (`is_child`) and the profile form (the consent box) share it.
+     */
+    public static function needsParentalConsent(int $birthYear): bool
+    {
+        return now('Europe/Lisbon')->year - $birthYear <= 13;
     }
 
     /**

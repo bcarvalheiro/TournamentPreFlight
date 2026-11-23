@@ -18,7 +18,7 @@ class PlayerProfileController extends Controller
      */
     public function store(StorePlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
     {
-        /** @var array{name: string, pop_id: string, birth_year: int|string} $data */
+        /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed} $data */
         $data = $request->validated();
 
         $createPlayerProfile->handle($request->user(), $data);
