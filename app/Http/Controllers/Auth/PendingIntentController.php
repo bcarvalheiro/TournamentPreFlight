@@ -10,12 +10,15 @@ use Illuminate\Http\Request;
 /**
  * A guest pressed "I'm going" (M06): remember the event in the session, come
  * back to the same page after sign-in, and send them to sign in. M08 acts on
- * the intent once the page receives it.
+ * the intent once the page receives it. Only events players can answer for
+ * (listed, not ended) are accepted.
  */
 class PendingIntentController extends Controller
 {
-    public function __invoke(Request $request, Event $event): RedirectResponse
+    public function __invoke(Request $request, int $event): RedirectResponse
     {
+        $event = Event::query()->upcoming()->findOrFail($event);
+
         $request->session()->put('pending_intent', ['event_id' => $event->id]);
         redirect()->setIntendedUrl($this->returnTo($request));
 
@@ -28,7 +31,7 @@ class PendingIntentController extends Controller
      */
     private function returnTo(Request $request): string
     {
-        $returnTo = $request->query('return_to');
+        $returnTo = $request->input('return_to');
 
         if (! is_string($returnTo)) {
             return route('home');

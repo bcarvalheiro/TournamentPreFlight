@@ -69,7 +69,7 @@ describe('EventListItem', () => {
 
     it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
         expect(render(card())).toMatch(
-            /<a[^>]*href="\/events\/1\/going\?return_to=%2F%3Ftype%5B%5D%3Dcup"[^>]*>I(&#x27;|')m going<\/a>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,
         );
     });
 });

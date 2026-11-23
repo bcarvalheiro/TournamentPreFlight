@@ -1,0 +1,602 @@
+- generic [active] [ref=f26e1]:
+  - generic [ref=f26e2]:
+    - generic [ref=f26e3]:
+      - generic [ref=f26e5]:
+        - banner [ref=f26e6]:
+          - link "Pre-Flight" [ref=f26e7] [cursor=pointer]:
+            - /url: /
+          - navigation "Account" [ref=f26e14]:
+            - link "Sign in" [ref=f26e15] [cursor=pointer]:
+              - /url: /login
+            - link "Sign up" [ref=f26e16] [cursor=pointer]:
+              - /url: /register
+        - generic [ref=f26e17]:
+          - generic [ref=f26e18]:
+            - heading "Pre-Flight" [level=1] [ref=f26e19]
+            - paragraph [ref=f26e20]: Should I go or should I stay at home?
+            - paragraph [ref=f26e21]: See how many players are heading to each Pokémon TCG tournament in Portugal before you sleeve up.
+            - generic [ref=f26e22]:
+              - generic [aria-hidden] [ref=f26e23]:
+                - generic [ref=f26e24]: Prizes
+                - generic [ref=f26e25]: GO
+              - generic [ref=f26e32]:
+                - 'button "Flip a coin: heads go, tails stay" [ref=f26e33] [cursor=pointer]':
+                  - generic [ref=f26e34]:
+                    - generic [ref=f26e35]: GO
+                    - generic [ref=f26e36]: STAY
+                - generic [ref=f26e37]: Still can't decide?Flip for it. Heads you go.
+          - region "Next events" [ref=f26e38]:
+            - generic [ref=f26e40]:
+              - heading "Up next" [level=2] [ref=f26e41]
+              - generic [ref=f26e42]: Posted 13:19
+            - generic [ref=f26e43]:
+              - generic [aria-hidden] [ref=f26e44]:
+                - generic [ref=f26e45]: When
+                - generic [ref=f26e46]: Event
+                - generic [ref=f26e47]: Trainers
+              - list [ref=f26e48]:
+                - listitem [ref=f26e49]:
+                  - generic [ref=f26e50]:
+                    - generic [ref=f26e51]: NOW
+                    - generic [ref=f26e52]: LIVE
+                  - generic [ref=f26e53]:
+                    - strong [ref=f26e54]: Toca do Tabuleiro
+                    - generic [ref=f26e55]: Cup · Braga
+                  - generic [ref=f26e65]:
+                    - text: "28"
+                    - generic [ref=f26e66]: trainers going
+                  - button "I'm going" [ref=f26e68]
+                - listitem [ref=f26e69]:
+                  - generic [ref=f26e70]:
+                    - generic [ref=f26e71]: Nov
+                    - generic [ref=f26e72]: Mon 23
+                    - generic [ref=f26e73]: 14:00
+                  - generic [ref=f26e74]:
+                    - strong [ref=f26e75]: Sado Games
+                    - generic [ref=f26e76]: Challenge · Setúbal
+                  - generic [ref=f26e87]:
+                    - text: "11"
+                    - generic [ref=f26e88]: trainers going
+                  - button "I'm going" [ref=f26e90]
+                - listitem [ref=f26e91]:
+                  - generic [ref=f26e92]:
+                    - generic [ref=f26e93]: Nov
+                    - generic [ref=f26e94]: Tue 24
+                    - generic [ref=f26e95]: 10:00
+                  - generic [ref=f26e96]:
+                    - strong [ref=f26e97]: Dado Dourado
+                    - generic [ref=f26e98]: Cup · Lisboa
+                  - generic [ref=f26e108]:
+                    - text: "41"
+                    - generic [ref=f26e109]: trainers going
+                  - button "I'm going" [ref=f26e111]
+                - listitem [ref=f26e112]:
+                  - generic [ref=f26e113]:
+                    - generic [ref=f26e114]: Nov
+                    - generic [ref=f26e115]: Tue 24
+                    - generic [ref=f26e116]: 15:00
+                  - generic [ref=f26e117]:
+                    - strong [ref=f26e118]: Casa dos Meeples
+                    - generic [ref=f26e119]: Challenge · Coimbra
+                  - generic [ref=f26e130]:
+                    - text: "8"
+                    - generic [ref=f26e131]: trainers going
+                  - button "I'm going" [ref=f26e133]
+                - listitem [ref=f26e134]:
+                  - generic [ref=f26e135]:
+                    - generic [ref=f26e136]: Nov
+                    - generic [ref=f26e137]: Thu 26
+                    - generic [ref=f26e138]: 18:30
+                  - generic [ref=f26e139]:
+                    - strong [ref=f26e140]: Toca do Tabuleiro
+                    - generic [ref=f26e141]: Casual · Braga
+                  - generic [ref=f26e148]:
+                    - text: "5"
+                    - generic [ref=f26e149]: trainers going
+                  - button "I'm going" [ref=f26e151]
+            - paragraph [ref=f26e152]: Headcount, not registration · Register at the shop
+      - main [ref=f26e153]:
+        - generic [ref=f26e155]:
+          - button "Filters" [ref=f26e156] [cursor=pointer]
+          - button "Any time ▾" [ref=f26e157] [cursor=pointer]
+          - generic [ref=f26e158]: First 25 of 26 events
+        - generic [ref=f26e159]:
+          - paragraph [ref=f26e160]:
+            - generic [ref=f26e161]: Common
+            - generic [ref=f26e162]: Casual
+            - generic [ref=f26e168]: Prerelease
+            - generic [ref=f26e177]: Challenge
+            - generic [ref=f26e187]: Cup
+            - generic [ref=f26e196]: Rare
+          - region "Mon 23 Nov" [ref=f26e197]:
+            - heading "Mon 23 Nov Today" [level=2] [ref=f26e198]:
+              - generic [ref=f26e199]: Mon 23 Nov
+              - text: Today
+            - list [ref=f26e200]:
+              - listitem [ref=f26e201]:
+                - generic [ref=f26e202]:
+                  - generic [ref=f26e203]:
+                    - generic [ref=f26e204]: Cup
+                    - heading "Toca do Tabuleiro" [level=3] [ref=f26e205]
+                    - paragraph [ref=f26e206]:
+                      - generic [ref=f26e207]: Braga
+                      - generic [ref=f26e208]: ● Happening now
+                      - generic [ref=f26e209]: League Cup
+                  - generic [ref=f26e210]:
+                    - generic [ref=f26e213]:
+                      - text: "28"
+                      - generic [ref=f26e214]: trainers going
+                    - generic [aria-hidden] [ref=f26e215]: Trainers
+                    - button "I'm going" [ref=f26e217]
+              - listitem [ref=f26e218]:
+                - generic [ref=f26e219]:
+                  - generic [ref=f26e220]:
+                    - generic [ref=f26e221]: Challenge
+                    - heading "Sado Games" [level=3] [ref=f26e222]
+                    - paragraph [ref=f26e223]:
+                      - generic [ref=f26e224]: Setúbal
+                      - generic [ref=f26e225]: Starts 14:00
+                      - generic [ref=f26e226]: League Challenge
+                  - generic [ref=f26e227]:
+                    - generic [ref=f26e230]:
+                      - text: "11"
+                      - generic [ref=f26e231]: trainers going
+                    - generic [aria-hidden] [ref=f26e232]: Trainers
+                    - button "I'm going" [ref=f26e234]
+          - region "Tue 24 Nov" [ref=f26e235]:
+            - heading "Tue 24 Nov Tomorrow" [level=2] [ref=f26e236]:
+              - generic [ref=f26e237]: Tue 24 Nov
+              - text: Tomorrow
+            - list [ref=f26e238]:
+              - listitem [ref=f26e239]:
+                - generic [ref=f26e240]:
+                  - generic [ref=f26e241]:
+                    - generic [ref=f26e242]: Cup
+                    - heading "Dado Dourado" [level=3] [ref=f26e243]
+                    - paragraph [ref=f26e244]:
+                      - generic [ref=f26e245]: Lisboa
+                      - generic [ref=f26e246]: Starts 10:00
+                      - generic [ref=f26e247]: League Cup
+                  - generic [ref=f26e248]:
+                    - generic [ref=f26e251]:
+                      - text: "41"
+                      - generic [ref=f26e252]: trainers going
+                    - generic [aria-hidden] [ref=f26e253]: Trainers
+                    - button "I'm going" [ref=f26e255]
+              - listitem [ref=f26e256]:
+                - generic [ref=f26e257]:
+                  - generic [ref=f26e258]:
+                    - generic [ref=f26e259]: Challenge
+                    - heading "Casa dos Meeples" [level=3] [ref=f26e260]
+                    - paragraph [ref=f26e261]:
+                      - generic [ref=f26e262]: Coimbra
+                      - generic [ref=f26e263]: Starts 15:00
+                      - generic [ref=f26e264]: League Challenge
+                  - generic [ref=f26e265]:
+                    - generic [ref=f26e268]:
+                      - text: "8"
+                      - generic [ref=f26e269]: trainers going
+                    - generic [aria-hidden] [ref=f26e270]: Trainers
+                    - button "I'm going" [ref=f26e272]
+          - region "Thu 26 Nov" [ref=f26e273]:
+            - heading "Thu 26 Nov In 3 days" [level=2] [ref=f26e274]:
+              - generic [ref=f26e275]: Thu 26 Nov
+              - text: In 3 days
+            - list [ref=f26e276]:
+              - listitem [ref=f26e277]:
+                - generic [ref=f26e278]:
+                  - generic [ref=f26e279]:
+                    - generic [ref=f26e280]: Casual
+                    - heading "Toca do Tabuleiro" [level=3] [ref=f26e281]
+                    - paragraph [ref=f26e282]:
+                      - generic [ref=f26e283]: Braga
+                      - generic [ref=f26e284]: Starts 18:30
+                      - generic [ref=f26e285]: Casual play
+                  - generic [ref=f26e286]:
+                    - generic [ref=f26e289]:
+                      - text: "5"
+                      - generic [ref=f26e290]: trainers going
+                    - generic [aria-hidden] [ref=f26e291]: Trainers
+                    - button "I'm going" [ref=f26e293]
+          - region "Fri 27 Nov" [ref=f26e294]:
+            - heading "Fri 27 Nov In 4 days" [level=2] [ref=f26e295]:
+              - generic [ref=f26e296]: Fri 27 Nov
+              - text: In 4 days
+            - list [ref=f26e297]:
+              - listitem [ref=f26e298]:
+                - generic [ref=f26e299]:
+                  - generic [ref=f26e300]:
+                    - generic [ref=f26e301]: Casual
+                    - heading "Liz Card Club" [level=3] [ref=f26e302]
+                    - paragraph [ref=f26e303]:
+                      - generic [ref=f26e304]: Leiria
+                      - generic [ref=f26e305]: Starts 19:00
+                      - generic [ref=f26e306]: Casual play
+                  - generic [ref=f26e307]:
+                    - generic [ref=f26e310]:
+                      - text: "3"
+                      - generic [ref=f26e311]: trainers going
+                    - generic [aria-hidden] [ref=f26e312]: Trainers
+                    - button "I'm going" [ref=f26e314]
+          - region "Sun 29 Nov" [ref=f26e315]:
+            - heading "Sun 29 Nov In 6 days" [level=2] [ref=f26e316]:
+              - generic [ref=f26e317]: Sun 29 Nov
+              - text: In 6 days
+            - list [ref=f26e318]:
+              - listitem [ref=f26e319]:
+                - generic [ref=f26e320]:
+                  - generic [ref=f26e321]:
+                    - generic [ref=f26e322]: Casual
+                    - heading "Carta Alta" [level=3] [ref=f26e323]
+                    - paragraph [ref=f26e324]:
+                      - generic [ref=f26e325]: Porto
+                      - generic [ref=f26e326]: Starts 18:00
+                      - generic [ref=f26e327]: Casual play
+                  - generic [ref=f26e328]:
+                    - generic [ref=f26e331]:
+                      - text: "12"
+                      - generic [ref=f26e332]: trainers going
+                    - generic [aria-hidden] [ref=f26e333]: Trainers
+                    - button "I'm going" [ref=f26e335]
+          - region "Mon 30 Nov" [ref=f26e336]:
+            - heading "Mon 30 Nov Next week" [level=2] [ref=f26e337]:
+              - generic [ref=f26e338]: Mon 30 Nov
+              - text: Next week
+            - list [ref=f26e339]:
+              - listitem [ref=f26e340]:
+                - generic [ref=f26e341]:
+                  - generic [ref=f26e342]:
+                    - generic [ref=f26e343]: Cup
+                    - heading "Carta Alta" [level=3] [ref=f26e344]
+                    - paragraph [ref=f26e345]:
+                      - generic [ref=f26e346]: Porto
+                      - generic [ref=f26e347]: Starts 10:00
+                      - generic [ref=f26e348]: League Cup
+                  - generic [ref=f26e349]:
+                    - generic [ref=f26e352]:
+                      - text: "32"
+                      - generic [ref=f26e353]: trainers going
+                    - generic [aria-hidden] [ref=f26e354]: Trainers
+                    - button "I'm going" [ref=f26e356]
+              - listitem [ref=f26e357]:
+                - generic [ref=f26e358]:
+                  - generic [ref=f26e359]:
+                    - generic [ref=f26e360]: Challenge
+                    - heading "Farol Geek" [level=3] [ref=f26e361]
+                    - paragraph [ref=f26e362]:
+                      - generic [ref=f26e363]: Faro
+                      - generic [ref=f26e364]: Starts 14:30
+                      - generic [ref=f26e365]: League Challenge
+                  - generic [ref=f26e366]:
+                    - generic [ref=f26e369]:
+                      - text: "7"
+                      - generic [ref=f26e370]: trainers going
+                    - generic [aria-hidden] [ref=f26e371]: Trainers
+                    - button "I'm going" [ref=f26e373]
+          - region "Tue 1 Dec" [ref=f26e374]:
+            - heading "Tue 1 Dec Next week" [level=2] [ref=f26e375]:
+              - generic [ref=f26e376]: Tue 1 Dec
+              - text: Next week
+            - list [ref=f26e377]:
+              - listitem [ref=f26e378]:
+                - generic [ref=f26e379]:
+                  - generic [ref=f26e380]:
+                    - generic [ref=f26e381]: Challenge
+                    - heading "Levada TCG" [level=3] [ref=f26e382]
+                    - paragraph [ref=f26e383]:
+                      - generic [ref=f26e384]: Funchal
+                      - generic [ref=f26e385]: Starts 10:00
+                      - generic [ref=f26e386]: League Challenge
+                  - generic [ref=f26e387]:
+                    - generic [ref=f26e390]:
+                      - text: "6"
+                      - generic [ref=f26e391]: trainers going
+                    - generic [aria-hidden] [ref=f26e392]: Trainers
+                    - button "I'm going" [ref=f26e394]
+              - listitem [ref=f26e395]:
+                - generic [ref=f26e396]:
+                  - generic [ref=f26e397]:
+                    - generic [ref=f26e398]: Cup
+                    - heading "Casa dos Meeples" [level=3] [ref=f26e399]
+                    - paragraph [ref=f26e400]:
+                      - generic [ref=f26e401]: Coimbra
+                      - generic [ref=f26e402]: Starts 14:00
+                      - generic [ref=f26e403]: League Cup
+                  - generic [ref=f26e404]:
+                    - generic [ref=f26e407]:
+                      - text: "16"
+                      - generic [ref=f26e408]: trainers going
+                    - generic [aria-hidden] [ref=f26e409]: Trainers
+                    - button "I'm going" [ref=f26e411]
+          - region "Thu 3 Dec" [ref=f26e412]:
+            - heading "Thu 3 Dec Next week" [level=2] [ref=f26e413]:
+              - generic [ref=f26e414]: Thu 3 Dec
+              - text: Next week
+            - list [ref=f26e415]:
+              - listitem [ref=f26e416]:
+                - generic [ref=f26e417]:
+                  - generic [ref=f26e418]:
+                    - generic [ref=f26e419]: Casual
+                    - heading "Dado Dourado" [level=3] [ref=f26e420]
+                    - paragraph [ref=f26e421]:
+                      - generic [ref=f26e422]: Lisboa
+                      - generic [ref=f26e423]: Starts 18:30
+                      - generic [ref=f26e424]: Casual play
+                  - generic [ref=f26e425]:
+                    - generic [ref=f26e428]:
+                      - text: "7"
+                      - generic [ref=f26e429]: trainers going
+                    - generic [aria-hidden] [ref=f26e430]: Trainers
+                    - button "I'm going" [ref=f26e432]
+          - region "Fri 4 Dec" [ref=f26e433]:
+            - heading "Fri 4 Dec Next week" [level=2] [ref=f26e434]:
+              - generic [ref=f26e435]: Fri 4 Dec
+              - text: Next week
+            - list [ref=f26e436]:
+              - listitem [ref=f26e437]:
+                - generic [ref=f26e438]:
+                  - generic [ref=f26e439]:
+                    - generic [ref=f26e440]: Prerelease
+                    - heading "Liz Card Club" [level=3] [ref=f26e441]
+                    - paragraph [ref=f26e442]:
+                      - generic [ref=f26e443]: Leiria
+                      - generic [ref=f26e444]: Starts 14:00
+                      - generic [ref=f26e445]: Prerelease
+                  - generic [ref=f26e446]:
+                    - generic [ref=f26e449]:
+                      - text: "6"
+                      - generic [ref=f26e450]: trainers going
+                    - generic [aria-hidden] [ref=f26e451]: Trainers
+                    - button "I'm going" [ref=f26e453]
+          - region "Sun 6 Dec" [ref=f26e454]:
+            - heading "Sun 6 Dec Next week" [level=2] [ref=f26e455]:
+              - generic [ref=f26e456]: Sun 6 Dec
+              - text: Next week
+            - list [ref=f26e457]:
+              - listitem [ref=f26e458]:
+                - generic [ref=f26e459]:
+                  - generic [ref=f26e460]:
+                    - generic [ref=f26e461]: Casual
+                    - heading "Sado Games" [level=3] [ref=f26e462]
+                    - paragraph [ref=f26e463]:
+                      - generic [ref=f26e464]: Setúbal
+                      - generic [ref=f26e465]: Starts 19:00
+                      - generic [ref=f26e466]: Casual play
+                  - generic [ref=f26e467]:
+                    - generic [ref=f26e470]:
+                      - text: "5"
+                      - generic [ref=f26e471]: trainers going
+                    - generic [aria-hidden] [ref=f26e472]: Trainers
+                    - button "I'm going" [ref=f26e474]
+          - region "Mon 7 Dec" [ref=f26e475]:
+            - heading "Mon 7 Dec In 2 weeks" [level=2] [ref=f26e476]:
+              - generic [ref=f26e477]: Mon 7 Dec
+              - text: In 2 weeks
+            - list [ref=f26e478]:
+              - listitem [ref=f26e479]:
+                - generic [ref=f26e480]:
+                  - generic [ref=f26e481]:
+                    - generic [ref=f26e482]: Cup
+                    - heading "Farol Geek" [level=3] [ref=f26e483]
+                    - paragraph [ref=f26e484]:
+                      - generic [ref=f26e485]: Faro
+                      - generic [ref=f26e486]: Starts 10:00
+                      - generic [ref=f26e487]: League Cup
+                  - generic [ref=f26e488]:
+                    - generic [ref=f26e491]:
+                      - text: "13"
+                      - generic [ref=f26e492]: trainers going
+                    - generic [aria-hidden] [ref=f26e493]: Trainers
+                    - button "I'm going" [ref=f26e495]
+              - listitem [ref=f26e496]:
+                - generic [ref=f26e497]:
+                  - generic [ref=f26e498]:
+                    - generic [ref=f26e499]: Challenge
+                    - heading "Ria Cartas & Jogos" [level=3] [ref=f26e500]
+                    - paragraph [ref=f26e501]:
+                      - generic [ref=f26e502]: Aveiro
+                      - generic [ref=f26e503]: Starts 14:00
+                      - generic [ref=f26e504]: League Challenge
+                  - generic [ref=f26e505]:
+                    - generic [ref=f26e508]:
+                      - text: "9"
+                      - generic [ref=f26e509]: trainers going
+                    - generic [aria-hidden] [ref=f26e510]: Trainers
+                    - button "I'm going" [ref=f26e512]
+          - region "Tue 8 Dec" [ref=f26e513]:
+            - heading "Tue 8 Dec In 2 weeks" [level=2] [ref=f26e514]:
+              - generic [ref=f26e515]: Tue 8 Dec
+              - text: In 2 weeks
+            - list [ref=f26e516]:
+              - listitem [ref=f26e517]:
+                - generic [ref=f26e518]:
+                  - generic [ref=f26e519]:
+                    - generic [ref=f26e520]: Cup
+                    - heading "Liz Card Club" [level=3] [ref=f26e521]
+                    - paragraph [ref=f26e522]:
+                      - generic [ref=f26e523]: Leiria
+                      - generic [ref=f26e524]: Starts 10:00
+                      - generic [ref=f26e525]: League Cup
+                  - generic [ref=f26e526]:
+                    - generic [ref=f26e529]:
+                      - text: "10"
+                      - generic [ref=f26e530]: trainers going
+                    - generic [aria-hidden] [ref=f26e531]: Trainers
+                    - button "I'm going" [ref=f26e533]
+          - region "Thu 10 Dec" [ref=f26e534]:
+            - heading "Thu 10 Dec In 2 weeks" [level=2] [ref=f26e535]:
+              - generic [ref=f26e536]: Thu 10 Dec
+              - text: In 2 weeks
+            - list [ref=f26e537]:
+              - listitem [ref=f26e538]:
+                - generic [ref=f26e539]:
+                  - generic [ref=f26e540]:
+                    - generic [ref=f26e541]: Casual
+                    - heading "Casa dos Meeples" [level=3] [ref=f26e542]
+                    - paragraph [ref=f26e543]:
+                      - generic [ref=f26e544]: Coimbra
+                      - generic [ref=f26e545]: Starts 18:30
+                      - generic [ref=f26e546]: Casual play
+                  - generic [ref=f26e547]:
+                    - generic [ref=f26e550]:
+                      - text: "4"
+                      - generic [ref=f26e551]: trainers going
+                    - generic [aria-hidden] [ref=f26e552]: Trainers
+                    - button "I'm going" [ref=f26e554]
+          - region "Mon 14 Dec" [ref=f26e555]:
+            - heading "Mon 14 Dec In 3 weeks" [level=2] [ref=f26e556]:
+              - generic [ref=f26e557]: Mon 14 Dec
+              - text: In 3 weeks
+            - list [ref=f26e558]:
+              - listitem [ref=f26e559]:
+                - generic [ref=f26e560]:
+                  - generic [ref=f26e561]:
+                    - generic [ref=f26e562]: Challenge
+                    - heading "Toca do Tabuleiro" [level=3] [ref=f26e563]
+                    - paragraph [ref=f26e564]:
+                      - generic [ref=f26e565]: Braga
+                      - generic [ref=f26e566]: Starts 10:00
+                      - generic [ref=f26e567]: League Challenge
+                  - generic [ref=f26e568]:
+                    - generic [ref=f26e571]:
+                      - text: "12"
+                      - generic [ref=f26e572]: trainers going
+                    - generic [aria-hidden] [ref=f26e573]: Trainers
+                    - button "I'm going" [ref=f26e575]
+              - listitem [ref=f26e576]:
+                - generic [ref=f26e577]:
+                  - generic [ref=f26e578]:
+                    - generic [ref=f26e579]: Casual
+                    - heading "Dado Dourado" [level=3] [ref=f26e580]
+                    - paragraph [ref=f26e581]:
+                      - generic [ref=f26e582]: Lisboa
+                      - generic [ref=f26e583]: Starts 14:00
+                      - generic [ref=f26e584]: Casual play
+                  - generic [ref=f26e585]:
+                    - generic [ref=f26e588]:
+                      - text: "9"
+                      - generic [ref=f26e589]: trainers going
+                    - generic [aria-hidden] [ref=f26e590]: Trainers
+                    - button "I'm going" [ref=f26e592]
+          - region "Tue 15 Dec" [ref=f26e593]:
+            - heading "Tue 15 Dec In 3 weeks" [level=2] [ref=f26e594]:
+              - generic [ref=f26e595]: Tue 15 Dec
+              - text: In 3 weeks
+            - list [ref=f26e596]:
+              - listitem [ref=f26e597]:
+                - generic [ref=f26e598]:
+                  - generic [ref=f26e599]:
+                    - generic [ref=f26e600]: Cup
+                    - heading "Sado Games" [level=3] [ref=f26e601]
+                    - paragraph [ref=f26e602]:
+                      - generic [ref=f26e603]: Setúbal
+                      - generic [ref=f26e604]: Starts 10:00
+                      - generic [ref=f26e605]: League Cup
+                  - generic [ref=f26e606]:
+                    - generic [ref=f26e609]:
+                      - text: "19"
+                      - generic [ref=f26e610]: trainers going
+                    - generic [aria-hidden] [ref=f26e611]: Trainers
+                    - button "I'm going" [ref=f26e613]
+          - region "Mon 21 Dec" [ref=f26e614]:
+            - heading "Mon 21 Dec In 4 weeks" [level=2] [ref=f26e615]:
+              - generic [ref=f26e616]: Mon 21 Dec
+              - text: In 4 weeks
+            - list [ref=f26e617]:
+              - listitem [ref=f26e618]:
+                - generic [ref=f26e619]:
+                  - generic [ref=f26e620]:
+                    - generic [ref=f26e621]: Cup
+                    - heading "Toca do Tabuleiro" [level=3] [ref=f26e622]
+                    - paragraph [ref=f26e623]:
+                      - generic [ref=f26e624]: Braga
+                      - generic [ref=f26e625]: Starts 10:00
+                      - generic [ref=f26e626]: League Cup
+                  - generic [ref=f26e627]:
+                    - generic [ref=f26e630]:
+                      - text: "8"
+                      - generic [ref=f26e631]: trainers going
+                    - generic [aria-hidden] [ref=f26e632]: Trainers
+                    - button "I'm going" [ref=f26e634]
+              - listitem [ref=f26e635]:
+                - generic [ref=f26e636]:
+                  - generic [ref=f26e637]:
+                    - generic [ref=f26e638]: Challenge
+                    - heading "Carta Alta" [level=3] [ref=f26e639]
+                    - paragraph [ref=f26e640]:
+                      - generic [ref=f26e641]: Porto
+                      - generic [ref=f26e642]: Starts 14:00
+                      - generic [ref=f26e643]: League Challenge
+                  - generic [ref=f26e644]:
+                    - generic [ref=f26e647]:
+                      - text: "3"
+                      - generic [ref=f26e648]: trainers going
+                    - generic [aria-hidden] [ref=f26e649]: Trainers
+                    - button "I'm going" [ref=f26e651]
+          - region "Tue 22 Dec" [ref=f26e652]:
+            - heading "Tue 22 Dec In 4 weeks" [level=2] [ref=f26e653]:
+              - generic [ref=f26e654]: Tue 22 Dec
+              - text: In 4 weeks
+            - list [ref=f26e655]:
+              - listitem [ref=f26e656]:
+                - generic [ref=f26e657]:
+                  - generic [ref=f26e658]:
+                    - generic [ref=f26e659]: Challenge
+                    - heading "Dado Dourado" [level=3] [ref=f26e660]
+                    - paragraph [ref=f26e661]:
+                      - generic [ref=f26e662]: Lisboa
+                      - generic [ref=f26e663]: Starts 10:00
+                      - generic [ref=f26e664]: League Challenge
+                  - generic [ref=f26e665]:
+                    - generic [ref=f26e668]:
+                      - text: "2"
+                      - generic [ref=f26e669]: trainers going
+                    - generic [aria-hidden] [ref=f26e670]: Trainers
+                    - button "I'm going" [ref=f26e672]
+          - region "Mon 28 Dec" [ref=f26e673]:
+            - heading "Mon 28 Dec In 5 weeks" [level=2] [ref=f26e674]:
+              - generic [ref=f26e675]: Mon 28 Dec
+              - text: In 5 weeks
+            - list [ref=f26e676]:
+              - listitem [ref=f26e677]:
+                - generic [ref=f26e678]:
+                  - generic [ref=f26e679]:
+                    - generic [ref=f26e680]: Cup
+                    - heading "Ria Cartas & Jogos" [level=3] [ref=f26e681]
+                    - paragraph [ref=f26e682]:
+                      - generic [ref=f26e683]: Aveiro
+                      - generic [ref=f26e684]: Starts 10:00
+                      - generic [ref=f26e685]: League Cup
+                  - generic [ref=f26e686]:
+                    - generic [ref=f26e689]:
+                      - text: "5"
+                      - generic [ref=f26e690]: trainers going
+                    - generic [aria-hidden] [ref=f26e691]: Trainers
+                    - button "I'm going" [ref=f26e693]
+          - paragraph [ref=f26e694]:
+            - strong [ref=f26e695]: A headcount, not a registration.
+            - text: Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual.
+      - contentinfo [ref=f26e696]:
+        - generic [ref=f26e697]:
+          - paragraph [ref=f26e698]: Independent fan project. Not affiliated with, endorsed or sponsored by Nintendo or The Pokémon Company.
+          - navigation "Footer" [ref=f26e699]:
+            - list [ref=f26e700]:
+              - listitem [ref=f26e701]:
+                - link "Privacy" [ref=f26e702] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f26e703]:
+                - link "Terms" [ref=f26e704] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f26e705]:
+                - link "Contact" [ref=f26e706] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=f26e707]:
+                - link "Add a missing event" [ref=f26e708] [cursor=pointer]:
+                  - /url: "#"
+    - region "Notifications alt+T"
+  - generic [ref=f26e710]:
+    - button "Edit this page with Herd" [ref=f26e711] [cursor=pointer]:
+      - generic [ref=f26e712]: Edit with
+      - generic [ref=f26e717]: Herd
+    - button "Show dev stack processes" [ref=f26e718] [cursor=pointer]
+    - button "Hide badge for this session" [ref=f26e721] [cursor=pointer]
