@@ -18,6 +18,7 @@ Define these once in `resources/css/app.css` as Tailwind 4 `@theme` variables an
 | `--color-ink-2` | `#2B3742` | Hover on dark surfaces |
 | `--color-muted` | `#5B6875` | Secondary text |
 | `--color-line` | `#E1E7ED` | Borders |
+| `--color-line-strong` | `#848F9B` | Form field borders (inputs, checkboxes): 3.3:1 on white, 3.1:1 on `bg-2` (WCAG 1.4.11) |
 | `--color-red` | `#E63946` | Actions, counts, focus ring, "live" |
 | `--color-paper` | `#FBFBF8` | Pairings sheet |
 | `--color-board-fg` | `#E9EEF3` | Text on the band |

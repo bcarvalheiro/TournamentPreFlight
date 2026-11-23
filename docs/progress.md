@@ -384,6 +384,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Kit focus styles**: `ui/toggle.tsx`, `ui/select.tsx`, `ui/navigation-menu.tsx` and `app-header.tsx` still set `outline-none` with the kit's faint ring, hiding design.md's red focus outline; none is on a page players use yet. Fix when a page uses them. (M15)
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
 - ~~**Starter kit demo pages**~~: handled in M06 (Slices 1a, 1b, 7).
 - ~~Summary agent~~: decided 13 Nov, `/wrap-up` writes the full summary instead.
