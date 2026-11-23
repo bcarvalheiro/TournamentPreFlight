@@ -22,7 +22,7 @@ class EnsurePlayerReady
      *
      * @var list<string>
      */
-    private const ALWAYS_OPEN = ['logout', 'events.going', 'verification.*', 'password.*', 'settings', 'profile.*', 'security.*', 'user-password.*'];
+    private const ALWAYS_OPEN = ['logout', 'events.going*', 'verification.*', 'password.*', 'settings', 'profile.*', 'security.*', 'user-password.*'];
 
     /**
      * Handle an incoming request.

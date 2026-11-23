@@ -146,3 +146,21 @@ it('hands a ready player\'s intent straight back to the page', function () {
     $this->get('/')->assertInertia(fn (Assert $page) => $page
         ->where('pendingIntent', ['event_id' => $event->id]));
 });
+
+it('lets a user leave the profile page without answering', function () {
+    $event = Event::factory()->create();
+    $this->actingAs(User::factory()->create());
+    $this->post(route('events.going', $event), ['return_to' => '/?type[]=cup']);
+    $this->get('/?type[]=cup')->assertRedirect(route('profiles.create'));
+
+    $this->get(route('profiles.create'))->assertInertia(fn (Assert $page) => $page
+        ->where('signingInToGo', true));
+
+    $this->delete(route('events.going.forget'))
+        ->assertRedirect(url('/').'/?'.http_build_query(['type' => ['cup']]));
+
+    expect(session('pending_intent'))->toBeNull();
+    $this->get('/?type[]=cup')->assertOk();
+    $this->get(route('profiles.create'))->assertInertia(fn (Assert $page) => $page
+        ->where('signingInToGo', false));
+});

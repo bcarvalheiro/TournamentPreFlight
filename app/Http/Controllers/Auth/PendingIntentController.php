@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
  */
 class PendingIntentController extends Controller
 {
-    public function __invoke(Request $request, int $event): RedirectResponse
+    public function store(Request $request, int $event): RedirectResponse
     {
         $event = Event::query()->upcoming()->findOrFail($event);
 
@@ -33,6 +33,17 @@ class PendingIntentController extends Controller
         redirect()->setIntendedUrl($returnTo);
 
         return redirect()->route('login');
+    }
+
+    /**
+     * "Not now" on the profile page: forget the intent and go back to the
+     * page the player gate saved, so nobody is held on the profile page.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->session()->forget('pending_intent');
+
+        return redirect()->intended(route('home'));
     }
 
     /**

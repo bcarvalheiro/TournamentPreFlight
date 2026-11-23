@@ -12,6 +12,7 @@ An account manages its own profile and its children's.
 - Save profiles through the model (`create`/`update` on a `PlayerProfile`), never with bulk queries: the model's saving hook sets `is_child` and enforces consent (`decisions.md`, M04 review).
 - Saving the first profile redirects with `redirect()->intended(route('home'))`: the M06 gate saved the page it blocked, so a player who pressed "I'm going" lands back on that page and receives the intent.
 - A social account needs no password (M06 review); the first-profile page asks only for the profile.
+- Keep M06's "Not now" on the first-profile page when the player arrived from "I'm going" (`signingInToGo`): it forgets the intent and returns to the page.
 - The first-profile page asks "I am 13 or older" again when the account was taken over from someone who registered its email without proving it (M06 review: their `age_confirmed_at` is not the owner's answer).
 - Navbar "Profiles (n)".
 - `PlayerProfilePolicy`: only the owner can view, edit, delete.
