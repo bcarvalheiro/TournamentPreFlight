@@ -35,7 +35,7 @@ dataset('sign-in pages', [
 ]);
 
 /**
- * The family's name, Pokemon Player ID (POP ID)s and birth year appear nowhere in the page.
+ * The family's name, Pokemon Player IDs (POP IDs) and birth year appear nowhere in the page.
  */
 function expectNoPlayerData(TestResponse $response): void
 {

@@ -97,4 +97,4 @@ Payments, Pokémon account login, pairings and results, deck lists, native apps,
 
 ## Later phase: shop tools (not now)
 
-A shop claims its events by email magic link, sees going players' names and Pokemon Player ID (POP ID)s only for players who agreed to share with that shop, confirms attendance with players, and exports a list for typing into TOM (TOM has no import). Tables added then: shops, shop_user, claimed_by_shop_id on events, per-shop consent records. Nothing in v1 should block this, but nothing in v1 builds it.
+A shop claims its events by email magic link, sees going players' names and Pokemon Player IDs (POP IDs) only for players who agreed to share with that shop, confirms attendance with players, and exports a list for typing into TOM (TOM has no import). Tables added then: shops, shop_user, claimed_by_shop_id on events, per-shop consent records. Nothing in v1 should block this, but nothing in v1 builds it.

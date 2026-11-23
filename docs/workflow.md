@@ -47,7 +47,7 @@ Why this order: the importer depends on real response fields we have not seen ye
 - **Pest feature tests** are the main safety net. Every acceptance criterion in a milestone becomes at least one test.
 - **Unit tests** for pure logic: the sync diff, date-range presets.
 - **Architecture tests** (Pest `arch()`): public controllers return only `app/Data/Public` objects; no `dd`/`dump`; models are not used in Inertia props directly.
-- **The privacy test**: seeds profiles with distinctive names and Pokemon Player ID (POP ID)s, hits every public route as a guest and as another user, and asserts none of those strings appear in the response. Every new public route is added to its dataset.
+- **The privacy test**: seeds profiles with distinctive names and Pokemon Player IDs (POP IDs), hits every public route as a guest and as another user, and asserts none of those strings appear in the response. Every new public route is added to its dataset.
 - **Browser tests** (Pest browser plugin, which runs Playwright) for the few flows that only work in a real browser: the quick "I'm going" button signed out, the profile picker, filters on a phone viewport. Keep them few; they are slow.
 - **Fixtures, not live calls.** The importer is tested against recorded pokedata.ovh responses in `tests/Fixtures/pokedata/`. Tests never hit the network (`Http::preventStrayRequests()`).
 - **Larastan** at level 7 (the kit default), raised when the code is clean. Never lowered.

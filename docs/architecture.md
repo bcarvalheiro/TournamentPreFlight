@@ -168,7 +168,7 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **social_accounts**: user_id, provider (google, discord, x; apple in M13; cast to the `SocialProvider` enum), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 
-**player_profiles**: user_id (owner), name, pop_id (the Pokémon Pokemon Player ID (POP ID), shown as "Pokemon Player ID (POP ID)"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
+**player_profiles**: user_id (owner), name, pop_id (the Pokemon Player ID, or POP ID, shown as "Pokemon Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
@@ -192,8 +192,8 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 
 - Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction.
 - Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
-- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Pokemon Player ID (POP ID)s `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
-- Logs never contain profile names or Pokemon Player ID (POP ID)s.
+- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Pokemon Player IDs (POP IDs) `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
+- Logs never contain profile names or Pokemon Player IDs (POP IDs).
 
 ## Time
 

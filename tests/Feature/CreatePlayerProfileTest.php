@@ -6,7 +6,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * M07: an account saves its own player profile: name, Pokemon Player ID (POP ID) (digits,
+ * M07: an account saves its own player profile: name, Pokemon Player ID (digits,
  * unique across the app) and birth year. Saving the first one returns to the
  * page the player gate blocked, which then receives the pending intent.
  */

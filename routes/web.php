@@ -16,7 +16,7 @@ Route::get('/', HomeController::class)->name('home');
 // nobody adds profiles to an email they have not proven.
 Route::middleware(['auth', 'verified'])->group(function () {
     // Placeholder until M07 Slice 3 builds the form; the player gate sends new players here.
-    Route::get('profiles/create', fn(Request $request) => Inertia::render('profiles/create', [
+    Route::get('profiles/create', fn (Request $request) => Inertia::render('profiles/create', [
         'signingInToGo' => $request->session()->has('pending_intent'),
     ]))->name('profiles.create');
 
@@ -54,4 +54,4 @@ if (app()->isLocal()) {
     Route::inertia('styleguide', 'styleguide')->name('styleguide');
 }
 
-require __DIR__ . '/settings.php';
+require __DIR__.'/settings.php';
