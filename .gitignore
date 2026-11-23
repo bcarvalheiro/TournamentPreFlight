@@ -46,4 +46,4 @@ yarn-error.log
 # Pest browser test failure screenshots
 /tests/Browser/Screenshots
 
-./playwright-mcp
+/.playwright-mcp
