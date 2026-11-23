@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * The player gate (M06): a signed-in user uses the site only with a verified
- * email, a password and at least one player profile, so only players answer.
- * Guests are not affected. Like the `auth` middleware, it remembers the page it
- * blocked as the intended URL (`redirect()->guest()`), so verifying the email
- * or saving the first profile can return there with `redirect()->intended()`.
+ * The player gate (M06): anyone may look at every page, but only a player
+ * answers: a verified email and a player profile (its Player ID is required);
+ * a password is optional. The gate steps in only on the way to answering,
+ * when the session holds a pending "I'm going": a user who is not ready is
+ * sent to verify their email, then to add their Player ID. Like the `auth`
+ * middleware, it remembers the page it blocked as the intended URL
+ * (`redirect()->guest()`), so verifying or saving the profile returns there.
  */
 class EnsurePlayerReady
 {
@@ -20,7 +22,7 @@ class EnsurePlayerReady
      *
      * @var list<string>
      */
-    private const ALWAYS_OPEN = ['logout', 'verification.*', 'password.*', 'settings', 'profile.*', 'security.*', 'user-password.*'];
+    private const ALWAYS_OPEN = ['logout', 'events.going', 'verification.*', 'password.*', 'settings', 'profile.*', 'security.*', 'user-password.*'];
 
     /**
      * Handle an incoming request.
@@ -31,7 +33,9 @@ class EnsurePlayerReady
     {
         $user = $request->user();
 
-        if ($user === null || $request->routeIs(self::ALWAYS_OPEN)) {
+        // Anyone may look around; the gate only walks a user who pressed
+        // "I'm going" through what answering needs.
+        if ($user === null || ! $request->session()->has('pending_intent') || $request->routeIs(self::ALWAYS_OPEN)) {
             return $next($request);
         }
 

@@ -113,8 +113,8 @@ it('asks the database nothing for the intent when there is none', function () {
 
     $this->get(route('home'))->assertOk();
 
-    // The player gate's own check; the pendingIntent prop adds none.
-    expect($profileQueries)->toBe(1);
+    // Without a pending intent neither the player gate nor the prop asks.
+    expect($profileQueries)->toBe(0);
 });
 
 it('tells the sign-in pages a guest is signing in to say they are going', function (string $page) {
@@ -124,3 +124,25 @@ it('tells the sign-in pages a guest is signing in to say they are going', functi
 
     $this->get(route($page))->assertInertia(fn (Assert $inertia) => $inertia->where('signingInToGo', true));
 })->with(['login', 'register']);
+
+it('walks a signed-in user without a Player ID from the button to the profile page and back', function () {
+    $event = Event::factory()->create();
+    $this->actingAs(User::factory()->create());
+
+    $this->post(route('events.going', $event), ['return_to' => '/?type[]=cup'])
+        ->assertRedirect(url('/?type[]=cup'));
+    $this->get('/?type[]=cup')->assertRedirect(route('profiles.create'));
+
+    expect(session('pending_intent'))->toBe(['event_id' => $event->id])
+        ->and(session('url.intended'))->toBe(url('/').'/?'.http_build_query(['type' => ['cup']]));
+});
+
+it('hands a ready player\'s intent straight back to the page', function () {
+    $event = Event::factory()->create();
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+
+    $this->post(route('events.going', $event), ['return_to' => '/'])->assertRedirect(url('/'));
+
+    $this->get('/')->assertInertia(fn (Assert $page) => $page
+        ->where('pendingIntent', ['event_id' => $event->id]));
+});

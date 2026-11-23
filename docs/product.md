@@ -18,8 +18,8 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ## Accounts and profiles
 
-- Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13).
-- A signed-in account can use the site only once it has a verified email, a password and at least one player profile (so only players answer). Social sign-ups set their password on the first-profile page.
+- Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13). A social sign-up needs an email the provider confirms; without one the player registers with email and a password.
+- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Player ID is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Player ID, then back to the page. A password is optional for social sign-ups; they can add one in Settings.
 - Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Profile fields: name, Player ID, birth year. All required.
@@ -45,7 +45,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ### The quick "I'm going" button (cards and pairings sheet)
 
-1. Signed out: open sign-in. After signing in, come back to the same page and continue with step 2 for that event. If the account has no profile yet, create the first profile, then continue.
+1. Signed out, or signed in without a verified email or a Player ID: sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
 3. Signed in with several profiles: open a picker listing each profile with a checkbox for going. Save applies the choices per profile. The button then reads "Going (2)".
 4. The button toggles going; the event page has the same per-profile controls.
@@ -66,7 +66,7 @@ See `design.md` for the visual spec. Content:
 
 ## Event page
 
-Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, follow with a threshold ("tell me when 16 are going"), "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons.
+Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, follow with a threshold ("tell me when 16 are going"), "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
 
 ## Adding a missing event
 

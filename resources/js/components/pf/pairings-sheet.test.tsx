@@ -63,11 +63,12 @@ describe('PairingsSheet', () => {
         );
     });
 
-    it('shows a plain button to signed-in players', () => {
-        const markup = render([card()], true);
-
-        expect(markup).not.toContain('/going');
-        expect(markup).toMatch(/<button[^>]*>I(&#x27;|')m going<\/button>/);
+    it('gives signed-in players the same "I\'m going" form', () => {
+        // M06: the server decides what comes next (verify, Player ID, or the
+        // intent handed back); M08 turns it into a toggle for ready players.
+        expect(render([card()], true)).toMatch(
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,
+        );
     });
 
     it('says so when nothing is coming up', () => {

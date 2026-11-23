@@ -30,13 +30,13 @@ Route::middleware('guest')->group(function () {
         Route::get('welcome', 'show')->name('welcome');
         Route::post('welcome', 'store')->middleware('throttle:6,1')->name('welcome.store');
     });
-
-    // A guest pressed "I'm going": remember it, then sign in (M06 pending intent).
-    // POST only, so a link cannot set it.
-    Route::post('events/{event}/going', PendingIntentController::class)
-        ->whereNumber('event')
-        ->name('events.going');
 });
+
+// "I'm going" pressed (M06 pending intent): remember it, then sign in or go
+// back to the page. POST only, so a link cannot set it.
+Route::post('events/{event}/going', PendingIntentController::class)
+    ->whereNumber('event')
+    ->name('events.going');
 
 // Developer page with every shared component; it does not exist outside local.
 if (app()->isLocal()) {

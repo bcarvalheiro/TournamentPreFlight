@@ -8,8 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * A guest pressed "I'm going" (M06): remember the event in the session, come
- * back to the same page after sign-in, and send them to sign in. M08 acts on
+ * "I'm going" was pressed (M06): remember the event in the session. A guest
+ * signs in first and comes back to the same page; a signed-in user goes
+ * straight back to it. M08 acts on
  * the intent once the page receives it. Only events players can answer for
  * (listed, not ended) are accepted.
  */
@@ -20,7 +21,16 @@ class PendingIntentController extends Controller
         $event = Event::query()->upcoming()->findOrFail($event);
 
         $request->session()->put('pending_intent', ['event_id' => $event->id]);
-        redirect()->setIntendedUrl($this->returnTo($request));
+        $returnTo = $this->returnTo($request);
+
+        // Signed in: back to the page, where the player gate walks a user who
+        // is not ready through verifying and adding a Player ID, and a ready
+        // player's page receives the intent.
+        if ($request->user() !== null) {
+            return redirect()->to($returnTo);
+        }
+
+        redirect()->setIntendedUrl($returnTo);
 
         return redirect()->route('login');
     }
