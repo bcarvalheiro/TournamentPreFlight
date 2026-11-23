@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\SocialProvider;
+use App\Http\Controllers\Account\PlayerProfileController;
 use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\WelcomeController;
@@ -11,11 +12,15 @@ use Inertia\Inertia;
 
 Route::get('/', HomeController::class)->name('home');
 
-Route::middleware('auth')->group(function () {
-    // Placeholder until M07 builds the form; the player gate sends new players here.
-    Route::get('profiles/create', fn (Request $request) => Inertia::render('profiles/create', [
+// The account's own player profiles (M07). A verified email comes first, so
+// nobody adds profiles to an email they have not proven.
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Placeholder until M07 Slice 3 builds the form; the player gate sends new players here.
+    Route::get('profiles/create', fn(Request $request) => Inertia::render('profiles/create', [
         'signingInToGo' => $request->session()->has('pending_intent'),
     ]))->name('profiles.create');
+
+    Route::post('profiles', [PlayerProfileController::class, 'store'])->name('profiles.store');
 });
 
 Route::middleware('guest')->group(function () {
@@ -49,4 +54,4 @@ if (app()->isLocal()) {
     Route::inertia('styleguide', 'styleguide')->name('styleguide');
 }
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

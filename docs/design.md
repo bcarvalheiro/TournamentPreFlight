@@ -109,7 +109,7 @@ Use the same band (navbar only, no hero) and the same card language:
 
 - **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, follow form, official link button, disclaimer.
 - **Sign in / Sign up**: email and password form with Google, Discord and X buttons (Apple from M13; provider icons from the providers' own brand guidelines). Register adds name and the "I am 13 or older" box.
-- **Profiles**: list of profile cards (name, Player ID, birth year), add/edit form, consent checkbox for under-13s.
+- **Profiles**: list of profile cards (name, Pokemon Player ID (POP ID), birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.
 
 ## Copy rules

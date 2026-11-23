@@ -22,7 +22,7 @@ Working "I'm going" (M08), sign-in (M06), event page (M09: slips link to `/event
 4. Date filter applies before the cap: with 40 matching events the page says "First 25 of 40".
 5. Counts are the number of going answers.
 6. Shop filter lists only shops with upcoming events, with counts.
-7. Privacy test passes: no seeded names or Player IDs in the response.
+7. Privacy test passes: no seeded names or Pokemon Player ID (POP ID)s in the response.
 8. Browser test at 390px: filter sheet opens, choosing Cup and a shop updates the list and the URL; reloading the URL keeps the filters.
 9. Signed out, the quick button sends to the sign-in route (placeholder page is fine).
 

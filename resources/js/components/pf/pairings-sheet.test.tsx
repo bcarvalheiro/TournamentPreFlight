@@ -64,7 +64,7 @@ describe('PairingsSheet', () => {
     });
 
     it('gives signed-in players the same "I\'m going" form', () => {
-        // M06: the server decides what comes next (verify, Player ID, or the
+        // M06: the server decides what comes next (verify, Pokemon Player ID (POP ID), or the
         // intent handed back); M08 turns it into a toggle for ready players.
         expect(render([card()], true)).toMatch(
             /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,

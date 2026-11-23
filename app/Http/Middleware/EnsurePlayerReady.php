@@ -8,10 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The player gate (M06): anyone may look at every page, but only a player
- * answers: a verified email and a player profile (its Player ID is required);
+ * answers: a verified email and a player profile (its Pokemon Player ID (POP ID) is required);
  * a password is optional. The gate steps in only on the way to answering,
  * when the session holds a pending "I'm going": a user who is not ready is
- * sent to verify their email, then to add their Player ID. Like the `auth`
+ * sent to verify their email, then to add their Pokemon Player ID (POP ID). Like the `auth`
  * middleware, it remembers the page it blocked as the intended URL
  * (`redirect()->guest()`), so verifying or saving the profile returns there.
  */

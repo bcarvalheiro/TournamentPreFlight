@@ -125,7 +125,7 @@ it('tells the sign-in pages a guest is signing in to say they are going', functi
     $this->get(route($page))->assertInertia(fn (Assert $inertia) => $inertia->where('signingInToGo', true));
 })->with(['login', 'register']);
 
-it('walks a signed-in user without a Player ID from the button to the profile page and back', function () {
+it('walks a signed-in user without a Pokemon Player ID (POP ID) from the button to the profile page and back', function () {
     $event = Event::factory()->create();
     $this->actingAs(User::factory()->create());
 

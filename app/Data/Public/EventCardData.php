@@ -6,7 +6,7 @@ use App\Enums\EventType;
 use App\Models\Event;
 
 /**
- * One event as other players may see it on a card: no names, Player IDs or
+ * One event as other players may see it on a card: no names, Pokemon Player ID (POP ID)s or
  * birth years, only the event and its going count (CLAUDE.md rule 1).
  * Times are UTC ISO strings; the frontend shows them in Lisbon time.
  */

@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Rule 1 (CLAUDE.md, "Counts only"): no public page shows a player's name,
- * Player ID or birth year (architecture.md, "Privacy enforcement").
+ * Pokemon Player ID (POP ID) or birth year (architecture.md, "Privacy enforcement").
  * A family with easy-to-spot data (an adult and an under-13 child, rule 2's
  * profiles) is going to a listed event, so their data sits right next to what
  * the page shows; every public route must still hide it.
@@ -35,7 +35,7 @@ dataset('sign-in pages', [
 ]);
 
 /**
- * The family's name, Player IDs and birth year appear nowhere in the page.
+ * The family's name, Pokemon Player ID (POP ID)s and birth year appear nowhere in the page.
  */
 function expectNoPlayerData(TestResponse $response): void
 {
@@ -69,7 +69,7 @@ beforeEach(function () {
     Attendance::factory()->for($child)->for($event)->create();
 });
 
-it('shows no player name, Player ID or birth year', function (string $url, bool $signedIn) {
+it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, bool $signedIn) {
     if ($signedIn) {
         $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     }

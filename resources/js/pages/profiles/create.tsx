@@ -10,7 +10,7 @@ type Props = {
 
 /**
  * Placeholder for "Create your player profile" (M06); M07 builds the form.
- * After "I'm going", the player gate sends a user without a Player ID here;
+ * After "I'm going", the player gate sends a user without a Pokemon Player ID (POP ID) here;
  * "Not now" forgets that intent and goes back to the page.
  */
 export default function CreateProfile({ signingInToGo }: Props) {
@@ -23,11 +23,11 @@ export default function CreateProfile({ signingInToGo }: Props) {
                 </h1>
                 {signingInToGo && (
                     <p className="mt-3 font-semibold">
-                        Add your Player ID to say you're going.
+                        Add your Pokemon Player ID (POP ID) to say you're going.
                     </p>
                 )}
                 <p className="mt-3 text-muted-foreground">
-                    Profiles are coming soon. You will add your name, Player ID
+                    Profiles are coming soon. You will add your name, Pokemon Player ID (POP ID)
                     and birth year here.
                 </p>
                 {signingInToGo && (

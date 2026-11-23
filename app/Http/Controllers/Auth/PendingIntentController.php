@@ -24,7 +24,7 @@ class PendingIntentController extends Controller
         $returnTo = $this->returnTo($request);
 
         // Signed in: back to the page, where the player gate walks a user who
-        // is not ready through verifying and adding a Player ID, and a ready
+        // is not ready through verifying and adding a Pokemon Player ID (POP ID), and a ready
         // player's page receives the intent.
         if ($request->user() !== null) {
             return redirect()->to($returnTo);

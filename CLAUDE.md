@@ -22,7 +22,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 ## Rules that never bend
 
-1. **Counts only.** No response, page, prop, email or log visible to another player contains a player's name, Player ID or birth year. Public data goes through the classes in `app/Data/Public/`, never raw models. There is a test for this; keep it green and extend it when you add a public endpoint.
+1. **Counts only.** No response, page, prop, email or log visible to another player contains a player's name, Pokemon Player ID (POP ID) or birth year. Public data goes through the classes in `app/Data/Public/`, never raw models. There is a test for this; keep it green and extend it when you add a public endpoint.
 2. **Under-13s have no login.** A child profile belongs to a parent account, and the parent's consent is recorded.
 3. **No divisions, no seasons.** Pre-Flight never computes or shows Junior/Senior/Masters. Birth year is kept only for the under-13 rule.
 4. **Times stored in UTC, shown in Europe/Lisbon.**

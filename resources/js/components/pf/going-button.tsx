@@ -9,7 +9,7 @@ const goingClasses =
 /**
  * The quick "I'm going" button (product.md). It posts the event (a form, so a
  * link cannot set the intent): a guest signs in first, a user without a
- * verified email or a Player ID is walked through them, and the page comes
+ * verified email or a Pokemon Player ID (POP ID) is walked through them, and the page comes
  * back with the intent. M08 makes it toggle the going answer for players.
  */
 export function GoingButton({
