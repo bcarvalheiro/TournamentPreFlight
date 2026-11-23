@@ -5,6 +5,8 @@ use App\Models\Event;
 use App\Models\PlayerProfile;
 use App\Models\User;
 use Illuminate\Support\Arr;
+use Illuminate\Testing\TestResponse;
+use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Rule 1 (CLAUDE.md, "Counts only"): no public page shows a player's name,
@@ -18,6 +20,38 @@ use Illuminate\Support\Arr;
 dataset('public pages', [
     'home' => fn () => route('home'),
 ]);
+
+/**
+ * The sign-in pages (M06), each with the viewer who can open it. They show no
+ * events, but share the same Inertia props, so they are checked too.
+ */
+dataset('sign-in pages', [
+    'login' => ['login', 'auth/login', 'guest'],
+    'register' => ['register', 'auth/register', 'guest'],
+    'forgot password' => ['password.request', 'auth/forgot-password', 'guest'],
+    'welcome' => ['welcome', 'auth/welcome', 'social sign-up'],
+    'verify email' => ['verification.notice', 'auth/verify-email', 'unverified user'],
+    'first profile' => ['profiles.create', 'profiles/create', 'user without a profile'],
+]);
+
+/**
+ * The family's name, Player IDs and birth year appear nowhere in the page.
+ */
+function expectNoPlayerData(TestResponse $response): void
+{
+    // Lower-cased first: assertDontSee matches exact case, and the owner's email is lower case.
+    expect(mb_strtolower((string) $response->getContent()))
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655')
+        ->not->toContain('9988776656');
+
+    // The props only: asset file names in the HTML could contain "1913" by chance.
+    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
+
+    // Birth years are plain numbers that could match a date by chance, so check the keys instead.
+    expect(array_keys(Arr::dot($response->inertiaProps())))
+        ->each->not->toMatch('/pop_?id|birth_?year/i');
+}
 
 beforeEach(function () {
     $owner = User::factory()->create(['name' => 'Zzleak Owner', 'email' => 'zzleak@example.test']);
@@ -45,19 +79,26 @@ it('shows no player name, Player ID or birth year', function (string $url, bool 
     // Both answers are counted, so the test is not passing on an empty page.
     expect($response->inertiaProps('events.0.goingCount'))->toBe(2);
 
-    // Lower-cased first: assertDontSee matches exact case, and the owner's email is lower case.
-    expect(mb_strtolower($response->getContent()))
-        ->not->toContain('zzleak')
-        ->not->toContain('9988776655')
-        ->not->toContain('9988776656');
-
-    // The props only: asset file names in the HTML could contain "1913" by chance.
-    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
-
-    // Birth years are plain numbers that could match a date by chance, so check the keys instead.
-    expect(array_keys(Arr::dot($response->inertiaProps())))
-        ->each->not->toMatch('/pop_?id|birth_?year/i');
+    expectNoPlayerData($response);
 })->with('public pages')->with([
     'guest' => false,
     'another user' => true,
 ]);
+
+it('shows no player data on the sign-in pages', function (string $route, string $component, string $viewer) {
+    match ($viewer) {
+        'guest' => null,
+        'social sign-up' => $this->withSession(['social_signup' => [
+            'provider' => 'google', 'provider_user_id' => 'id-789', 'name' => 'Ana Lima', 'email' => 'ana@example.test',
+        ]]),
+        'unverified user' => $this->actingAs(User::factory()->unverified()->create()),
+        'user without a profile' => $this->actingAs(User::factory()->create()),
+    };
+
+    // The right page rendered, so the test is not passing on a redirect.
+    $response = $this->get(route($route))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component($component));
+
+    expectNoPlayerData($response);
+})->with('sign-in pages');
