@@ -10,6 +10,7 @@ An account manages its own profile and its children's.
 - `CreatePlayerProfile` / `UpdatePlayerProfile` actions with validation: name required, Player ID digits only 1–10 and unique, birth year between 1920 and the current year.
 - Child profiles: consent checkbox appears when the birth year means the person turns 13 or younger this year (same rule as the model's `is_child`); consent time and user stored.
 - Save profiles through the model (`create`/`update` on a `PlayerProfile`), never with bulk queries: the model's saving hook sets `is_child` and enforces consent (`decisions.md`, M04 review).
+- Saving the first profile redirects with `redirect()->intended(route('home'))`: the M06 gate saved the page it blocked, so a player who pressed "I'm going" lands back on that page and receives the intent.
 - A social account without a password sets one on the first-profile page (the M06 player gate keeps it there until both exist).
 - The first-profile page asks "I am 13 or older" again when the account was taken over from someone who registered its email without proving it (M06 review: their `age_confirmed_at` is not the owner's answer).
 - Navbar "Profiles (n)".

@@ -4,6 +4,7 @@ use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\PlayerProfile;
 use App\Models\User;
+use Illuminate\Support\Facades\URL;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
@@ -36,16 +37,35 @@ it('returns the player to the same page with the intent, once', function () {
         ->where('pendingIntent', null));
 });
 
-it('keeps the intent while the gate holds the player on the profile page', function () {
+it('keeps the intent and the page while the gate holds the player on the profile page', function () {
     $event = Event::factory()->create();
     $user = User::factory()->create();
 
-    $this->post(route('events.going', $event), ['return_to' => '/']);
+    $this->post(route('events.going', $event), ['return_to' => '/?type[]=cup']);
     $this->post(route('login.store'), ['email' => $user->email, 'password' => 'password']);
+
+    $this->get('/?type[]=cup')->assertRedirect(route('profiles.create'));
 
     $this->get(route('profiles.create'))->assertInertia(fn (Assert $page) => $page
         ->where('pendingIntent', null));
-    expect(session('pending_intent'))->toBe(['event_id' => $event->id]);
+    expect(session('pending_intent'))->toBe(['event_id' => $event->id])
+        // The gate saves the page the way Laravel rebuilds its query: type[0]=cup.
+        ->and(session('url.intended'))->toBe(url('/').'/?'.http_build_query(['type' => ['cup']]));
+});
+
+it('returns to the page after the email is verified', function () {
+    $event = Event::factory()->create();
+    $user = User::factory()->unverified()->has(PlayerProfile::factory())->create();
+
+    $this->post(route('events.going', $event), ['return_to' => '/?type[]=cup']);
+    $this->post(route('login.store'), ['email' => $user->email, 'password' => 'password']);
+    $this->get('/?type[]=cup')->assertRedirect(route('verification.notice'));
+
+    $verificationUrl = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+        'id' => $user->id, 'hash' => sha1($user->email),
+    ]);
+
+    $this->get($verificationUrl)->assertRedirect(url('/').'/?'.http_build_query(['type' => ['cup']]));
 });
 
 it('only returns to pages on this site', function (?string $returnTo, Closure $expected) {

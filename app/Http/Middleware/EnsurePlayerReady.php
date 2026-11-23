@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * The player gate (M06): a signed-in user uses the site only with a verified
  * email, a password and at least one player profile, so only players answer.
- * Guests are not affected.
+ * Guests are not affected. Like the `auth` middleware, it remembers the page it
+ * blocked as the intended URL (`redirect()->guest()`), so verifying the email
+ * or saving the first profile can return there with `redirect()->intended()`.
  */
 class EnsurePlayerReady
 {
@@ -34,11 +36,11 @@ class EnsurePlayerReady
         }
 
         if (! $user->hasVerifiedEmail()) {
-            return redirect()->route('verification.notice');
+            return redirect()->guest(route('verification.notice'));
         }
 
         if (! $user->isPlayerReady() && ! $request->routeIs('profiles.create')) {
-            return redirect()->route('profiles.create');
+            return redirect()->guest(route('profiles.create'));
         }
 
         return $next($request);
