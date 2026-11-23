@@ -2,6 +2,7 @@
 
 use App\Models\PlayerProfile;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
 /*
  * M06 AC2: a signed-in user uses the site only with a verified email, a
@@ -40,8 +41,17 @@ it('lets a ready player in', function () {
 it('keeps settings and logout open to a user who is not ready', function () {
     $this->actingAs(User::factory()->create());
 
+    $this->get('/settings')->assertRedirect('/settings/profile');
     $this->get(route('profile.edit'))->assertOk();
     $this->post(route('logout'));
 
     $this->assertGuest();
+});
+
+it('lets a user who is not ready reach every profile route', function () {
+    // M07 adds the routes that save the first profile; a stand-in is enough here.
+    Route::middleware(['web', 'auth'])->post('profiles', fn () => 'saved')->name('profiles.store');
+    $this->actingAs(User::factory()->create());
+
+    $this->post('/profiles')->assertOk()->assertSee('saved');
 });

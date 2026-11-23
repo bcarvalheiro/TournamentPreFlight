@@ -20,7 +20,7 @@ class EnsurePlayerReady
      *
      * @var list<string>
      */
-    private const ALWAYS_OPEN = ['logout', 'verification.*', 'password.*', 'profile.*', 'security.*', 'user-password.*'];
+    private const ALWAYS_OPEN = ['logout', 'verification.*', 'password.*', 'settings', 'profile.*', 'security.*', 'user-password.*'];
 
     /**
      * Handle an incoming request.
@@ -39,7 +39,8 @@ class EnsurePlayerReady
             return redirect()->guest(route('verification.notice'));
         }
 
-        if (! $user->isPlayerReady() && ! $request->routeIs('profiles.create')) {
+        // Every player-profile route stays open: the page and, from M07, saving it.
+        if (! $user->isPlayerReady() && ! $request->routeIs('profiles.*')) {
             return redirect()->guest(route('profiles.create'));
         }
 

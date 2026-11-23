@@ -4,6 +4,8 @@ use App\Enums\EventStatus;
 use App\Models\Event;
 use App\Models\PlayerProfile;
 use App\Models\User;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -101,3 +103,16 @@ it('sets no intent for an event that is not coming up', function (Closure $event
     'cancelled' => [fn () => Event::factory()->create(['status' => EventStatus::Cancelled])],
     'pending' => [fn () => Event::factory()->create(['status' => EventStatus::Pending])],
 ]);
+
+it('asks the database nothing for the intent when there is none', function () {
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    $profileQueries = 0;
+    DB::listen(function (QueryExecuted $query) use (&$profileQueries) {
+        $profileQueries += str_contains($query->sql, 'player_profiles') ? 1 : 0;
+    });
+
+    $this->get(route('home'))->assertOk();
+
+    // The player gate's own check; the pendingIntent prop adds none.
+    expect($profileQueries)->toBe(1);
+});
