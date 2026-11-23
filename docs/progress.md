@@ -491,7 +491,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
 - **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
-- **Settings → Security for social accounts**: an account with no password cannot use it (it asks to confirm a password it does not have). Being solved in M06 fix 10b ("Set a password" for passwordless accounts). (M06 `/rethink-tests`)
+- ~~**Settings → Security for social accounts**~~: done in M06 fix 10b ("Email me a link to set a password").
 - **Kit focus styles**: `ui/toggle.tsx`, `ui/select.tsx`, `ui/navigation-menu.tsx` and `app-header.tsx` still set `outline-none` with the kit's faint ring, hiding design.md's red focus outline; none is on a page players use yet. Fix when a page uses them. (M15)
 - **Paratest pin**: remove the `conflict` on `brianium/paratest` when Pest supports 7.28+. (later)
 - ~~**Starter kit demo pages**~~: handled in M06 (Slices 1a, 1b, 7).

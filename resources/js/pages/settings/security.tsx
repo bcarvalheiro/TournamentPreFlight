@@ -10,11 +10,19 @@ import { edit } from '@/routes/security';
 
 type Props = {
     passwordRules: string;
+    /** False for a social account that never set a password (M06). */
+    hasPassword: boolean;
+    /** The providers this account signs in with: Google, Discord, X. */
+    signInProviders: string[];
 };
 
 export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+
+    if (!props.hasPassword) {
+        return <SetPassword providers={props.signInProviders} />;
+    }
 
     return (
         <>
@@ -113,6 +121,46 @@ export default function Security(props: Props) {
                                     Save
                                 </Button>
                             </div>
+                        </>
+                    )}
+                </Form>
+            </div>
+        </>
+    );
+}
+
+/**
+ * For an account without a password (M06): a link by email, so the inbox
+ * proves it is the owner. Sending it signs the player out, because the
+ * reset page opens only signed out.
+ */
+function SetPassword({ providers }: { providers: string[] }) {
+    return (
+        <>
+            <Head title="Security settings" />
+
+            <h1 className="sr-only">Security settings</h1>
+
+            <div className="space-y-6">
+                <Heading
+                    variant="small"
+                    title="Set a password"
+                    description={`You sign in with ${providers.join(' or ') || 'a social account'}. Add a password to also sign in with your email.`}
+                />
+
+                <Form
+                    {...SecurityController.sendLink.form()}
+                    className="space-y-3"
+                >
+                    {({ errors, processing }) => (
+                        <>
+                            <Button disabled={processing}>
+                                Email me a link to set a password
+                            </Button>
+                            <p className="text-sm text-muted-foreground">
+                                We'll sign you out so you can open the link.
+                            </p>
+                            <InputError message={errors.email} />
                         </>
                     )}
                 </Form>

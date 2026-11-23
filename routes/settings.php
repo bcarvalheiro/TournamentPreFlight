@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
-use Illuminate\Auth\Middleware\RequirePassword;
+use App\Http\Middleware\ConfirmPasswordIfSet;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->prefix('settings')->group(function () {
@@ -15,7 +15,9 @@ Route::middleware('auth')->prefix('settings')->group(function () {
     });
 
     Route::controller(SecurityController::class)->middleware('verified')->group(function () {
-        Route::get('security', 'edit')->middleware(RequirePassword::class)->name('security.edit');
+        Route::get('security', 'edit')->middleware(ConfirmPasswordIfSet::class)->name('security.edit');
         Route::put('password', 'update')->middleware('throttle:6,1')->name('user-password.update');
+        // A social account without a password asks for a link to set one (M06).
+        Route::post('password/link', 'sendLink')->middleware('throttle:6,1')->name('user-password.link');
     });
 });
