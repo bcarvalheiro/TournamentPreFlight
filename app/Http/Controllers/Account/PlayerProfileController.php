@@ -34,7 +34,7 @@ class PlayerProfileController extends Controller
     }
 
     /**
-     * The "Add a player" form: the account's own profile or a child's. After
+     * The "Add a trainer" form: the account's own profile or a child's. After
      * "I'm going" the player gate sends a user without a profile here, and the
      * page offers "Not now".
      */

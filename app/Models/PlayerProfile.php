@@ -48,7 +48,7 @@ class PlayerProfile extends Model
 
             if ($profile->is_child && ($profile->consent_given_at === null || $profile->consent_by_user_id === null)) {
                 throw ValidationException::withMessages([
-                    'consent' => 'A parent must give consent for a player under 13.',
+                    'consent' => 'A parent must give consent for a trainer under 13.',
                 ]);
             }
         });

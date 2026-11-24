@@ -22,35 +22,35 @@ type Props = {
 };
 
 /**
- * The account's players (M07): the holder's own profile and their
+ * The account's trainers (M07): the holder's own profile and their
  * children's, or only a child's when the parent does not play. Seen only by
  * the account that owns them.
  */
 export default function Profiles({ profiles, isFull, supportEmail }: Props) {
     return (
         <>
-            <Head title="Players" />
+            <Head title="Trainers" />
             <div className="mx-auto max-w-xl px-4 py-10">
                 <div className="flex items-center justify-between gap-4">
                     <h1 className="font-display text-3xl font-extrabold uppercase">
-                        Players
+                        Trainers
                     </h1>
                     {profiles.length > 0 && !isFull && (
                         <Button asChild>
-                            <Link href={create()}>Add a player</Link>
+                            <Link href={create()}>Add a trainer</Link>
                         </Button>
                     )}
                 </div>
 
                 {profiles.length === 0 ? (
                     <Empty className="mt-6">
-                        <EmptyTitle>No players yet</EmptyTitle>
+                        <EmptyTitle>No trainers yet</EmptyTitle>
                         <EmptyDescription>
                             Add yourself, or your child if they are under 13.
                         </EmptyDescription>
                         <EmptyContent>
                             <Button asChild>
-                                <Link href={create()}>Add a player</Link>
+                                <Link href={create()}>Add a trainer</Link>
                             </Button>
                         </EmptyContent>
                     </Empty>

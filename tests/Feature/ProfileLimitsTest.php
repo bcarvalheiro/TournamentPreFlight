@@ -27,7 +27,7 @@ it('refuses a second profile aged 13 or older', function () {
     $user = User::factory()->has(PlayerProfile::factory())->create();
 
     $this->actingAs($user)->post(route('profiles.store'), adultProfile())
-        ->assertSessionHasErrors(['birth_year' => 'Your account already has a player aged 13 or older. Anyone else 13 or older signs up with their own account.']);
+        ->assertSessionHasErrors(['birth_year' => 'Your account already has a trainer aged 13 or older. Anyone else 13 or older signs up with their own account.']);
 
     expect($user->playerProfiles()->count())->toBe(1);
 });

@@ -37,7 +37,7 @@ function hint(canAddAdult: boolean, canAddChild: boolean): string {
 }
 
 /**
- * "Add a player" (M07): the account's own profile or a child's, so a parent
+ * "Add a trainer" (M07): the account's own profile or a child's, so a parent
  * who does not play can add only their child. The consent box appears as soon
  * as a child birth year is typed; the server checks it again. After "I'm
  * going", "Not now" forgets that intent and goes back to the page. An account
@@ -57,10 +57,10 @@ export default function CreateProfile({
 
     return (
         <>
-            <Head title="Add a player" />
+            <Head title="Add a trainer" />
             <div className="mx-auto max-w-xl px-4 py-10">
                 <h1 className="font-display text-3xl font-extrabold uppercase">
-                    Add a player
+                    Add a trainer
                 </h1>
                 {!isFull && (
                     <p className="mt-2 text-muted-foreground">
@@ -69,7 +69,7 @@ export default function CreateProfile({
                 )}
                 {signingInToGo && (
                     <p className="mt-4 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm font-semibold">
-                        Add a player to say you're going.
+                        Add a trainer to say you're going.
                     </p>
                 )}
 
@@ -168,7 +168,7 @@ export default function CreateProfile({
                                     className="w-full sm:w-auto sm:justify-self-start"
                                 >
                                     {processing && <Spinner />}
-                                    Save player
+                                    Save trainer
                                 </Button>
                             </>
                         )}

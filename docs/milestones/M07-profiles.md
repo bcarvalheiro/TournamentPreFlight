@@ -15,7 +15,7 @@ An account manages its own profile and its children's.
 - Keep M06's "Not now" on the first-profile page when the player arrived from "I'm going" (`signingInToGo`): it forgets the intent and returns to the page.
 - The first-profile page asks "I am 13 or older" again when the account was taken over from someone who registered its email without proving it (M06 review: their `age_confirmed_at` is not the owner's answer).
 - Limits per account (Bruno, 24 Nov): one profile aged 13 or older (the holder's own) and at most 3 child profiles; more children by email to support.
-- Navbar for a signed-in account: "Profiles (n)", "Settings" and "Sign out" (today it has only "Sign out", so profiles and Settings → Security cannot be reached).
+- Navbar for a signed-in account: "Trainers (n)", "Settings" and "Sign out" (Bruno, 24 Nov: profiles are "trainers" in the UI) (today it has only "Sign out", so profiles and Settings → Security cannot be reached).
 - `PlayerProfilePolicy`: only the owner can view, edit, delete.
 - Own-data shapes in `app/Data/Private/` (beside `app/Data/Public/`).
 

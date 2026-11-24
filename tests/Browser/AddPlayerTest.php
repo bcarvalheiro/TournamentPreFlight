@@ -16,12 +16,12 @@ it('asks a parent for consent when the player is a child', function () {
     $page = visit(route('profiles.create'));
 
     // A parent who does not play adds only their child (decisions.md, 23 Nov).
-    $page->assertSee('ADD A PLAYER')
+    $page->assertSee('ADD A TRAINER')
         ->assertSee('You, or your child if they are under 13.')
         ->assertDontSee('Not now')
         // The server's English messages show, not the browser's own checks.
         ->fill('pop_id', '21das')
-        ->click('Save player')
+        ->click('Save trainer')
         ->assertSee('The Pokemon Player ID (POP ID) field must be between 1 and 10 digits.')
         ->assertSee('The birth year field is required.')
         ->fill('name', 'Young Trainer')
@@ -30,10 +30,10 @@ it('asks a parent for consent when the player is a child', function () {
         ->assertDontSee("I'm their parent or guardian")
         ->fill('birth_year', $childYear)
         ->assertSee("I'm their parent or guardian")
-        ->click('Save player')
-        ->assertSee('A parent must give consent for a player under 13.')
+        ->click('Save trainer')
+        ->assertSee('A parent must give consent for a trainer under 13.')
         ->click('#consent')
-        ->click('Save player')
+        ->click('Save trainer')
         ->assertPathIs('/');
 
     $profile = $parent->playerProfiles()->sole();

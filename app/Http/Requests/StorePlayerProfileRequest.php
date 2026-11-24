@@ -61,7 +61,7 @@ class StorePlayerProfileRequest extends FormRequest
             $isChild = PlayerProfile::needsParentalConsent($this->integer('birth_year'));
 
             if (! $isChild && ! $user->canAddAdultProfile()) {
-                $validator->errors()->add('birth_year', 'Your account already has a player aged 13 or older. Anyone else 13 or older signs up with their own account.');
+                $validator->errors()->add('birth_year', 'Your account already has a trainer aged 13 or older. Anyone else 13 or older signs up with their own account.');
             }
 
             if ($isChild && ! $user->canAddChildProfile()) {
@@ -79,7 +79,7 @@ class StorePlayerProfileRequest extends FormRequest
     {
         return [
             'pop_id.unique' => 'This Pokemon Player ID (POP ID) is already on another profile.',
-            'consent.accepted' => 'A parent must give consent for a player under 13.',
+            'consent.accepted' => 'A parent must give consent for a trainer under 13.',
         ];
     }
 

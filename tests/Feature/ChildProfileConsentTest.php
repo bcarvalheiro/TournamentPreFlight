@@ -23,7 +23,7 @@ it('refuses a child profile without consent', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)->post(route('profiles.store'), childProfile())
-        ->assertSessionHasErrors(['consent' => 'A parent must give consent for a player under 13.']);
+        ->assertSessionHasErrors(['consent' => 'A parent must give consent for a trainer under 13.']);
 
     expect(PlayerProfile::query()->count())->toBe(0);
 });
