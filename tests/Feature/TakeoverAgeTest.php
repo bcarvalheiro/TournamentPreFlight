@@ -1,6 +1,9 @@
 <?php
 
+use App\Actions\CreatePlayerProfile;
+use App\Models\PlayerProfile;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Password;
 use Inertia\Testing\AssertableInertia as Assert;
 
@@ -67,4 +70,16 @@ it('records the owner\'s answer with the first trainer', function () {
 
     expect($owner->playerProfiles()->count())->toBe(1)
         ->and($owner->fresh()->age_confirmed_at->equalTo(now()))->toBeTrue();
+});
+
+// Review fix: the age answer and the trainer are saved together or not at all.
+it('keeps no age answer when the trainer cannot be saved', function () {
+    PlayerProfile::factory()->create(['pop_id' => '8888888']);
+    $owner = User::factory()->create(['age_confirmed_at' => null]);
+
+    // Straight to the action: a duplicate the form request did not catch (two tabs at once).
+    expect(fn () => app(CreatePlayerProfile::class)->handle($owner, trainer(['age_confirmed' => '1'])))
+        ->toThrow(QueryException::class);
+
+    expect($owner->fresh()->age_confirmed_at)->toBeNull();
 });

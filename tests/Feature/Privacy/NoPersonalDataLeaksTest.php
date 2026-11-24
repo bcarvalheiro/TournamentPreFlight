@@ -122,3 +122,17 @@ it('shows another account none of the family on its profile list', function () {
         ->not->toContain('9988776656');
     expect(json_encode($response->inertiaProps()))->not->toContain('1913');
 });
+
+// Review fix: another account cannot open a family trainer's edit page, nor see its data.
+it('refuses another account the edit page of the family\'s trainers', function () {
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+
+    PlayerProfile::query()->where('name', 'like', 'Zzleak%')->get()->each(function (PlayerProfile $profile) {
+        $response = $this->get(route('profiles.edit', $profile))->assertForbidden();
+
+        expect(mb_strtolower((string) $response->getContent()))
+            ->not->toContain('zzleak')
+            ->not->toContain('9988776655')
+            ->not->toContain('9988776656');
+    });
+});

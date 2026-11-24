@@ -21,11 +21,12 @@ Route::middleware(['auth'])->group(function () {
             ->group(function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('create', 'create')->name('create');
-                Route::post('/', 'store')->name('store');
+                // Throttled: nobody tries Pokemon Player IDs one after another (M07 review).
+                Route::post('/', 'store')->middleware('throttle:10,1')->name('store');
                 // Only the trainer's own account (PlayerProfilePolicy); anyone else gets 403.
                 Route::middleware('can:update,profile')->group(function () {
                     Route::get('{profile}/edit', 'edit')->name('edit');
-                    Route::put('{profile}', 'update')->name('update');
+                    Route::put('{profile}', 'update')->middleware('throttle:10,1')->name('update');
                 });
                 Route::delete('{profile}', 'destroy')->can('delete', 'profile')->name('destroy');
             });
