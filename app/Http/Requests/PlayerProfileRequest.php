@@ -10,17 +10,19 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
 
 /**
- * A new player profile (M07): name, Pokemon Player ID (POP ID) and birth year, all required.
- * The Pokemon Player ID (POP ID) is digits only, 1–10 long until its real format is confirmed
- * (decisions.md, open questions), and unique across every account. A child
- * profile also needs the parent's consent box (CLAUDE.md rule 2). An account
- * holds one profile aged 13 or older and at most 3 children (decisions.md, 24 Nov).
+ * A trainer (player profile) being added or edited (M07): name, Pokemon
+ * Player ID (POP ID) and birth year, all required. The POP ID is digits only,
+ * 1–10 long until its real format is confirmed (decisions.md, open questions),
+ * and unique across every account. A trainer who becomes a child needs the
+ * parent's consent box (CLAUDE.md rule 2); an existing child keeps theirs. An
+ * account holds one trainer aged 13 or older and at most 3 children
+ * (decisions.md, 24 Nov). On store the route has no {profile}.
  */
-class StorePlayerProfileRequest extends FormRequest
+class PlayerProfileRequest extends FormRequest
 {
     /**
-     * Any signed-in, verified account may add a profile to itself; the routes'
-     * `auth` and `verified` middleware already checked that.
+     * Any signed-in, verified account may add a trainer to itself, and the
+     * `can:update` route middleware already decided who may edit one.
      */
     public function authorize(): bool
     {
@@ -34,31 +36,36 @@ class StorePlayerProfileRequest extends FormRequest
      */
     public function rules(): array
     {
+        $becomesChild = $this->isChild() && ! ($this->profile()->is_child ?? false);
+
         return [
             'name' => ['required', 'string', 'max:255'],
-            'pop_id' => ['required', 'string', 'digits_between:1,10', 'unique:player_profiles,pop_id'],
+            'pop_id' => ['required', 'string', 'digits_between:1,10', Rule::unique('player_profiles', 'pop_id')->ignore($this->profile())],
             'birth_year' => ['required', 'integer', 'between:1920,'.now('Europe/Lisbon')->year],
-            // Asked only for a child; for anyone else the box is dropped (`exclude`), so it is never stored.
+            // Asked only of a trainer who becomes a child; otherwise the box is dropped (`exclude`), never stored.
             // A birth year that is not a number reads as 0, never a child: only its own error shows.
-            'consent' => Rule::when(PlayerProfile::needsParentalConsent($this->integer('birth_year')), ['accepted'], ['exclude']),
+            'consent' => Rule::when($becomesChild, ['accepted'], ['exclude']),
         ];
     }
 
     /**
      * The account limits, checked once the birth year itself is valid: it
-     * decides whether the new profile is the adult or a child.
+     * decides whether the trainer is the adult or a child. An edit that keeps
+     * the trainer on the same side changes no count.
      *
      * @return array<int, callable(Validator): void>
      */
     public function after(): array
     {
         return [function (Validator $validator): void {
-            if ($validator->errors()->has('birth_year')) {
+            $profile = $this->profile();
+            $isChild = $this->isChild();
+
+            if ($validator->errors()->has('birth_year') || ($profile !== null && $profile->is_child === $isChild)) {
                 return;
             }
 
             $user = $this->user();
-            $isChild = PlayerProfile::needsParentalConsent($this->integer('birth_year'));
 
             if (! $isChild && ! $user->canAddAdultProfile()) {
                 $validator->errors()->add('birth_year', 'Your account already has a trainer aged 13 or older. Anyone else 13 or older signs up with their own account.');
@@ -68,6 +75,24 @@ class StorePlayerProfileRequest extends FormRequest
                 $validator->errors()->add('birth_year', 'An account can hold up to '.PlayerProfile::MAX_CHILDREN.' children. To add more, email us at '.config('app.support_email').'.');
             }
         }];
+    }
+
+    /**
+     * The trainer being edited; null when one is being added.
+     */
+    private function profile(): ?PlayerProfile
+    {
+        $profile = $this->route('profile');
+
+        return $profile instanceof PlayerProfile ? $profile : null;
+    }
+
+    /**
+     * Whether the submitted birth year makes the trainer a child.
+     */
+    private function isChild(): bool
+    {
+        return PlayerProfile::needsParentalConsent($this->integer('birth_year'));
     }
 
     /**

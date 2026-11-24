@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Account;
 
 use App\Actions\CreatePlayerProfile;
+use App\Actions\UpdatePlayerProfile;
 use App\Data\Private\OwnProfileData;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePlayerProfileRequest;
+use App\Http\Requests\PlayerProfileRequest;
 use App\Models\PlayerProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,7 +57,7 @@ class PlayerProfileController extends Controller
      * (its intended URL), where a pending "I'm going" waits. Otherwise the
      * first profile goes home and any later one back to the list.
      */
-    public function store(StorePlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
+    public function store(PlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
     {
         /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed} $data */
         $data = $request->validated();
@@ -67,5 +68,30 @@ class PlayerProfileController extends Controller
         $createPlayerProfile->handle($user, $data);
 
         return redirect()->intended(route($isFirst ? 'home' : 'profiles.index'));
+    }
+
+    /**
+     * The edit form, prefilled with the trainer (only its owner reaches it:
+     * the route's `can:update` middleware).
+     */
+    public function edit(PlayerProfile $profile): Response
+    {
+        return Inertia::render('profiles/edit', [
+            'profile' => OwnProfileData::fromModel($profile),
+            'consentFromYear' => PlayerProfile::consentFromBirthYear(),
+        ]);
+    }
+
+    /**
+     * Save the edited trainer and go back to the list.
+     */
+    public function update(PlayerProfileRequest $request, PlayerProfile $profile, UpdatePlayerProfile $updatePlayerProfile): RedirectResponse
+    {
+        /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed} $data */
+        $data = $request->validated();
+
+        $updatePlayerProfile->handle($request->user(), $profile, $data);
+
+        return redirect()->route('profiles.index');
     }
 }

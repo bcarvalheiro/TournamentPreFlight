@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 5 done, waiting for Bruno's commits (trainers rename, then the slice). Next: Slice 6.
+- **State**: Slice 6 done, waiting for Bruno's commit. Next: Slice 7 (delete).
 
 ### Plan (M07)
 
@@ -22,7 +22,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Added (Bruno, 24 Nov): new rule found while testing slice 4. The support address lives in `.env` (the repo is public).
 - [x] Slice 5: signed-in navbar "Trainers (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a trainer to say you're going: you, or your child." + "Add a trainer"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`, `types/auth.ts`; `public-layout.test.tsx`, `SharedProfilesCountTest`) · AC4, AC5
   - Changed (Bruno, 24 Nov): profiles are "Trainers" in the UI (navbar, list page, "Add a trainer", messages); `ProfileNoticeTest` became `SharedProfilesCountTest` plus the layout test. The M06 query test in `PendingIntentTest` now ignores the navbar's one `count(*)` (Bruno).
-- [ ] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; the limits of Slice 4b apply when the birth year changes; `PlayerProfilePolicy` gives 403 to anyone but the owner (`PlayerProfileController@edit/update`, `UpdatePlayerProfileRequest`, `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `pages/profiles/edit.tsx`, `architecture.md`; `UpdatePlayerProfileTest`) · AC1, AC2, AC3
+- [x] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; the limits of Slice 4b apply when the birth year changes; `PlayerProfilePolicy` gives 403 to anyone but the owner; "Edit" on each card; the form is shared with "Add a trainer" (`routes/web.php`, `PlayerProfileController@edit/update`, `PlayerProfileRequest` (renamed from `StorePlayerProfileRequest`), `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `components/pf/profile-form.tsx`, `pages/profiles/edit.tsx`, `create.tsx`, `index.tsx`, `architecture.md`; `UpdatePlayerProfileTest`, `profile-form.test.tsx`) · AC1, AC2, AC3
+  - Changed (Bruno, 24 Nov): offered as 6a (server) and 6b (page), kept as one slice (~350 lines); one request class for store and update.
 - [ ] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`; `DeletePlayerProfileTest`) · AC1, AC6
 - [ ] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`) · scope (takeover)
 

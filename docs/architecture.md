@@ -22,11 +22,12 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 app/
   Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
-  Http/Requests/      Form Requests: HomeFilterRequest, StorePlayerProfileRequest
+  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer)
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
-                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile,
+                      UpdatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
@@ -35,7 +36,7 @@ app/
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
-  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
+  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts

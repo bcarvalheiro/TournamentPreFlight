@@ -9,7 +9,7 @@ import {
     EmptyTitle,
 } from '@/components/ui/empty';
 import PublicLayout from '@/layouts/public-layout';
-import { create } from '@/routes/profiles';
+import { create, edit } from '@/routes/profiles';
 import type { OwnProfile } from '@/types';
 
 type Props = {
@@ -63,11 +63,20 @@ export default function Profiles({ profiles, isFull, supportEmail }: Props) {
                                         <CardTitle className="text-xl">
                                             {profile.name}
                                         </CardTitle>
-                                        {profile.isChild && (
-                                            <Badge variant="outline">
-                                                Child
-                                            </Badge>
-                                        )}
+                                        <div className="flex items-center gap-2">
+                                            {profile.isChild && (
+                                                <Badge variant="outline">
+                                                    Child
+                                                </Badge>
+                                            )}
+                                            <Link
+                                                href={edit(profile.id)}
+                                                className="inline-flex min-h-10 items-center px-1 text-sm font-semibold underline underline-offset-4"
+                                                aria-label={`Edit ${profile.name}`}
+                                            >
+                                                Edit
+                                            </Link>
+                                        </div>
                                     </CardHeader>
                                     <CardContent className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
                                         <span>

@@ -15,11 +15,19 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
         // The account's own player profiles (M07). A verified email comes first, so
         // nobody adds profiles to an email they have not proven.
-        Route::controller(PlayerProfileController::class)->group(function () {
-            Route::get('profiles', 'index')->name('profiles.index');
-            Route::get('profiles/create', 'create')->name('profiles.create');
-            Route::post('profiles', 'store')->name('profiles.store');
-        });
+        Route::controller(PlayerProfileController::class)
+            ->prefix('profiles')
+            ->name('profiles.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('create', 'create')->name('create');
+                Route::post('/', 'store')->name('store');
+                // Only the trainer's own account (PlayerProfilePolicy); anyone else gets 403.
+                Route::middleware('can:update,profile')->group(function () {
+                    Route::get('{profile}/edit', 'edit')->name('edit');
+                    Route::put('{profile}', 'update')->name('update');
+                });
+            });
     });
 });
 
