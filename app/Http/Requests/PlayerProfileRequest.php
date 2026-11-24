@@ -107,14 +107,21 @@ class PlayerProfileRequest extends FormRequest
     }
 
     /**
-     * The duplicate message never says whose profile holds the Pokemon Player ID (POP ID).
+     * Short, friendly messages (design.md, Copy rules). The duplicate message
+     * never says whose profile holds the Pokemon Player ID (POP ID).
      *
      * @return array<string, string>
      */
     public function messages(): array
     {
         return [
+            'name.required' => 'Add a name.',
+            'pop_id.required' => 'Add the Pokemon Player ID (POP ID).',
+            'pop_id.digits_between' => 'A POP ID is 1 to 10 digits.',
             'pop_id.unique' => 'This Pokemon Player ID (POP ID) is already on another profile.',
+            'birth_year.required' => 'Add a birth year.',
+            'birth_year.integer' => 'Enter a birth year from 1920 to '.now('Europe/Lisbon')->year.'.',
+            'birth_year.between' => 'Enter a birth year from 1920 to '.now('Europe/Lisbon')->year.'.',
             'consent.accepted' => 'A parent must give consent for a trainer under 13.',
             'age_confirmed.accepted' => 'Please confirm you are 13 or older.',
         ];

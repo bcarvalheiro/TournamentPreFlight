@@ -86,14 +86,17 @@ it('returns to the page the gate blocked, which receives the intent', function (
         ->where('pendingIntent', ['event_id' => $event->id]));
 });
 
-it('lets a social account without a password save its first profile and use the site', function () {
+it('lets a social account without a password save its first profile and answer', function () {
+    $event = Event::factory()->create();
     $user = User::factory()->create(['password' => null]);
+    $this->actingAs($user);
 
-    $this->actingAs($user)->post(route('profiles.store'), validProfile())
-        ->assertRedirect(route('home'));
+    $this->post(route('profiles.store'), validProfile())->assertRedirect(route('home'));
 
-    expect($user->fresh()->isPlayerReady())->toBeTrue();
-    $this->get(route('home'))->assertOk();
+    // "Using the site" means answering: the gate lets the intent through, no password asked.
+    $this->post(route('events.going', $event), ['return_to' => '/'])->assertRedirect(url('/'));
+    $this->get('/')->assertInertia(fn (Assert $page) => $page
+        ->where('pendingIntent', ['event_id' => $event->id]));
 });
 
 it('shows the form with the first birth year that needs consent', function () {
@@ -120,4 +123,21 @@ it('returns to the profile list after adding another player', function () {
     ]))->assertRedirect(route('profiles.index'));
 
     expect($user->playerProfiles()->count())->toBe(2);
+});
+
+// Review fix (copy rules: short, friendly): our own words, not Laravel's defaults.
+it('explains each mistake in a short sentence', function () {
+    $this->actingAs(User::factory()->create())
+        ->post(route('profiles.store'), ['name' => '', 'pop_id' => '12ab', 'birth_year' => 1900])
+        ->assertSessionHasErrors([
+            'name' => 'Add a name.',
+            'pop_id' => 'A POP ID is 1 to 10 digits.',
+            'birth_year' => 'Enter a birth year from 1920 to '.now('Europe/Lisbon')->year.'.',
+        ]);
+
+    $this->post(route('profiles.store'), ['name' => 'Ana', 'pop_id' => '', 'birth_year' => ''])
+        ->assertSessionHasErrors([
+            'pop_id' => 'Add the Pokemon Player ID (POP ID).',
+            'birth_year' => 'Add a birth year.',
+        ]);
 });
