@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 6 done, waiting for Bruno's commit. Next: Slice 7 (delete).
+- **State**: Slice 7 done, waiting for Bruno's commit. Next: Slice 8 (age after a takeover).
 
 ### Plan (M07)
 
@@ -24,7 +24,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 24 Nov): profiles are "Trainers" in the UI (navbar, list page, "Add a trainer", messages); `ProfileNoticeTest` became `SharedProfilesCountTest` plus the layout test. The M06 query test in `PendingIntentTest` now ignores the navbar's one `count(*)` (Bruno).
 - [x] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; the limits of Slice 4b apply when the birth year changes; `PlayerProfilePolicy` gives 403 to anyone but the owner; "Edit" on each card; the form is shared with "Add a trainer" (`routes/web.php`, `PlayerProfileController@edit/update`, `PlayerProfileRequest` (renamed from `StorePlayerProfileRequest`), `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `components/pf/profile-form.tsx`, `pages/profiles/edit.tsx`, `create.tsx`, `index.tsx`, `architecture.md`; `UpdatePlayerProfileTest`, `profile-form.test.tsx`) · AC1, AC2, AC3
   - Changed (Bruno, 24 Nov): offered as 6a (server) and 6b (page), kept as one slice (~350 lines); one request class for store and update.
-- [ ] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`; `DeletePlayerProfileTest`) · AC1, AC6
+- [x] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`, `routes/web.php`; `DeletePlayerProfileTest`, `tests/Browser/DeleteTrainerTest.php`) · AC1, AC6
+  - Changed (24 Nov): no `DeletePlayerProfile` Action: the operation is `$profile->delete()` and the foreign key cascades; an Action can come with M14's account deletion.
 - [ ] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`) · scope (takeover)
 
 ## Milestones

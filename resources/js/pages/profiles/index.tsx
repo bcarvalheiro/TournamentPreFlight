@@ -1,4 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
+import { useState } from 'react';
+import { ResponsiveDialog } from '@/components/pf/responsive-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +11,7 @@ import {
     EmptyTitle,
 } from '@/components/ui/empty';
 import PublicLayout from '@/layouts/public-layout';
-import { create, edit } from '@/routes/profiles';
+import { create, destroy, edit } from '@/routes/profiles';
 import type { OwnProfile } from '@/types';
 
 type Props = {
@@ -20,6 +22,50 @@ type Props = {
     /** Where to write for a fourth child. */
     supportEmail: string;
 };
+
+/**
+ * "Delete" on a trainer card: asks first (design.md "Sheet"), and only
+ * "Delete trainer" removes them, with their "I'm going" answers.
+ */
+function DeleteTrainer({ profile }: { profile: OwnProfile }) {
+    const [open, setOpen] = useState(false);
+
+    return (
+        <ResponsiveDialog
+            open={open}
+            onOpenChange={setOpen}
+            trigger={
+                <button
+                    type="button"
+                    className="inline-flex min-h-10 cursor-pointer items-center px-1 text-sm font-semibold underline underline-offset-4"
+                    aria-label={`Delete ${profile.name}`}
+                >
+                    Delete
+                </button>
+            }
+            title={`Delete ${profile.name}?`}
+            description="Their “I'm going” answers go too. This can't be undone."
+            footer={
+                <>
+                    <Button variant="outline" onClick={() => setOpen(false)}>
+                        Cancel
+                    </Button>
+                    <Form {...destroy.form(profile.id)} className="grid">
+                        {({ processing }) => (
+                            <Button
+                                type="submit"
+                                variant="destructive"
+                                disabled={processing}
+                            >
+                                Delete trainer
+                            </Button>
+                        )}
+                    </Form>
+                </>
+            }
+        />
+    );
+}
 
 /**
  * The account's trainers (M07): the holder's own profile and their
@@ -76,6 +122,7 @@ export default function Profiles({ profiles, isFull, supportEmail }: Props) {
                                             >
                                                 Edit
                                             </Link>
+                                            <DeleteTrainer profile={profile} />
                                         </div>
                                     </CardHeader>
                                     <CardContent className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">

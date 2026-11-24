@@ -94,4 +94,15 @@ class PlayerProfileController extends Controller
 
         return redirect()->route('profiles.index');
     }
+
+    /**
+     * Remove the trainer (only its owner gets here: `can:delete`). Their
+     * "I'm going" answers go too: the attendances foreign key cascades.
+     */
+    public function destroy(PlayerProfile $profile): RedirectResponse
+    {
+        $profile->delete();
+
+        return redirect()->route('profiles.index');
+    }
 }
