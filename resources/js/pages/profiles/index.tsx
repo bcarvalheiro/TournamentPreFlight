@@ -15,6 +15,10 @@ import type { OwnProfile } from '@/types';
 type Props = {
     /** The account's own players, oldest first. */
     profiles: OwnProfile[];
+    /** One profile aged 13 or older and 3 children: nothing more can be added. */
+    isFull: boolean;
+    /** Where to write for a fourth child. */
+    supportEmail: string;
 };
 
 /**
@@ -22,7 +26,7 @@ type Props = {
  * children's, or only a child's when the parent does not play. Seen only by
  * the account that owns them.
  */
-export default function Profiles({ profiles }: Props) {
+export default function Profiles({ profiles, isFull, supportEmail }: Props) {
     return (
         <>
             <Head title="Players" />
@@ -31,7 +35,7 @@ export default function Profiles({ profiles }: Props) {
                     <h1 className="font-display text-3xl font-extrabold uppercase">
                         Players
                     </h1>
-                    {profiles.length > 0 && (
+                    {profiles.length > 0 && !isFull && (
                         <Button asChild>
                             <Link href={create()}>Add a player</Link>
                         </Button>
@@ -83,6 +87,20 @@ export default function Profiles({ profiles }: Props) {
                             </li>
                         ))}
                     </ul>
+                )}
+
+                {isFull && (
+                    <p className="mt-6 text-sm text-muted-foreground">
+                        This account is full: your profile and 3 children. To
+                        add more, email us at{' '}
+                        <a
+                            href={`mailto:${supportEmail}`}
+                            className="font-semibold text-foreground underline"
+                        >
+                            {supportEmail}
+                        </a>
+                        .
+                    </p>
                 )}
             </div>
         </>

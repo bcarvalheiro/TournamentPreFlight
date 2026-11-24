@@ -68,6 +68,23 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Whether this account may add a profile aged 13 or older: only the
+     * holder's own, so only while it has none (decisions.md, 24 Nov).
+     */
+    public function canAddAdultProfile(): bool
+    {
+        return ! $this->playerProfiles()->where('is_child', false)->exists();
+    }
+
+    /**
+     * Whether this account may add another child profile (at most 3).
+     */
+    public function canAddChildProfile(): bool
+    {
+        return $this->playerProfiles()->where('is_child', true)->count() < PlayerProfile::MAX_CHILDREN;
+    }
+
+    /**
      * The player profiles this account holds (its own and its children's).
      *
      * @return HasMany<PlayerProfile, $this>

@@ -32,6 +32,9 @@ class PlayerProfile extends Model
     /** @use HasFactory<PlayerProfileFactory> */
     use HasFactory;
 
+    /** Child profiles one account may hold; more need an email to support (decisions.md, 24 Nov). */
+    public const int MAX_CHILDREN = 3;
+
     /**
      * A profile that may be under 13 at some point this calendar year (it turns
      * 13 or younger) is a child profile, and it needs the parent's recorded

@@ -23,9 +23,13 @@ class PlayerProfileController extends Controller
      */
     public function index(Request $request): Response
     {
+        $user = $request->user();
+
         return Inertia::render('profiles/index', [
-            'profiles' => $request->user()->playerProfiles()->oldest('id')->get()
+            'profiles' => $user->playerProfiles()->oldest('id')->get()
                 ->map(OwnProfileData::fromModel(...)),
+            'isFull' => ! $user->canAddAdultProfile() && ! $user->canAddChildProfile(),
+            'supportEmail' => config('app.support_email'),
         ]);
     }
 
@@ -36,9 +40,14 @@ class PlayerProfileController extends Controller
      */
     public function create(Request $request): Response
     {
+        $user = $request->user();
+
         return Inertia::render('profiles/create', [
             'signingInToGo' => $request->session()->has('pending_intent'),
             'consentFromYear' => PlayerProfile::consentFromBirthYear(),
+            'canAddAdult' => $user->canAddAdultProfile(),
+            'canAddChild' => $user->canAddChildProfile(),
+            'supportEmail' => config('app.support_email'),
         ]);
     }
 

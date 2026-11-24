@@ -113,8 +113,11 @@ it('shows the form with the first birth year that needs consent', function () {
 it('returns to the profile list after adding another player', function () {
     $user = User::factory()->has(PlayerProfile::factory())->create();
 
-    $this->actingAs($user)->post(route('profiles.store'), validProfile())
-        ->assertRedirect(route('profiles.index'));
+    // A child: the account already holds its one profile aged 13 or older (AC7).
+    $this->actingAs($user)->post(route('profiles.store'), validProfile([
+        'birth_year' => now('Europe/Lisbon')->year - 9,
+        'consent' => '1',
+    ]))->assertRedirect(route('profiles.index'));
 
     expect($user->playerProfiles()->count())->toBe(2);
 });
