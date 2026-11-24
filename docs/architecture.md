@@ -20,9 +20,10 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController), /Admin,
+  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
-  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer)
+  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer),
+                      AttendanceRequest ("I'm going" answers: {profiles: {id: bool}})
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
