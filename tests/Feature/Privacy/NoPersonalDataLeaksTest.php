@@ -103,3 +103,22 @@ it('shows no player data on the sign-in pages', function (string $route, string 
 
     expectNoPlayerData($response);
 })->with('sign-in pages');
+
+/*
+ * The profile list (M07) is an own-data page: the viewer's own profiles carry
+ * Pokemon Player IDs and birth years there by design, so only the family's
+ * values are checked, not the keys.
+ */
+it('shows another account none of the family on its profile list', function () {
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+
+    $response = $this->get(route('profiles.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('profiles/index')->has('profiles', 1));
+
+    expect(mb_strtolower((string) $response->getContent()))
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655')
+        ->not->toContain('9988776656');
+    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
+});

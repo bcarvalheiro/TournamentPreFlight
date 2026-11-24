@@ -30,7 +30,8 @@ app/
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
-  Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
+  Data/Private/       shapes sent only to the account that owns the data (never to other players):
+                      OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed

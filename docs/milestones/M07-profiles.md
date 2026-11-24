@@ -16,7 +16,7 @@ An account manages its own profile and its children's.
 - The first-profile page asks "I am 13 or older" again when the account was taken over from someone who registered its email without proving it (M06 review: their `age_confirmed_at` is not the owner's answer).
 - Navbar for a signed-in account: "Profiles (n)", "Settings" and "Sign out" (today it has only "Sign out", so profiles and Settings → Security cannot be reached).
 - `PlayerProfilePolicy`: only the owner can view, edit, delete.
-- Own-data shapes in `app/Data/Own/`.
+- Own-data shapes in `app/Data/Private/` (beside `app/Data/Public/`).
 
 ## Out of scope
 Answers (M08). Admin editing of profiles.

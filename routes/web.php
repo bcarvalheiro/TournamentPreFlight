@@ -16,6 +16,7 @@ Route::middleware(['auth'])->group(function () {
         // The account's own player profiles (M07). A verified email comes first, so
         // nobody adds profiles to an email they have not proven.
         Route::controller(PlayerProfileController::class)->group(function () {
+            Route::get('profiles', 'index')->name('profiles.index');
             Route::get('profiles/create', 'create')->name('profiles.create');
             Route::post('profiles', 'store')->name('profiles.store');
         });

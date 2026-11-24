@@ -109,3 +109,12 @@ it('shows the form with the first birth year that needs consent', function () {
         ->get(route('profiles.create'))
         ->assertInertia(fn (Assert $page) => $page->where('signingInToGo', true));
 });
+
+it('returns to the profile list after adding another player', function () {
+    $user = User::factory()->has(PlayerProfile::factory())->create();
+
+    $this->actingAs($user)->post(route('profiles.store'), validProfile())
+        ->assertRedirect(route('profiles.index'));
+
+    expect($user->playerProfiles()->count())->toBe(2);
+});

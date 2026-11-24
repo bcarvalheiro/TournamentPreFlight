@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Account;
 
 use App\Actions\CreatePlayerProfile;
+use App\Data\Private\OwnProfileData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePlayerProfileRequest;
 use App\Models\PlayerProfile;
@@ -16,6 +17,18 @@ use Inertia\Response;
  */
 class PlayerProfileController extends Controller
 {
+    /**
+     * The account's own players, oldest first. Only this account's profiles
+     * can be listed: the query starts from the signed-in user.
+     */
+    public function index(Request $request): Response
+    {
+        return Inertia::render('profiles/index', [
+            'profiles' => $request->user()->playerProfiles()->oldest('id')->get()
+                ->map(OwnProfileData::fromModel(...)),
+        ]);
+    }
+
     /**
      * The "Add a player" form: the account's own profile or a child's. After
      * "I'm going" the player gate sends a user without a profile here, and the
@@ -31,15 +44,19 @@ class PlayerProfileController extends Controller
 
     /**
      * Save a new profile, then go back to the page the player gate blocked
-     * (its intended URL), where a pending "I'm going" waits; home otherwise.
+     * (its intended URL), where a pending "I'm going" waits. Otherwise the
+     * first profile goes home and any later one back to the list.
      */
     public function store(StorePlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
     {
         /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed} $data */
         $data = $request->validated();
 
-        $createPlayerProfile->handle($request->user(), $data);
+        $user = $request->user();
+        $isFirst = ! $user->playerProfiles()->exists();
 
-        return redirect()->intended(route('home'));
+        $createPlayerProfile->handle($user, $data);
+
+        return redirect()->intended(route($isFirst ? 'home' : 'profiles.index'));
     }
 }

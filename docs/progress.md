@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 3 done, waiting for Bruno's commit. Next: Slice 4.
+- **State**: Slice 4 done, waiting for Bruno's commit. Next: Slice 5.
 
 ### Plan (M07)
 
@@ -16,7 +16,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 - [x] Slice 3: the create form: name, Pokemon Player ID (POP ID), birth year; consent box shown for a child birth year (the server sends `consentFromYear` from the new `PlayerProfile::consentFromBirthYear()`); "Not now" kept; heading "Add a player" with "You, or your child if they are under 13.", so a parent who does not play can add only their child (`routes/web.php`, `PlayerProfileController@create`, `PlayerProfile.php`, `pages/profiles/create.tsx`; props in `CreatePlayerProfileTest`, `tests/Browser/AddPlayerTest.php`) · AC3, AC4
   - Changed (Bruno, 23 Nov): offered as 3a (form) and 3b (consent box), kept as one slice (~250 lines); a browser test added because Vitest renders static markup only and the box appears as you type. The page's Vitest file was dropped (Bruno): the Inertia Vite plugin bundles every `pages/**/*.tsx`, tests included.
   - Changed (Bruno, 23 Nov): copy for a parent who does not play; was "Create your player profile" or "Add a profile".
-- [ ] Slice 4: profile list: cards with name, Pokemon Player ID (POP ID), birth year, only the account's own; saving a profile that is not the first returns to the list (`PlayerProfileController@index`, `app/Data/Own/OwnProfileData.php`, `pages/profiles/index.tsx`, `NoPersonalDataLeaksTest` dataset; `PlayerProfileListTest`) · AC1
+- [x] Slice 4: profile list: cards with name, Pokemon Player ID (POP ID), birth year, only the account's own; saving a profile that is not the first returns to the list (`routes/web.php`, `PlayerProfileController@index/store`, `app/Data/Private/OwnProfileData.php`, `types/profiles.ts`, `pages/profiles/index.tsx`, `NoPersonalDataLeaksTest` case; `PlayerProfileListTest`, `CreatePlayerProfileTest`) · AC1
+  - Changed (Bruno, 24 Nov): `Data/Own` renamed `Data/Private`, beside `Data/Public`.
 - [ ] Slice 5: signed-in navbar "Profiles (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a player to say you're going: you, or your child." + "Add a player"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`; `public-layout.test.tsx`, `ProfileNoticeTest`) · AC4, AC5
 - [ ] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; `PlayerProfilePolicy` gives 403 to anyone but the owner (`PlayerProfileController@edit/update`, `UpdatePlayerProfileRequest`, `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `pages/profiles/edit.tsx`, `architecture.md`; `UpdatePlayerProfileTest`) · AC1, AC2, AC3
 - [ ] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`; `DeletePlayerProfileTest`) · AC1, AC6
@@ -486,6 +487,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Linked accounts seeing a child's profile** (Bruno's idea, 24 Nov): today a child profile belongs to exactly one account. Later, another account (a second parent, or the child's own account once they turn 13) could be allowed to see or manage it. `OwnProfileData` is the owner's view and could be reused; needs a link table and consent rules. (later)
 - **Browser validation on the auth pages**: register, sign in, welcome and reset use `required`, so the browser blocks the form with its own bubble in the browser's language (Portuguese for most players, against rule 8) before our English errors show. M07 put `noValidate` on the profile form; decide the same for the kit's auth forms. (M15)
 - **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
 - ~~**Settings → Security for social accounts**~~: done in M06 fix 10b ("Email me a link to set a password").
