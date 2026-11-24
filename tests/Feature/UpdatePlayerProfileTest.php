@@ -114,3 +114,21 @@ it('opens the edit page with the trainer\'s data', function () {
             ->where('profile.isChild', true)
             ->where('consentFromYear', now('Europe/Lisbon')->year - 13));
 });
+
+/*
+ * Review fix: is_child is only refreshed when a row is saved, so on 1 January
+ * a child who turns 14 still has is_child = true. Edits and limits decide from
+ * the birth year today instead.
+ */
+it('lets the owner edit a child who aged out on 1 January', function () {
+    $owner = User::factory()->has(PlayerProfile::factory())->create();
+    $child = PlayerProfile::factory()->child()->for($owner)->create(['birth_year' => now('Europe/Lisbon')->year - 13]);
+
+    $this->travelTo(now('Europe/Lisbon')->addYear()->startOfYear()->addDay());
+
+    $this->actingAs($owner)
+        ->put(route('profiles.update', $child), ['name' => 'Typo Fixed', 'pop_id' => $child->pop_id, 'birth_year' => $child->birth_year])
+        ->assertSessionHasNoErrors();
+
+    expect($child->fresh()->name)->toBe('Typo Fixed');
+});

@@ -26,7 +26,8 @@ final readonly class OwnProfileData
             name: $profile->name,
             popId: $profile->pop_id,
             birthYear: $profile->birth_year,
-            isChild: $profile->is_child,
+            // From the birth year today: the stored is_child goes stale on 1 January.
+            isChild: PlayerProfile::needsParentalConsent($profile->birth_year),
         );
     }
 }

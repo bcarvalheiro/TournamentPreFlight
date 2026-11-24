@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: All slices done; Slice 8 waiting for Bruno's commit. Next: `/rethink-tests`, then `/review`.
+- **State**: All slices done; Slice 8 waiting for Bruno's commit. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: `/review`.
 
 ### Plan (M07)
 

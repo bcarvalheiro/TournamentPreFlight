@@ -79,3 +79,13 @@ it('tells the form what the account can still add', function (int $adults, int $
     'three children' => [0, 3, true, false],
     'full' => [1, 3, false, false],
 ]);
+
+it('stops counting a child who aged out on 1 January', function () {
+    $user = User::factory()->create();
+    PlayerProfile::factory()->child()->for($user)->count(2)->create();
+    PlayerProfile::factory()->child()->for($user)->create(['birth_year' => now('Europe/Lisbon')->year - 13]);
+
+    $this->travelTo(now('Europe/Lisbon')->addYear()->startOfYear()->addDay());
+
+    $this->actingAs($user)->post(route('profiles.store'), anotherChild())->assertSessionHasNoErrors();
+});

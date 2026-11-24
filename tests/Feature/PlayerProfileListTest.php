@@ -50,3 +50,12 @@ it('sends a guest to sign in and an unverified account to verify', function () {
         ->get(route('profiles.index'))
         ->assertRedirect(route('verification.notice'));
 });
+
+it('no longer shows a child who aged out on 1 January as a child', function () {
+    $child = PlayerProfile::factory()->child()->create(['birth_year' => now('Europe/Lisbon')->year - 13]);
+
+    $this->travelTo(now('Europe/Lisbon')->addYear()->startOfYear()->addDay());
+
+    $this->actingAs($child->user)->get(route('profiles.index'))
+        ->assertInertia(fn (Assert $page) => $page->where('profiles.0.isChild', false));
+});

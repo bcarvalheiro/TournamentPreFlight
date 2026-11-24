@@ -36,7 +36,7 @@ class PlayerProfileRequest extends FormRequest
      */
     public function rules(): array
     {
-        $becomesChild = $this->isChild() && ! ($this->profile()->is_child ?? false);
+        $becomesChild = $this->isChild() && ! $this->wasChild();
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -60,14 +60,12 @@ class PlayerProfileRequest extends FormRequest
     public function after(): array
     {
         return [function (Validator $validator): void {
-            $profile = $this->profile();
-            $isChild = $this->isChild();
-
-            if ($validator->errors()->has('birth_year') || ($profile !== null && $profile->is_child === $isChild)) {
+            if ($validator->errors()->has('birth_year') || ($this->profile() !== null && $this->wasChild() === $this->isChild())) {
                 return;
             }
 
             $user = $this->user();
+            $isChild = $this->isChild();
 
             if (! $isChild && ! $user->canAddAdultProfile()) {
                 $validator->errors()->add('birth_year', 'Your account already has a trainer aged 13 or older. Anyone else 13 or older signs up with their own account.');
@@ -87,6 +85,17 @@ class PlayerProfileRequest extends FormRequest
         $profile = $this->route('profile');
 
         return $profile instanceof PlayerProfile ? $profile : null;
+    }
+
+    /**
+     * Whether the trainer being edited is a child today, from its stored birth
+     * year: the is_child column goes stale on 1 January (review fix).
+     */
+    private function wasChild(): bool
+    {
+        $profile = $this->profile();
+
+        return $profile !== null && PlayerProfile::needsParentalConsent($profile->birth_year);
     }
 
     /**
