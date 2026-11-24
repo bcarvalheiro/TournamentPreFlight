@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M07 · Player profiles (review).
-- **Branch**: m07-profiles
-- **State**: All slices and review fixes committed; `composer verify` green. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: Bruno pushes and opens the PR, then M08.
+- **Milestone**: M08 · "I'm going" (in progress).
+- **Branch**: m08-attendance
+- **State**: Plan proposed, waiting for Bruno's approval. No code yet.
 
 ### Plan (M07)
 
@@ -38,8 +38,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
-| M07 | Player profiles | review | PR to open |
-| M08 | "I'm going" and Maybe | todo | |
+| M07 | Player profiles | done | PR #9 merged |
+| M08 | "I'm going" | in progress | "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
