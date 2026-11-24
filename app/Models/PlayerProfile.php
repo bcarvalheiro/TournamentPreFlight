@@ -58,7 +58,16 @@ class PlayerProfile extends Model
      */
     public static function needsParentalConsent(int $birthYear): bool
     {
-        return now('Europe/Lisbon')->year - $birthYear <= 13;
+        return $birthYear >= self::consentFromBirthYear();
+    }
+
+    /**
+     * The first birth year that needs a parent's consent (this Lisbon year
+     * minus 13). The profile form shows the consent box from this year on.
+     */
+    public static function consentFromBirthYear(): int
+    {
+        return now('Europe/Lisbon')->year - 13;
     }
 
     /**

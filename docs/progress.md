@@ -6,14 +6,15 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 2 done, waiting for Bruno's commit. Next: Slice 3.
+- **State**: Slice 3 done, waiting for Bruno's commit. Next: Slice 4.
 
 ### Plan (M07)
 
 - [x] Slice 1: save an adult profile: name required, Pokemon Player ID (POP ID) 1–10 digits and unique across accounts ("This Pokemon Player ID (POP ID) is already on another profile."), birth year 1920 to this Lisbon year; profile routes behind `auth` + `verified`; saving redirects with `redirect()->intended(route('home'))`; a social account without a password saves too (`routes/web.php`, `Account\PlayerProfileController@store`, `StorePlayerProfileRequest`, `Actions\CreatePlayerProfile`, `architecture.md` Code layout; `CreatePlayerProfileTest`) · AC2, AC4, AC5
   - Changed (23 Nov): "later profiles go to the list" moved to Slice 4, which builds the list.
 - [x] Slice 2: child consent: one rule, `PlayerProfile::needsParentalConsent()`, used by the model and the request; no consent, no profile; with consent `consent_given_at` and `consent_by_user_id` (the signed-in owner) are stored (`PlayerProfile.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`; `ChildProfileConsentTest`) · AC3
-- [ ] Slice 3: the create form: name, Pokemon Player ID (POP ID), birth year; consent box shown for a child birth year (the server sends the cut-off year); "Not now" kept; heading "Add a player" with "You, or your child if they are under 13.", so a parent who does not play can add only their child (`PlayerProfileController@create`, `pages/profiles/create.tsx`; `create.test.tsx`, props in `CreatePlayerProfileTest`) · AC3, AC4
+- [x] Slice 3: the create form: name, Pokemon Player ID (POP ID), birth year; consent box shown for a child birth year (the server sends `consentFromYear` from the new `PlayerProfile::consentFromBirthYear()`); "Not now" kept; heading "Add a player" with "You, or your child if they are under 13.", so a parent who does not play can add only their child (`routes/web.php`, `PlayerProfileController@create`, `PlayerProfile.php`, `pages/profiles/create.tsx`; props in `CreatePlayerProfileTest`, `tests/Browser/AddPlayerTest.php`) · AC3, AC4
+  - Changed (Bruno, 23 Nov): offered as 3a (form) and 3b (consent box), kept as one slice (~250 lines); a browser test added because Vitest renders static markup only and the box appears as you type. The page's Vitest file was dropped (Bruno): the Inertia Vite plugin bundles every `pages/**/*.tsx`, tests included.
   - Changed (Bruno, 23 Nov): copy for a parent who does not play; was "Create your player profile" or "Add a profile".
 - [ ] Slice 4: profile list: cards with name, Pokemon Player ID (POP ID), birth year, only the account's own; saving a profile that is not the first returns to the list (`PlayerProfileController@index`, `app/Data/Own/OwnProfileData.php`, `pages/profiles/index.tsx`, `NoPersonalDataLeaksTest` dataset; `PlayerProfileListTest`) · AC1
 - [ ] Slice 5: signed-in navbar "Profiles (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a player to say you're going: you, or your child." + "Add a player"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`; `public-layout.test.tsx`, `ProfileNoticeTest`) · AC4, AC5
@@ -485,6 +486,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Browser validation on the auth pages**: register, sign in, welcome and reset use `required`, so the browser blocks the form with its own bubble in the browser's language (Portuguese for most players, against rule 8) before our English errors show. M07 put `noValidate` on the profile form; decide the same for the kit's auth forms. (M15)
 - **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
 - ~~**Settings → Security for social accounts**~~: done in M06 fix 10b ("Email me a link to set a password").
 - **Kit focus styles**: `ui/toggle.tsx`, `ui/select.tsx`, `ui/navigation-menu.tsx` and `app-header.tsx` still set `outline-none` with the kit's faint ring, hiding design.md's red focus outline; none is on a page players use yet. Fix when a page uses them. (M15)

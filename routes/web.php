@@ -6,21 +6,20 @@ use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\WelcomeController;
 use App\Http\Controllers\Public\HomeController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', HomeController::class)->name('home');
 
-// The account's own player profiles (M07). A verified email comes first, so
-// nobody adds profiles to an email they have not proven.
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Placeholder until M07 Slice 3 builds the form; the player gate sends new players here.
-    Route::get('profiles/create', fn (Request $request) => Inertia::render('profiles/create', [
-        'signingInToGo' => $request->session()->has('pending_intent'),
-    ]))->name('profiles.create');
-
-    Route::post('profiles', [PlayerProfileController::class, 'store'])->name('profiles.store');
+// Signed-in accounts
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['verified'])->group(function () {
+        // The account's own player profiles (M07). A verified email comes first, so
+        // nobody adds profiles to an email they have not proven.
+        Route::controller(PlayerProfileController::class)->group(function () {
+            Route::get('profiles/create', 'create')->name('profiles.create');
+            Route::post('profiles', 'store')->name('profiles.store');
+        });
+    });
 });
 
 Route::middleware('guest')->group(function () {

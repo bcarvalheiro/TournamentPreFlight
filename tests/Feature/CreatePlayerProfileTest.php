@@ -95,3 +95,17 @@ it('lets a social account without a password save its first profile and use the 
     expect($user->fresh()->isPlayerReady())->toBeTrue();
     $this->get(route('home'))->assertOk();
 });
+
+it('shows the form with the first birth year that needs consent', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)->get(route('profiles.create'))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('profiles/create')
+            ->where('signingInToGo', false)
+            ->where('consentFromYear', now('Europe/Lisbon')->year - 13));
+
+    $this->withSession(['pending_intent' => ['event_id' => 1]])
+        ->get(route('profiles.create'))
+        ->assertInertia(fn (Assert $page) => $page->where('signingInToGo', true));
+});

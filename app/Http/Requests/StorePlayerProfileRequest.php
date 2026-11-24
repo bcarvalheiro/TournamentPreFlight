@@ -54,4 +54,17 @@ class StorePlayerProfileRequest extends FormRequest
             'consent.accepted' => 'A parent must give consent for a player under 13.',
         ];
     }
+
+    /**
+     * Field names as the form shows them, for Laravel's default messages.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'pop_id' => 'Pokemon Player ID (POP ID)',
+            'birth_year' => 'birth year',
+        ];
+    }
 }
