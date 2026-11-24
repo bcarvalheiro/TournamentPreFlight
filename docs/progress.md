@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 4b done, waiting for Bruno's commit. Next: Slice 5.
+- **State**: Slice 5 done, waiting for Bruno's commits (trainers rename, then the slice). Next: Slice 6.
 
 ### Plan (M07)
 
@@ -20,7 +20,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 24 Nov): `Data/Own` renamed `Data/Private`, beside `Data/Public`.
 - [x] Slice 4b: profile limits: a second profile aged 13 or older is refused, and a fourth child is refused with a pointer to support; the form tells the parent before they type (`StorePlayerProfileRequest`, `PlayerProfile::MAX_CHILDREN`, `User::canAddAdultProfile()`/`canAddChildProfile()`, `PlayerProfileController@index/create`, `config/app.php` `support_email` + `.env.example` `SUPPORT_EMAIL`, `pages/profiles/create.tsx`, `pages/profiles/index.tsx`, `docs/product.md`; `ProfileLimitsTest`) · AC7
   - Added (Bruno, 24 Nov): new rule found while testing slice 4. The support address lives in `.env` (the repo is public).
-- [ ] Slice 5: signed-in navbar "Profiles (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a player to say you're going: you, or your child." + "Add a player"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`; `public-layout.test.tsx`, `ProfileNoticeTest`) · AC4, AC5
+- [x] Slice 5: signed-in navbar "Trainers (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a trainer to say you're going: you, or your child." + "Add a trainer"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`, `types/auth.ts`; `public-layout.test.tsx`, `SharedProfilesCountTest`) · AC4, AC5
+  - Changed (Bruno, 24 Nov): profiles are "Trainers" in the UI (navbar, list page, "Add a trainer", messages); `ProfileNoticeTest` became `SharedProfilesCountTest` plus the layout test. The M06 query test in `PendingIntentTest` now ignores the navbar's one `count(*)` (Bruno).
 - [ ] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; the limits of Slice 4b apply when the birth year changes; `PlayerProfilePolicy` gives 403 to anyone but the owner (`PlayerProfileController@edit/update`, `UpdatePlayerProfileRequest`, `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `pages/profiles/edit.tsx`, `architecture.md`; `UpdatePlayerProfileTest`) · AC1, AC2, AC3
 - [ ] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`; `DeletePlayerProfileTest`) · AC1, AC6
 - [ ] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`) · scope (takeover)

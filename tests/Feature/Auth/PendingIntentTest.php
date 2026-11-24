@@ -107,8 +107,10 @@ it('sets no intent for an event that is not coming up', function (Closure $event
 it('asks the database nothing for the intent when there is none', function () {
     $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     $profileQueries = 0;
+    // The navbar's "Trainers (n)" count (M07) is the one profile query every
+    // signed-in page makes on purpose; SharedProfilesCountTest covers it.
     DB::listen(function (QueryExecuted $query) use (&$profileQueries) {
-        $profileQueries += str_contains($query->sql, 'player_profiles') ? 1 : 0;
+        $profileQueries += str_contains($query->sql, 'player_profiles') && ! str_contains($query->sql, 'count(*)') ? 1 : 0;
     });
 
     $this->get(route('home'))->assertOk();

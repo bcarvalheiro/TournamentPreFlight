@@ -40,6 +40,8 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $request->user(),
+                // The account's trainers (M07), for the navbar and the no-profile notice.
+                'profilesCount' => fn () => $request->user()?->playerProfiles()->count(),
             ],
             // "I'm going" pressed while signed out (M06): handed over once, only
             // when the player gate lets the player in. The session is checked
