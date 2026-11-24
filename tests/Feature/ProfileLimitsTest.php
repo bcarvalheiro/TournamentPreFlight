@@ -89,3 +89,21 @@ it('stops counting a child who aged out on 1 January', function () {
 
     $this->actingAs($user)->post(route('profiles.store'), anotherChild())->assertSessionHasNoErrors();
 });
+
+/*
+ * Review fix (privacy): adding or editing trainers is throttled, so nobody can
+ * try Pokemon Player IDs one after another to find which are taken, or claim
+ * many quickly. Disputes go to support (decisions.md, 24 Nov).
+ */
+it('slows down an account that keeps adding or editing trainers', function () {
+    $user = User::factory()->has(PlayerProfile::factory())->create();
+    $profile = $user->playerProfiles()->sole();
+    $this->actingAs($user);
+
+    foreach (range(1, 10) as $attempt) {
+        $this->post(route('profiles.store'), ['pop_id' => "77{$attempt}"])->assertRedirect();
+    }
+
+    $this->post(route('profiles.store'), ['pop_id' => '7799'])->assertTooManyRequests();
+    $this->put(route('profiles.update', $profile), ['pop_id' => '7799'])->assertTooManyRequests();
+});

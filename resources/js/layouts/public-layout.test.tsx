@@ -9,7 +9,10 @@ const page = vi.hoisted(() => ({
     component: 'home',
     props: {
         auth: {
-            user: null as { id: number } | null,
+            user: null as {
+                id: number;
+                email_verified_at: string | null;
+            } | null,
             profilesCount: null as number | null,
         },
     },
@@ -28,8 +31,14 @@ function render(): string {
     );
 }
 
-function signIn(profilesCount: number): void {
-    page.props.auth = { user: { id: 1 }, profilesCount };
+function signIn(profilesCount: number, verified = true): void {
+    page.props.auth = {
+        user: {
+            id: 1,
+            email_verified_at: verified ? '2026-11-24T00:00:00Z' : null,
+        },
+        profilesCount,
+    };
 }
 
 describe('PublicLayout', () => {
@@ -71,6 +80,21 @@ describe('PublicLayout', () => {
     it('hides the notice on the "Add a trainer" page itself', () => {
         signIn(0);
         page.component = 'profiles/create';
+
+        expect(render()).not.toContain('to say you&#x27;re going');
+    });
+
+    // Review fix: the list page has its own empty state with the same link.
+    it('hides the notice on the trainer list', () => {
+        signIn(0);
+        page.component = 'profiles/index';
+
+        expect(render()).not.toContain('to say you&#x27;re going');
+    });
+
+    // Review fix: an unverified account would bounce to the verify page from the link.
+    it('hides the notice until the email is verified', () => {
+        signIn(0, false);
 
         expect(render()).not.toContain('to say you&#x27;re going');
     });

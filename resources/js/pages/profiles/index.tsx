@@ -76,7 +76,7 @@ export default function Profiles({ profiles, isFull, supportEmail }: Props) {
     return (
         <>
             <Head title="Trainers" />
-            <div className="mx-auto max-w-xl px-4 py-10">
+            <div className="mx-auto max-w-xl py-4">
                 <div className="flex items-center justify-between gap-4">
                     <h1 className="font-display text-3xl font-extrabold uppercase">
                         Trainers
@@ -106,12 +106,20 @@ export default function Profiles({ profiles, isFull, supportEmail }: Props) {
                             <li key={profile.id}>
                                 <Card>
                                     <CardHeader className="flex-row items-center justify-between gap-2">
-                                        <CardTitle className="text-xl">
+                                        {/* A heading, so screen readers can jump between trainers. */}
+                                        <CardTitle
+                                            role="heading"
+                                            aria-level={2}
+                                            className="text-xl"
+                                        >
                                             {profile.name}
                                         </CardTitle>
                                         <div className="flex items-center gap-2">
                                             {profile.isChild && (
-                                                <Badge variant="outline">
+                                                <Badge
+                                                    variant="outline"
+                                                    className="rounded-full"
+                                                >
                                                     Child
                                                 </Badge>
                                             )}

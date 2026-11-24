@@ -50,102 +50,139 @@ export function ProfileForm({
             noValidate
             className="mt-6 grid gap-6"
         >
-            {({ processing, errors }) => (
-                <>
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input
-                            id="name"
-                            name="name"
-                            required
-                            autoComplete="off"
-                            defaultValue={profile?.name ?? ''}
-                        />
-                        <InputError message={errors.name} />
-                    </div>
+            {({ processing, errors }) => {
+                // Links a field to its error so screen readers announce it, and
+                // lets the kit's aria-invalid styles show (WCAG 1.3.1, 3.3.1).
+                const describe = (field: string) =>
+                    errors[field]
+                        ? {
+                              'aria-invalid': true,
+                              'aria-describedby': `${field}-error`,
+                          }
+                        : {};
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="pop_id">
-                            Pokemon Player ID (POP ID)
-                        </Label>
-                        <Input
-                            id="pop_id"
-                            name="pop_id"
-                            required
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            maxLength={10}
-                            autoComplete="off"
-                            defaultValue={profile?.popId ?? ''}
-                        />
-                        <InputError message={errors.pop_id} />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="birth_year">Birth year</Label>
-                        <Input
-                            id="birth_year"
-                            name="birth_year"
-                            type="number"
-                            required
-                            min={1920}
-                            max={consentFromYear + 13}
-                            value={birthYear}
-                            onChange={(event) =>
-                                setBirthYear(event.target.value)
-                            }
-                            className="w-32"
-                        />
-                        <InputError message={errors.birth_year} />
-                    </div>
-
-                    {needsConsent && (
-                        <div className="grid gap-2 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3">
-                            <div className="flex items-center gap-3">
-                                <Checkbox id="consent" name="consent" />
-                                <Label
-                                    htmlFor="consent"
-                                    className="flex min-h-10 flex-1 items-center"
-                                >
-                                    I'm their parent or guardian, and I agree to
-                                    add them to my account.
-                                </Label>
-                            </div>
-                            <InputError message={errors.consent} />
-                        </div>
-                    )}
-
-                    {asksAge && (
+                return (
+                    <>
                         <div className="grid gap-2">
-                            <div className="flex items-center gap-3">
-                                <Checkbox
-                                    id="age_confirmed"
-                                    name="age_confirmed"
-                                />
-                                <Label
-                                    htmlFor="age_confirmed"
-                                    className="flex min-h-10 flex-1 items-center"
-                                >
-                                    I am 13 or older
-                                </Label>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                                Under 13? A parent or guardian adds you to their
-                                account.
-                            </p>
-                            <InputError message={errors.age_confirmed} />
+                            <Label htmlFor="name">Name</Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                {...describe('name')}
+                                required
+                                autoComplete="off"
+                                defaultValue={profile?.name ?? ''}
+                            />
+                            <InputError id="name-error" message={errors.name} />
                         </div>
-                    )}
 
-                    <Button
-                        type="submit"
-                        className="w-full sm:w-auto sm:justify-self-start"
-                    >
-                        {processing && <Spinner />}
-                        {submitLabel}
-                    </Button>
-                </>
-            )}
+                        <div className="grid gap-2">
+                            <Label htmlFor="pop_id">
+                                Pokemon Player ID (POP ID)
+                            </Label>
+                            <Input
+                                id="pop_id"
+                                name="pop_id"
+                                {...describe('pop_id')}
+                                required
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                maxLength={10}
+                                autoComplete="off"
+                                defaultValue={profile?.popId ?? ''}
+                            />
+                            <InputError
+                                id="pop_id-error"
+                                message={errors.pop_id}
+                            />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="birth_year">Birth year</Label>
+                            <Input
+                                id="birth_year"
+                                name="birth_year"
+                                {...describe('birth_year')}
+                                type="number"
+                                required
+                                min={1920}
+                                max={consentFromYear + 13}
+                                value={birthYear}
+                                onChange={(event) =>
+                                    setBirthYear(event.target.value)
+                                }
+                                className="w-32"
+                            />
+                            <InputError
+                                id="birth_year-error"
+                                message={errors.birth_year}
+                            />
+                        </div>
+
+                        {needsConsent && (
+                            <div className="grid gap-2">
+                                {/* The error sits below the pink box: red text on the tint fails contrast. */}
+                                <div className="flex items-center gap-3 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3">
+                                    <Checkbox
+                                        id="consent"
+                                        name="consent"
+                                        {...describe('consent')}
+                                    />
+                                    <Label
+                                        htmlFor="consent"
+                                        className="flex min-h-10 flex-1 items-center"
+                                    >
+                                        I'm their parent or guardian, and I
+                                        agree to add them to my account.
+                                    </Label>
+                                </div>
+                                <InputError
+                                    id="consent-error"
+                                    message={errors.consent}
+                                />
+                            </div>
+                        )}
+
+                        {asksAge && (
+                            <div className="grid gap-2">
+                                {/* After a takeover the account holder's own answer is asked, not the trainer's. */}
+                                <p className="text-sm font-semibold">
+                                    First, confirm your own age.
+                                </p>
+                                <div className="flex items-center gap-3">
+                                    <Checkbox
+                                        id="age_confirmed"
+                                        name="age_confirmed"
+                                        {...describe('age_confirmed')}
+                                    />
+                                    <Label
+                                        htmlFor="age_confirmed"
+                                        className="flex min-h-10 flex-1 items-center"
+                                    >
+                                        I am 13 or older
+                                    </Label>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    Under 13? A parent or guardian adds you to
+                                    their account.
+                                </p>
+                                <InputError
+                                    id="age_confirmed-error"
+                                    message={errors.age_confirmed}
+                                />
+                            </div>
+                        )}
+
+                        <Button
+                            type="submit"
+                            className="w-full sm:w-auto sm:justify-self-start"
+                        >
+                            {processing && <Spinner />}
+                            {submitLabel}
+                        </Button>
+                    </>
+                );
+            }}
         </Form>
     );
 }

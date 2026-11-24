@@ -54,7 +54,7 @@ export default function CreateProfile({
     return (
         <>
             <Head title="Add a trainer" />
-            <div className="mx-auto max-w-xl px-4 py-10">
+            <div className="mx-auto max-w-xl py-4">
                 <h1 className="font-display text-3xl font-extrabold uppercase">
                     Add a trainer
                 </h1>

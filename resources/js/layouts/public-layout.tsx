@@ -32,7 +32,10 @@ function Band({ hero }: { hero?: ReactNode }) {
             />
             <div className="relative mx-auto max-w-[1100px] px-4">
                 <header className="flex h-[50px] items-center justify-between gap-2">
-                    <Link href={home()} className="rounded-md text-white">
+                    <Link
+                        href={home()}
+                        className="inline-flex h-10 items-center rounded-md text-white"
+                    >
                         <AppLogo />
                     </Link>
                     <nav
@@ -81,15 +84,19 @@ function Band({ hero }: { hero?: ReactNode }) {
 
 /**
  * A signed-in account without trainers lands on the page as usual (M07,
- * decisions.md 23 Nov) and sees this notice on every page but "Add a trainer".
+ * decisions.md 23 Nov) and sees this notice on every page except "Add a
+ * trainer" and the trainer list (which has its own empty state). An account
+ * that has not verified its email is not shown it: adding a trainer starts
+ * with verifying.
  */
 function ProfileNotice() {
     const { props, component } = usePage();
 
     if (
-        !props.auth.user ||
+        !props.auth.user?.email_verified_at ||
         props.auth.profilesCount !== 0 ||
-        component === 'profiles/create'
+        component === 'profiles/create' ||
+        component === 'profiles/index'
     ) {
         return null;
     }

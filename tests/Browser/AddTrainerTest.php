@@ -22,8 +22,11 @@ it('asks a parent for consent when the player is a child', function () {
         // The server's English messages show, not the browser's own checks.
         ->fill('pop_id', '21das')
         ->click('Save trainer')
-        ->assertSee('The Pokemon Player ID (POP ID) field must be between 1 and 10 digits.')
-        ->assertSee('The birth year field is required.')
+        ->assertSee('A POP ID is 1 to 10 digits.')
+        ->assertSee('Add a birth year.')
+        // Each error is tied to its field for screen readers (review fix, WCAG 1.3.1).
+        ->assertAttribute('#pop_id', 'aria-invalid', 'true')
+        ->assertAttribute('#pop_id', 'aria-describedby', 'pop_id-error')
         ->fill('name', 'Young Trainer')
         ->fill('pop_id', '7654321')
         ->fill('birth_year', '1990')
