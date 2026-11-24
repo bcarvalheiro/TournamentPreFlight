@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M07 · Player profiles (in progress).
+- **Milestone**: M07 · Player profiles (review).
 - **Branch**: m07-profiles
-- **State**: All slices done; Slice 8 waiting for Bruno's commit. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: `/review`.
+- **State**: All slices and review fixes committed; `composer verify` green. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: Bruno pushes and opens the PR, then M08.
 
 ### Plan (M07)
 
@@ -38,7 +38,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
-| M07 | Player profiles | in progress | |
+| M07 | Player profiles | review | PR to open |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
@@ -53,6 +53,87 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-23/24 · M07 · Player profiles
+
+**Outcome.** All seven acceptance criteria met and tested.
+- An account manages its trainers (player profiles, called "Trainers" in the UI): list, "Add a trainer", edit and delete with a confirmation. The navbar shows "Trainers (n)", "Settings" and "Sign out".
+- Name, Pokemon Player ID (POP ID) and birth year are required. The POP ID is 1–10 digits and unique across accounts, and the duplicate message never says whose it is.
+- A trainer under 13 needs the parent's consent box; when and by whom is stored. "Child" is decided from the birth year today, never the stored `is_child`, which goes stale on 1 January.
+- Account limits: one trainer aged 13 or older, at most 3 children. The fourth child's message points to the support email, which lives in `.env` because the repo is public.
+- Sign-in still lands on `/`. An account without trainers sees a notice linking to "Add a trainer". From "I'm going", the gate leads to the form and saving returns to the blocked page with the intent.
+- After an account takeover, "Add a trainer" asks "I am 13 or older" again and saves the answer with the trainer in one transaction.
+- Adding and editing is throttled (`throttle:10,1`). Form errors are tied to their fields for screen readers.
+
+`composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 78 Vitest, 301 Pest (9,516 assertions). Built in 9 planned slices (4b added), then `/review` with 9 fixes (A–I), each committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- Slices:
+  - `1e40ffe` player profiles with a no-profile warning (plan)
+  - `05b2dda` save a profile and return to the blocked page; Player ID renamed POP ID (1)
+  - `8606619` tidy the POP ID rename and format routes
+  - `7246663` parental consent for a child (2)
+  - `31f6b86` "Add a player" form with the consent box (3)
+  - `4d9a6db` the account's profile list (4)
+  - `6a73d3a` one adult and three children (4b)
+  - `c1b2310` "Trainers" in the UI
+  - `6b6e551` navbar links and the no-trainer notice (5)
+  - `19dcaae` slice guide raised to about 350 lines
+  - `bbb67a0` edit a trainer with a shared form (6)
+  - `dbb165e` delete a trainer and their answers (7)
+  - `6495f1e` age asked again after a takeover (8)
+- `/review` fixes:
+  - `c0fcd26` child decided from the birth year today (A)
+  - `92cd051` age transaction and another account on the edit page (E), plus the throttle route (H)
+  - `d2462d9` short validation messages and the stronger AC5 test (G, E)
+  - `c9f16e8` form errors tied to fields, 40px inputs, tidy trainer pages (B, C, D, F), plus the throttle test (H)
+  - `818eeb6` review decisions and trainer names in the docs (I)
+- Outside the plan: `b61fb2c` a pulsing mail icon on the unverified-email notice in Settings and on `/email/verify` (Bruno's request after the review)
+
+**Commit scope notes.**
+- `05b2dda` carries the Player ID → POP ID rename across 28 files beside slice 1.
+- `19dcaae` (the slice guide in `CLAUDE.md` and `.claude/commands/slice.md`) has no Plan line.
+- Slice 6 came to about 517 changed lines, over the new 350 guide; Bruno kept it as one slice.
+- The throttle (H) is split: its route change is in `92cd051` and its test in `c9f16e8`. `d2462d9` also carries the stronger AC5 test, which shares a file with the messages test.
+- `b61fb2c` is settings and auth UI, outside M07's scope.
+
+**Decisions by Bruno** (all in `decisions.md`)
+- Profiles are "Trainers" in the UI; sign-in lands on `/` with a notice (AC4 reworded).
+- A parent who does not play holds only child profiles; one adult and 3 children per account, more by email to support.
+- Own-data shapes in `app/Data/Private/`.
+- A slice is about 350 changed lines.
+- Routes grouped by middleware, then by controller with `prefix` and `name` (saved as a preference).
+- Two tabs passing the limits at once is accepted for now.
+
+**Problems hit and how they were solved**
+- A Vitest file under `resources/js/pages/` broke the build: the Inertia Vite plugin bundles every `pages/**/*.tsx`. Page behaviour is tested in components or the browser instead.
+- The browser's own validation blocked the form, in Portuguese: `noValidate` on the trainer form, plus `attributes()` for readable field names.
+- `Rule::when(false, …)` still passed the field into `validated()`: the false branch is `['exclude']`.
+- The navbar wrapped at 360–390px: `whitespace-nowrap` and smaller text and padding below `sm`.
+- Bruno found while testing that an account with a child could add a second adult: slice 4b added the limits.
+- The review found that the stale `is_child` blocked editing a child who turned 14 and kept them counted: fix A.
+- The navbar's `count(*)` broke the M06 query test: that test now ignores it (Bruno).
+- Browser tests need `composer dev` running or a fresh `npm run build`.
+- Clicking "Resend verification email" 7 times in a few seconds gave a bare 429 page: Fortify's `throttle:6,1` worked, but the page invites repeat clicks. Noted for M15.
+
+**`/rethink-tests` outcome.** Skipped for M07 (Bruno, 24 Nov).
+
+**Review outcome.** `code-reviewer`, `privacy-guard` and `ui-reviewer`; 9 fixes, all applied.
+- **Fixed:**
+  - the stale `is_child` (A)
+  - form accessibility: aria links, consent error contrast, the age box lead-in (B)
+  - 40px inputs (C)
+  - notice rules on the list page and before verification (D)
+  - test gaps: AC5 really answers, the age transaction, another account on the edit page (E)
+  - layout polish (F)
+  - short messages (G)
+  - the throttle (H)
+  - docs and the browser test rename (I)
+- **Accepted, not fixed:** two tabs passing the limits; the policy has no `view` (the edit page is guarded by `update`).
+
+**What is left.** Bruno pushes and opens the PR. Then M08 ("I'm going" and Maybe), which acts on the pending intent and uses the trainers.
+
+**Surprising.** The year boundary: `is_child` is right on save and wrong from 1 January, so every rule now reads the birth year.
 
 ### 2026-11-21/23 · M06 · Sign in: email and password, Google, Discord, X
 
@@ -506,7 +587,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - ~~**Kit dark mode leftovers**~~: removed in M06 Slice 1b (Appearance page, `HandleAppearance`).
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - ~~**Non-affiliation footer on every page**~~: auth pages use `PublicLayout` since M06 Slice 7a.
-- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Pokemon Player IDs (POP IDs) or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M06, revisit in M07 when profiles arrive)
+- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Pokemon Player IDs (POP IDs) or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M07: profiles reach the page only through `OwnProfileData` and the `auth.profilesCount` number, and `User` gained no personal fields; M14)
 - **`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it. (M05 `/review`; M09)
 - **Privacy test and partial reloads**: `NoPersonalDataLeaksTest` makes full page loads only. When a page gets an `Inertia::optional()` or `Inertia::defer()` prop, add a partial-reload case (the `X-Inertia-Partial-*` headers) with the same scans. (M05 `/review`; later)
 - ~~**Emails saved in lower case**~~: not needed. `users.email` uses the case-insensitive `utf8mb4_unicode_ci` collation, so uniqueness and lookups already ignore case; social lookups also lower-case. Bruno dropped the mixed-case test in M06 because it could not fail.

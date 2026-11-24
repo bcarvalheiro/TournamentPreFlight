@@ -165,6 +165,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-24 | M07 review: **two requests at once can pass the account limits** (two tabs): accepted. The database's unique index still stops a duplicate POP ID (a rare 500 instead of the message), and a second adult or fourth child is visible on the list and can be deleted. No row locking until it is seen in practice | `/review` (code-reviewer #4) |
 | 2026-11-24 | M07 review: `PlayerProfilePolicy` has `update` and `delete` only. The milestone's "view" is the edit page, which `update` guards; the list needs no policy (its query starts from the user) | `/review` (code-reviewer #8) |
 | 2026-11-24 | M07 review: form errors on the trainer form are tied to their fields (`aria-invalid`, `aria-describedby` to `{field}-error`), messages are short and our own ("Add a name.", "A POP ID is 1 to 10 digits."), and the kit `Input` is 40px tall app-wide. The kit's auth pages still lack the aria links (M15, from the M06 review) | `/review` (ui-reviewer #1, #2, #5) |
+| 2026-11-24 | M07 (Bruno): **an unverified email shows a pulsing mail icon** (`components/pf/mail-alert-icon.tsx`): in a card with a red stripe in Settings → Profile, and inside the "Resend verification email" button on `/email/verify`. Noticeable without a yellow warning box; the pulse uses `motion-safe:` so it stops for reduced motion. The resend feedback and limit are M15 (`progress.md`, Found along the way) | Bruno, 24 Nov |
 
 ## Open questions
 

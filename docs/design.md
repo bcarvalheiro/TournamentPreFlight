@@ -102,6 +102,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
+- **Mail alert icon** (`MailAlertIcon`): a mail icon in a soft red circle with a pulsing red dot, for "an email is waiting" (unverified email in Settings and on `/email/verify`). Decorative (`aria-hidden`); the pulse runs only with `motion-safe:`.
 
 ## Other pages
 
