@@ -1,9 +1,11 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
+import { Check } from 'lucide-react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
 import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
+import { MailAlertIcon } from '@/components/pf/mail-alert-icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -87,26 +89,46 @@ export default function Profile({
 
                             {mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (
-                                    <div>
-                                        <p className="-mt-4 text-sm text-muted-foreground">
-                                            Your email address is unverified.{' '}
-                                            <Link
-                                                href={send()}
-                                                as="button"
-                                                className="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
-                                            >
-                                                Click here to re-send the
-                                                verification email.
-                                            </Link>
-                                        </p>
-
-                                        {status ===
-                                            'verification-link-sent' && (
-                                            <div className="mt-2 text-sm font-medium text-green-600">
-                                                A new verification link has been
-                                                sent to your email address.
+                                    // A quiet card, not a warning box: a red stripe and a
+                                    // softly pinging dot draw the eye without shouting.
+                                    <div className="relative -mt-2 overflow-hidden rounded-xl border border-line bg-bg-2 py-3.5 pr-3.5 pl-5">
+                                        <span
+                                            aria-hidden
+                                            className="absolute inset-y-0 left-0 w-1 bg-red"
+                                        />
+                                        <div className="flex items-start gap-3">
+                                            <MailAlertIcon />
+                                            <div className="grid flex-1 gap-1">
+                                                <p className="text-sm font-semibold">
+                                                    Verify your email
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    We sent a link to{' '}
+                                                    {auth.user.email}. Open it
+                                                    to add trainers and say
+                                                    you're going.
+                                                </p>
+                                                {status ===
+                                                'verification-link-sent' ? (
+                                                    <p className="mt-1 flex min-h-10 items-center gap-1.5 text-sm font-medium text-green-700 dark:text-green-400">
+                                                        <Check
+                                                            aria-hidden
+                                                            className="size-4"
+                                                        />
+                                                        New link sent. Check
+                                                        your inbox.
+                                                    </p>
+                                                ) : (
+                                                    <Link
+                                                        href={send()}
+                                                        as="button"
+                                                        className="mt-1 inline-flex min-h-10 items-center gap-1.5 justify-self-start text-sm font-semibold underline decoration-red/40 underline-offset-4 transition-colors hover:decoration-red"
+                                                    >
+                                                        Resend the link
+                                                    </Link>
+                                                )}
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 )}
 
