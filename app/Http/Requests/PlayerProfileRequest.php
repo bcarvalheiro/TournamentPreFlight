@@ -45,6 +45,8 @@ class PlayerProfileRequest extends FormRequest
             // Asked only of a trainer who becomes a child; otherwise the box is dropped (`exclude`), never stored.
             // A birth year that is not a number reads as 0, never a child: only its own error shows.
             'consent' => Rule::when($becomesChild, ['accepted'], ['exclude']),
+            // Only when adding, and only for an account without an age answer (cleared after a takeover).
+            'age_confirmed' => Rule::when($this->profile() === null && $this->user()->age_confirmed_at === null, ['accepted'], ['exclude']),
         ];
     }
 
@@ -105,6 +107,7 @@ class PlayerProfileRequest extends FormRequest
         return [
             'pop_id.unique' => 'This Pokemon Player ID (POP ID) is already on another profile.',
             'consent.accepted' => 'A parent must give consent for a trainer under 13.',
+            'age_confirmed.accepted' => 'Please confirm you are 13 or older.',
         ];
     }
 

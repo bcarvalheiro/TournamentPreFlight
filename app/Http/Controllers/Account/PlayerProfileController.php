@@ -49,6 +49,8 @@ class PlayerProfileController extends Controller
             'canAddAdult' => $user->canAddAdultProfile(),
             'canAddChild' => $user->canAddChildProfile(),
             'supportEmail' => config('app.support_email'),
+            // The account's "I am 13 or older" was cleared by a takeover (RevokeUnprovenAccess).
+            'asksAge' => $user->age_confirmed_at === null,
         ]);
     }
 
@@ -59,7 +61,7 @@ class PlayerProfileController extends Controller
      */
     public function store(PlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
     {
-        /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed} $data */
+        /** @var array{name: string, pop_id: string, birth_year: int|string, consent?: mixed, age_confirmed?: mixed} $data */
         $data = $request->validated();
 
         $user = $request->user();

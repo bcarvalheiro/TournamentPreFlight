@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
  * provider that vouches for it or by a password reset (M06 review). Whoever
  * registered that email with a password before may still be signed in: their
  * sessions and "remember me" token stop working, and the email counts as
- * verified from now on.
+ * verified from now on. Their "I am 13 or older" is not the owner's answer, so
+ * it is cleared and asked again before the first trainer (M07).
  */
 class RevokeUnprovenAccess
 {
@@ -23,6 +24,7 @@ class RevokeUnprovenAccess
         $user->forceFill([
             'email_verified_at' => now(),
             'remember_token' => Str::random(60),
+            'age_confirmed_at' => null,
         ])->save();
     }
 }

@@ -78,7 +78,7 @@ erDiagram
         string name
         string email UK
         timestamp email_verified_at "nullable"
-        timestamp age_confirmed_at "nullable, set at sign-up"
+        timestamp age_confirmed_at "nullable, set at sign-up; cleared after a takeover"
         boolean is_admin "default false"
         json notification_settings "default reminders true"
         string password "hashed, nullable: optional for social accounts"
@@ -166,7 +166,7 @@ erDiagram
 
 How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none).
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account needs none and may add one in Settings → Security), remember_token. No two-factor columns (dropped in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none; cleared by `RevokeUnprovenAccess` when the owner takes over an account someone else registered, and set again when they tick the box on "Add a trainer" (M07)), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account needs none and may add one in Settings → Security), remember_token. No two-factor columns (dropped in M06).
 
 **social_accounts**: user_id, provider (google, discord, x; apple in M13; cast to the `SocialProvider` enum), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 

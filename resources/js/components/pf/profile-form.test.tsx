@@ -5,12 +5,13 @@ import type { OwnProfile } from '@/types';
 
 const form = { action: '/profiles/7', method: 'post' as const };
 
-function render(profile?: OwnProfile): string {
+function render(profile?: OwnProfile, asksAge = false): string {
     return renderToStaticMarkup(
         <ProfileForm
             form={form}
             consentFromYear={2013}
             profile={profile}
+            asksAge={asksAge}
             submitLabel="Save trainer"
         />,
     );
@@ -55,5 +56,12 @@ describe('ProfileForm', () => {
     // An existing child keeps the consent already given (decisions.md, 24 Nov).
     it('does not ask an existing child for consent again', () => {
         expect(render(child)).not.toContain('parent or guardian');
+    });
+
+    // After a takeover the account's age answer is the claimer's, so it is asked again.
+    it('asks "I am 13 or older" only when told to', () => {
+        expect(render()).not.toContain('I am 13 or older');
+        expect(render(undefined, true)).toContain('I am 13 or older');
+        expect(render(undefined, true)).toContain('name="age_confirmed"');
     });
 });

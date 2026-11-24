@@ -17,6 +17,8 @@ type ProfileFormProps = {
     consentFromYear: number;
     /** The trainer being edited; none when adding one. */
     profile?: OwnProfile;
+    /** Ask "I am 13 or older" again: the account's answer was cleared by a takeover. */
+    asksAge?: boolean;
     submitLabel: string;
 };
 
@@ -30,6 +32,7 @@ export function ProfileForm({
     form,
     consentFromYear,
     profile,
+    asksAge = false,
     submitLabel,
 }: ProfileFormProps): ReactNode {
     const [birthYear, setBirthYear] = useState(
@@ -109,6 +112,28 @@ export function ProfileForm({
                                 </Label>
                             </div>
                             <InputError message={errors.consent} />
+                        </div>
+                    )}
+
+                    {asksAge && (
+                        <div className="grid gap-2">
+                            <div className="flex items-center gap-3">
+                                <Checkbox
+                                    id="age_confirmed"
+                                    name="age_confirmed"
+                                />
+                                <Label
+                                    htmlFor="age_confirmed"
+                                    className="flex min-h-10 flex-1 items-center"
+                                >
+                                    I am 13 or older
+                                </Label>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                                Under 13? A parent or guardian adds you to their
+                                account.
+                            </p>
+                            <InputError message={errors.age_confirmed} />
                         </div>
                     )}
 

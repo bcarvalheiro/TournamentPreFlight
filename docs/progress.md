@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M07 · Player profiles (in progress).
 - **Branch**: m07-profiles
-- **State**: Slice 7 done, waiting for Bruno's commit. Next: Slice 8 (age after a takeover).
+- **State**: All slices done; Slice 8 waiting for Bruno's commit. Next: `/rethink-tests`, then `/review`.
 
 ### Plan (M07)
 
@@ -26,7 +26,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
   - Changed (Bruno, 24 Nov): offered as 6a (server) and 6b (page), kept as one slice (~350 lines); one request class for store and update.
 - [x] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`, `routes/web.php`; `DeletePlayerProfileTest`, `tests/Browser/DeleteTrainerTest.php`) · AC1, AC6
   - Changed (24 Nov): no `DeletePlayerProfile` Action: the operation is `$profile->delete()` and the foreign key cascades; an Action can come with M14's account deletion.
-- [ ] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`) · scope (takeover)
+- [x] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `PlayerProfileRequest`, `CreatePlayerProfile`, `PlayerProfileController@create`, `profile-form.tsx`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`, `profile-form.test.tsx`) · scope (takeover)
 
 ## Milestones
 

@@ -16,6 +16,8 @@ type Props = {
     canAddChild: boolean;
     /** Where to write for a fourth child. */
     supportEmail: string;
+    /** The account's "I am 13 or older" was cleared by a takeover: ask it again. */
+    asksAge: boolean;
 };
 
 /** What the account may still add (decisions.md, 24 Nov: one adult, three children). */
@@ -45,6 +47,7 @@ export default function CreateProfile({
     canAddAdult,
     canAddChild,
     supportEmail,
+    asksAge,
 }: Props) {
     const isFull = !canAddAdult && !canAddChild;
 
@@ -82,6 +85,7 @@ export default function CreateProfile({
                     <ProfileForm
                         form={store.form()}
                         consentFromYear={consentFromYear}
+                        asksAge={asksAge}
                         submitLabel="Save trainer"
                     />
                 )}
