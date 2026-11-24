@@ -276,7 +276,7 @@
           <label class="ppf-label" for="ppf-n">Name</label>
           <input class="ppf-input" id="ppf-n" placeholder="e.g. Tiago Lopes" required>
           <div class="ppf-two">
-            <div><label class="ppf-label" for="ppf-pid">Player ID</label><input class="ppf-input" id="ppf-pid" inputmode="numeric" placeholder="1234567"></div>
+            <div><label class="ppf-label" for="ppf-pid">Pokemon Player ID (POP ID)</label><input class="ppf-input" id="ppf-pid" inputmode="numeric" placeholder="1234567"></div>
             <div><label class="ppf-label" for="ppf-by">Birth year</label><input class="ppf-input" id="ppf-by" inputmode="numeric" placeholder="2015" required></div>
           </div>
           ${err ? `<p class="ppf-err">${esc(err)}</p>` : ''}
@@ -295,7 +295,7 @@
         const by = Number(sh.el.querySelector('#ppf-by').value);
         const y = new Date().getFullYear();
         if (!name) err = 'Add a name.';
-        else if (pid && !/^\d{4,10}$/.test(pid)) err = 'Player ID is the number on your Play! Pokémon account, digits only.';
+        else if (pid && !/^\d{4,10}$/.test(pid)) err = 'Pokemon Player ID (POP ID) is the number on your Play! Pokémon account, digits only.';
         else if (!(by >= y - 100 && by <= y - 3)) err = `Birth year should be between ${y - 100} and ${y - 3}.`;
         else err = '';
         if (!err) { S.user.profiles.push({ id: 'p' + Date.now(), name, pid: pid || '—', by }); emit(); toast(`Added ${name} (${division(by)})`); }

@@ -68,6 +68,25 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Whether this account may add a profile aged 13 or older: only the
+     * holder's own, so only while it has none (decisions.md, 24 Nov). Counted
+     * by birth year, not the stored is_child, which goes stale on 1 January.
+     */
+    public function canAddAdultProfile(): bool
+    {
+        return ! $this->playerProfiles()->where('birth_year', '<', PlayerProfile::consentFromBirthYear())->exists();
+    }
+
+    /**
+     * Whether this account may add another child profile (at most 3), counted
+     * by birth year like canAddAdultProfile().
+     */
+    public function canAddChildProfile(): bool
+    {
+        return $this->playerProfiles()->where('birth_year', '>=', PlayerProfile::consentFromBirthYear())->count() < PlayerProfile::MAX_CHILDREN;
+    }
+
+    /**
      * The player profiles this account holds (its own and its children's).
      *
      * @return HasMany<PlayerProfile, $this>

@@ -1,5 +1,6 @@
 // Components
 import { Form, Head } from '@inertiajs/react';
+import { MailAlertIcon } from '@/components/pf/mail-alert-icon';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -24,8 +25,20 @@ export default function VerifyEmail({ status }: { status?: string }) {
             <Form {...send.form()} className="space-y-6 text-center">
                 {({ processing }) => (
                     <>
-                        <Button disabled={processing} variant="secondary">
-                            {processing && <Spinner />}
+                        {/* The pulsing mail badge leads the button, and the button wears the
+                            same soft red tint, so they read as one control. */}
+                        <Button
+                            disabled={processing}
+                            variant="secondary"
+                            className="h-11 gap-2.5 border border-red/20 bg-red/5 pr-4 pl-1 text-ink hover:bg-red/10"
+                        >
+                            {processing ? (
+                                <span className="grid size-9 place-items-center">
+                                    <Spinner />
+                                </span>
+                            ) : (
+                                <MailAlertIcon />
+                            )}
                             Resend verification email
                         </Button>
 

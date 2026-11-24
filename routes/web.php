@@ -1,21 +1,36 @@
 <?php
 
 use App\Enums\SocialProvider;
+use App\Http\Controllers\Account\PlayerProfileController;
 use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\WelcomeController;
 use App\Http\Controllers\Public\HomeController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', HomeController::class)->name('home');
 
-Route::middleware('auth')->group(function () {
-    // Placeholder until M07 builds the form; the player gate sends new players here.
-    Route::get('profiles/create', fn (Request $request) => Inertia::render('profiles/create', [
-        'signingInToGo' => $request->session()->has('pending_intent'),
-    ]))->name('profiles.create');
+// Signed-in accounts
+Route::middleware(['auth'])->group(function () {
+    Route::middleware(['verified'])->group(function () {
+        // The account's own player profiles (M07). A verified email comes first, so
+        // nobody adds profiles to an email they have not proven.
+        Route::controller(PlayerProfileController::class)
+            ->prefix('profiles')
+            ->name('profiles.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('create', 'create')->name('create');
+                // Throttled: nobody tries Pokemon Player IDs one after another (M07 review).
+                Route::post('/', 'store')->middleware('throttle:10,1')->name('store');
+                // Only the trainer's own account (PlayerProfilePolicy); anyone else gets 403.
+                Route::middleware('can:update,profile')->group(function () {
+                    Route::get('{profile}/edit', 'edit')->name('edit');
+                    Route::put('{profile}', 'update')->middleware('throttle:10,1')->name('update');
+                });
+                Route::delete('{profile}', 'destroy')->can('delete', 'profile')->name('destroy');
+            });
+    });
 });
 
 Route::middleware('guest')->group(function () {

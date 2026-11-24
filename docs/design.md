@@ -73,7 +73,7 @@ Three fanned card outlines (graphite, outlined, red) followed by "PRE-FLIGHT" in
 ### 1. Band (playmat)
 Dark radial gradient on `ink`, with two faint dashed card outlines as decoration. Contains:
 
-- **Navbar** (50px): brand left; right side signed out: "Sign in" (text) and "Sign up" (red pill); signed in: "Profiles (n)" and "Sign out".
+- **Navbar** (50px): brand left; right side signed out: "Sign in" (text) and "Sign up" (red pill); signed in: "Trainers (n)", "Settings" and "Sign out" (M07).
 - **Hero** (left column on desktop, 5/12): h1 "Pre-Flight", display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Pokémon TCG tournament in Portugal before you sleeve up."
 - **Coin flip** (decorative fun, keep it): a red "GO" / light "STAY" coin that flips on tap with the line "Still can't decide? Flip for it. Heads you go." The prize-zone grid next to it is decoration, `aria-hidden`.
 - **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: month, weekday and day, and time on three lines ("NOV" / "SAT 21" / "18:30"; or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "I'm going" button. Footer: "Headcount, not registration · Register at the shop".
@@ -102,6 +102,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
+- **Mail alert icon** (`MailAlertIcon`): a mail icon in a soft red circle with a pulsing red dot, for "an email is waiting" (unverified email in Settings and on `/email/verify`). Decorative (`aria-hidden`); the pulse runs only with `motion-safe:`.
 
 ## Other pages
 
@@ -109,7 +110,7 @@ Use the same band (navbar only, no hero) and the same card language:
 
 - **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, follow form, official link button, disclaimer.
 - **Sign in / Sign up**: email and password form with Google, Discord and X buttons (Apple from M13; provider icons from the providers' own brand guidelines). Register adds name and the "I am 13 or older" box.
-- **Profiles**: list of profile cards (name, Player ID, birth year), add/edit form, consent checkbox for under-13s.
+- **Profiles**, shown as **"Trainers"** (navbar "Trainers (n)", page "Trainers", "Add a trainer"): list of profile cards (name, Pokemon Player ID (POP ID), birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.
 
 ## Copy rules

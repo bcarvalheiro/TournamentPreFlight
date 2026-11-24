@@ -19,11 +19,12 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 ## Accounts and profiles
 
 - Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13). A social sign-up needs an email the provider confirms; without one the player registers with email and a password.
-- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Player ID is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Player ID, then back to the page. A password is optional for social sign-ups; they can add one in Settings.
+- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Pokemon Player ID (POP ID) is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Pokemon Player ID (POP ID), then back to the page. A password is optional for social sign-ups; they can add one in Settings. A signed-in account without a profile is not redirected: it lands on the home page, and every page shows a notice linking to "Add a trainer". The navbar links to Profiles and Settings.
 - Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
-- Profile fields: name, Player ID, birth year. All required.
-- Player ID: digits only, unique across the app. Exact length is unconfirmed (see `decisions.md`); validate 1–10 digits until confirmed.
+- Limits per account: **at most one profile aged 13 or older** (the account holder's own; anyone else 13 or older signs up with their own account) and **at most 3 child profiles**. More children need an email to support: it is unusual, and an account holding many profiles could block other players' Pokemon Player IDs.
+- Profile fields: name, Pokemon Player ID (POP ID), birth year. All required.
+- Pokemon Player ID (POP ID): digits only, unique across the app. Exact length is unconfirmed (see `decisions.md`); validate 1–10 digits until confirmed.
 - A profile whose birth year means the person may be under 13 at some point this calendar year (they turn 13 or younger) is a child profile. Only the birth year is known, so someone turning 13 this year counts as a child all year: asking for consent too often is harmless, too rarely is not. Creating one requires the parent to tick a consent statement; the time and the account are stored.
 - No divisions (Junior, Senior, Masters) and no seasons: Pre-Flight does not use them. Birth year is kept only to tell child profiles apart.
 
@@ -45,7 +46,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 ### The quick "I'm going" button (cards and pairings sheet)
 
-1. Signed out, or signed in without a verified email or a Player ID: sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
+1. Signed out, or signed in without a verified email or a Pokemon Player ID (POP ID): sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
 3. Signed in with several profiles: open a picker listing each profile with a checkbox for going. Save applies the choices per profile. The button then reads "Going (2)".
 4. The button toggles going; the event page has the same per-profile controls.
@@ -54,7 +55,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 See `design.md` for the visual spec. Content:
 
-- Small navbar: signed out shows Sign in and Sign up; signed in shows Profiles (n) and Sign out.
+- Small navbar: signed out shows Sign in and Sign up; signed in shows Trainers (n), Settings and Sign out.
 - Hero: "Pre-Flight" and "Should I go or should I stay at home?", one line saying what the app is (the only place the page names Pokémon).
 - **Up next** (the pairings sheet): the next 5 upcoming or ongoing events by start time, ignoring filters.
 - **Event list**: up to 25 upcoming and ongoing events, grouped by day, after filters. The count line says "12 of 29 events" or "First 25 of 31".
@@ -83,7 +84,7 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 
 ## Privacy and brand
 
-- Data kept: account email and name, linked logins, profile name, Player ID, birth year, answers, follows.
+- Data kept: account email and name, linked logins, profile name, Pokemon Player ID (POP ID), birth year, answers, follows.
 - Past answers are anonymised 90 days after the event (the profile link is removed, counts stay).
 - Account deletion removes the account, its profiles and answers.
 - Privacy policy and terms pages (English), a contact address for data requests.
@@ -97,4 +98,4 @@ Payments, Pokémon account login, pairings and results, deck lists, native apps,
 
 ## Later phase: shop tools (not now)
 
-A shop claims its events by email magic link, sees going players' names and Player IDs only for players who agreed to share with that shop, confirms attendance with players, and exports a list for typing into TOM (TOM has no import). Tables added then: shops, shop_user, claimed_by_shop_id on events, per-shop consent records. Nothing in v1 should block this, but nothing in v1 builds it.
+A shop claims its events by email magic link, sees going players' names and Pokemon Player IDs (POP IDs) only for players who agreed to share with that shop, confirms attendance with players, and exports a list for typing into TOM (TOM has no import). Tables added then: shops, shop_user, claimed_by_shop_id on events, per-shop consent records. Nothing in v1 should block this, but nothing in v1 builds it.

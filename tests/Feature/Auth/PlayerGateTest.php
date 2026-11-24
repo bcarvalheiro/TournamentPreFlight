@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Route;
 
 /*
  * M06 AC2: anyone can look at every page; only a player answers. A player has
- * a verified email and a player profile (its Player ID is required); a
+ * a verified email and a player profile (its Pokemon Player ID (POP ID) is required); a
  * password is optional. The gate steps in only on the way to answering, when
  * the session holds a pending "I'm going": then a user who is not ready yet is
- * sent to verify their email, then to add their Player ID. Auth pages,
+ * sent to verify their email, then to add their Pokemon Player ID (POP ID). Auth pages,
  * settings and logout always stay open; guests are not affected.
  */
 
@@ -32,7 +32,7 @@ it('lets a user who is not ready browse', function (Closure $user) {
     $this->get(route('home'))->assertOk();
 })->with([
     'unverified' => [fn () => User::factory()->unverified()->has(PlayerProfile::factory())->create()],
-    'without a Player ID' => [fn () => User::factory()->create()],
+    'without a Pokemon Player ID (POP ID)' => [fn () => User::factory()->create()],
 ]);
 
 it('sends an unverified user on the way to answer to the verify notice', function () {
@@ -42,7 +42,7 @@ it('sends an unverified user on the way to answer to the verify notice', functio
     $this->get(route('home'))->assertRedirect(route('verification.notice'));
 });
 
-it('sends a user without a Player ID on the way to answer to add one', function () {
+it('sends a user without a Pokemon Player ID (POP ID) on the way to answer to add one', function () {
     $this->actingAs(User::factory()->create());
     onTheWayToAnswer();
 

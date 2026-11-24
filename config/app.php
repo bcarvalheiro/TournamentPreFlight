@@ -56,6 +56,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Support Email
+    |--------------------------------------------------------------------------
+    |
+    | Where players write for what the site cannot do itself, such as adding
+    | a fourth child (M07). Kept in .env, out of the public repository.
+    |
+    */
+
+    'support_email' => env('SUPPORT_EMAIL', 'support@example.com'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

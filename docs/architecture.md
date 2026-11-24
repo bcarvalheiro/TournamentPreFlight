@@ -20,19 +20,23 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account, /Admin, /Auth (sign-in our code adds beside Fortify: social, pending intent)
+  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController), /Admin,
+                      /Auth (sign-in our code adds beside Fortify: social, pending intent)
+  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer)
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
-                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile, ApproveSubmission, SyncEvents
+                      controllers, jobs and commands: SignInWithSocialAccount, CreateUserFromSocialIdentity, RevokeUnprovenAccess, SetAttendance, CreatePlayerProfile,
+                      UpdatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
   Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
-  Data/Own/           shapes for the signed-in user's own data: OwnProfileData, OwnAttendanceData
+  Data/Private/       shapes sent only to the account that owns the data (never to other players):
+                      OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
-  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults
+  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
@@ -74,7 +78,7 @@ erDiagram
         string name
         string email UK
         timestamp email_verified_at "nullable"
-        timestamp age_confirmed_at "nullable, set at sign-up"
+        timestamp age_confirmed_at "nullable, set at sign-up; cleared after a takeover"
         boolean is_admin "default false"
         json notification_settings "default reminders true"
         string password "hashed, nullable: optional for social accounts"
@@ -84,7 +88,7 @@ erDiagram
         bigint id PK
         bigint user_id FK "owner, cascade on delete"
         string name
-        string pop_id UK "Player ID"
+        string pop_id UK "Pokemon Player ID (POP ID)"
         smallint birth_year
         boolean is_child "set on save"
         timestamp consent_given_at "nullable, required if child"
@@ -162,11 +166,11 @@ erDiagram
 
 How to read the lines: `||--o{` is "one to many" (a user owns zero or more profiles); `|o--o{` is "zero or one to many" (an attendance has a profile until it is anonymised, then none).
 
-**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account needs none and may add one in Settings → Security), remember_token. No two-factor columns (dropped in M06).
+**users** (a login): name, email (unique), email_verified_at, is_admin (bool, default false), age_confirmed_at (nullable; set when the person ticks "I am 13 or older" at sign-up; accounts made before M06 have none; cleared by `RevokeUnprovenAccess` when the owner takes over an account someone else registered, and set again when they tick the box on "Add a trainer" (M07)), notification_settings (json, `{"reminders": true}` by default; a JSON object so more settings can be added later), password (hashed; nullable: a social account needs none and may add one in Settings → Security), remember_token. No two-factor columns (dropped in M06).
 
 **social_accounts**: user_id, provider (google, discord, x; apple in M13; cast to the `SocialProvider` enum), provider_user_id, provider_email (nullable). Unique (provider, provider_user_id).
 
-**player_profiles**: user_id (owner), name, pop_id (the Pokémon Player ID, shown as "Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
+**player_profiles**: user_id (owner), name, pop_id (the Pokemon Player ID, or POP ID, shown as "Pokemon Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
@@ -188,10 +192,10 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
-- Public controllers return only `app/Data/Public` objects. These classes have no name, Player ID or birth-year fields by construction.
+- Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction.
 - Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
-- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Player IDs `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
-- Logs never contain profile names or Player IDs.
+- `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Pokemon Player IDs (POP IDs) `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
+- Logs never contain profile names or Pokemon Player IDs (POP IDs).
 
 ## Time
 
@@ -224,7 +228,7 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 - Email and password: Fortify login (rate limited), registration with the "I am 13 or older" box, email verification, password reset.
 - Social: generic routes `/auth/{provider}/redirect` and `/auth/{provider}/callback`, restricted with `whereIn` to the enabled providers (google, discord, x; apple in M13). One shared class does the work for every driver. Match by (provider, provider_user_id); if none, match an existing user by email and link, **only when the provider says the email is verified**; else, when the provider certifies for the email, send the person to the welcome page (name, the provider's email read-only, the age box) and create the account there, already verified. The pending sign-up waits in the session for 10 minutes at most; the welcome POST is throttled (6 a minute). An identity whose provider does not vouch for an email (X without one, Discord or Google unverified) never gets an account: back to sign-in with "Your X account has no confirmed email. Sign in another way, or register with your email and a password." So a social login only ever sits on a proven email. Social accounts start without a password and need none: the provider proved the email, and one email is one account. They may add one in Settings → Security: the page skips Laravel's password confirmation when there is no password (`ConfirmPasswordIfSet`, a subclass of `RequirePassword`) and offers "Email me a link to set a password", which sends Laravel's reset email and signs the player out, because Fortify's reset page opens only signed out. "Forgot password" works the same way. Apple sends name only on first login; store it then.
-- **Player gate** (middleware): anyone, signed in or not, may look at every page; only a player answers: a verified email and a player profile (its Player ID is required); a password is optional. The gate steps in only on the way to answering, when the session holds a pending "I'm going": a user who is not ready is redirected to the verify notice, then to "Create your player profile" (`redirect()->guest()` keeps the page). Auth pages, settings, logout, `events.going` and `profiles.*` stay open. It decides by route name, so every route it leaves open has one (the kit's `/settings` redirect is named `settings`). Guests are not affected.
+- **Player gate** (middleware): anyone, signed in or not, may look at every page; only a player answers: a verified email and a player profile (its Pokemon Player ID (POP ID) is required); a password is optional. The gate steps in only on the way to answering, when the session holds a pending "I'm going": a user who is not ready is redirected to the verify notice, then to "Add a trainer" (`redirect()->guest()` keeps the page). Auth pages, settings, logout, `events.going` and `profiles.*` stay open. It decides by route name, so every route it leaves open has one (the kit's `/settings` redirect is named `settings`). Guests are not affected.
 - **Pending intent**: when anyone presses "I'm going" (a form that POSTs to `events/{event}/going`, CSRF-protected; a GET is refused, so a link cannot answer for someone), store `{event_id}` in the session (never in the URL), keep the page as Laravel's intended URL (`return_to`, our host only) and send a guest to sign in; a signed-in user goes straight back to the page. On the profile page, "Not now" (`DELETE events/going`, `events.going.forget`) forgets the intent and returns to the saved page, so a pending intent never holds anyone there. The player gate saves the page it blocks the same way (`redirect()->guest()`, like the `auth` middleware), so verifying the email (Fortify calls `intended()`) and saving the first profile (M07) return there. Only upcoming events (listed, not ended) are accepted; any other gets a 404. After sign-in and the gate, they return to that page and it receives the intent once as a prop. M08 acts on it: one profile applies it, several open the picker.
 
 ## Admin

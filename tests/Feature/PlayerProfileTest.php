@@ -6,10 +6,10 @@ use Illuminate\Database\UniqueConstraintViolationException;
 
 /*
  * One account (a login) holds one or more player profiles, for example a
- * parent's own and one per child. A Player ID belongs to one profile in the
+ * parent's own and one per child. A Pokemon Player ID (POP ID) belongs to one profile in the
  * whole app (AC2).
  */
-it('refuses a Player ID already used by another account', function () {
+it('refuses a Pokemon Player ID (POP ID) already used by another account', function () {
     PlayerProfile::factory()->for(User::factory())->create(['pop_id' => '1234567']);
 
     expect(fn () => PlayerProfile::factory()->for(User::factory())->create(['pop_id' => '1234567']))

@@ -4,27 +4,29 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M06 · Sign in: email and password, Google, Discord, X (review).
-- **Branch**: m06-auth
-- **State**: All slices, `/rethink-tests` and the `/review` fixes done; `composer verify` green. Next: Bruno opens the PR.
+- **Milestone**: M07 · Player profiles (review).
+- **Branch**: m07-profiles
+- **State**: All slices and review fixes committed; `composer verify` green. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: Bruno pushes and opens the PR, then M08.
 
-### Plan (M06)
+### Plan (M07)
 
-- [x] Slice 1a: remove two-factor auth, passkeys and magic-login tokens: Fortify features, `User` traits, kit pages and components, tests; migration drops the 2FA columns, `passkeys` and `magic_login_tokens` (`config/fortify.php`, `FortifyServiceProvider`, `User.php`, `MagicLoginToken.php`, migration, `routes/settings.php`, `pages/auth/two-factor-challenge.tsx`, `pages/settings/security.tsx`, kit components, `architecture.md`; `NoTwoFactorOrPasskeysTest`) · AC4
-- [x] Slice 1b: remove the dashboard and Settings → Appearance; Fortify `home` → `/` (`routes/web.php`, `routes/settings.php`, `config/fortify.php`, `pages/dashboard.tsx`, `pages/settings/appearance.tsx`, kit nav; `AuthenticationTest` updated, `DashboardTest` removed) · groundwork
-- [x] Slice 2: "I am 13 or older" box on registration; migration adds `users.age_confirmed_at`; no box, no account (migration, `CreateNewUser`, `User.php`, `UserFactory`, `pages/auth/register.tsx`, `architecture.md`; `RegistrationTest`) · AC1
-- [x] Slice 3: player gate `EnsurePlayerReady` (verified email, password, player profile) on every page except auth, settings and logout; placeholder `profiles.create`; migration makes `users.password` nullable (`app/Http/Middleware/EnsurePlayerReady.php`, `bootstrap/app.php`, `routes/web.php`, `pages/profiles/create.tsx`, migration, `architecture.md`; `PlayerGateTest`, kit rate-limit and logout tests kept green) · AC2, AC6
-- [x] Slice 4: pending intent: guest "I'm going" stores `{event, return_to}` in the session (same-site paths only), sets the intended URL, goes to `/login`; after sign-in and the gate the page gets `pendingIntent` once (`routes/web.php`, `Auth\PendingIntentController`, `User::isPlayerReady()`, `EnsurePlayerReady`, `HandleInertiaRequests`, `pf/going-button.tsx` + callers, `types/global.d.ts`; `PendingIntentTest`, `event-list-item.test.tsx`, `pairings-sheet.test.tsx`) · AC5
-  - Changed in review (23 Nov): the button is a POST form for upcoming events only (a link cannot set an intent), `pending_intent` is just `{event_id}` and the page is kept as Laravel's intended URL, which the gate keeps with `redirect()->guest()`.
-  - Changed (21 Nov): `NoPersonalDataLeaksTest` not extended: the new route only redirects and renders no page, and `pendingIntent` holds only an event id; `User::isPlayerReady()` added so the gate and the prop share one check.
-- [x] Slice 5: social sign-in for existing accounts: Socialite + Socialite Providers Discord, `SocialProvider` enum (google, discord, x; `confirmsEmail()`), generic `/auth/{provider}/redirect|callback` with `whereIn`, `Actions\SignInWithSocialAccount`; known identity signs in, provider-verified email links (an unverified local account is verified and its password cleared), unverified provider email refused politely, cancelled sign-in back to login (`composer.json`, `config/services.php`, `.env.example`, `bootstrap/providers.php`, `AppServiceProvider`, `app/Enums/SocialProvider.php`, `SocialAccount.php`, `Auth\SocialAuthController`, `routes/web.php`, `architecture.md` Code layout, `decisions.md`; `SocialSignInTest`) · AC3
-  - Changed (Bruno, 21 Nov): offered as 5a/5b, kept as one slice; the cancel case and clearing the password of an unverified account added.
-- [x] Slice 6a: a new social identity is kept in the session (`social_signup`) and sent to `/welcome`, which shows the name prefilled and the email (fixed when the provider certified for it) (`Auth\SocialAuthController`, `Auth\WelcomeController@show`, `pages/auth/welcome.tsx`, `routes/web.php`; `SocialSignUpTest`) · AC3
-- [x] Slice 6b: submitting `/welcome` with the age box creates the account (no password; email verified only when the provider certified, otherwise the verification email), links the identity, signs in and returns to the intended URL (`Actions\CreateUserFromSocialIdentity`, `WelcomeController@store`, `routes/web.php`; `SocialSignUpTest`) · AC3. Changed in review: only a provider-vouched email signs up, so the account always starts verified; "AC7" corrected (M06 has six)
-  - Changed (Bruno, 21 Nov): Slice 6 split in two (~300 lines together); account creation is its own Action, `CreateUserFromSocialIdentity`, so it can be tested on its own.
-- [x] Slice 7a: auth pages (sign in, register, forgot/reset, verify, confirm, welcome) in the Pre-Flight look: band, card, footer with the notice; "Sign in" copy (`layouts/auth/auth-simple-layout.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`; `auth-simple-layout.test.tsx`) · design, rule 7
-- [x] Slice 7b: "Continue with Google / Discord / X" buttons on sign in and register, only for configured providers; icons from each provider's brand kit (`SocialProvider::enabled()`, `FortifyServiceProvider`, `pf/social-buttons.tsx`, `pages/auth/login.tsx`, `pages/auth/register.tsx`, `decisions.md`; `SocialButtonsTest`, `social-buttons.test.tsx`) · AC3 UI
-  - Changed (Bruno, 21 Nov): Slice 7 split in two (~250 lines together).
+- [x] Slice 1: save an adult profile: name required, Pokemon Player ID (POP ID) 1–10 digits and unique across accounts ("This Pokemon Player ID (POP ID) is already on another profile."), birth year 1920 to this Lisbon year; profile routes behind `auth` + `verified`; saving redirects with `redirect()->intended(route('home'))`; a social account without a password saves too (`routes/web.php`, `Account\PlayerProfileController@store`, `StorePlayerProfileRequest`, `Actions\CreatePlayerProfile`, `architecture.md` Code layout; `CreatePlayerProfileTest`) · AC2, AC4, AC5
+  - Changed (23 Nov): "later profiles go to the list" moved to Slice 4, which builds the list.
+- [x] Slice 2: child consent: one rule, `PlayerProfile::needsParentalConsent()`, used by the model and the request; no consent, no profile; with consent `consent_given_at` and `consent_by_user_id` (the signed-in owner) are stored (`PlayerProfile.php`, `StorePlayerProfileRequest`, `CreatePlayerProfile`; `ChildProfileConsentTest`) · AC3
+- [x] Slice 3: the create form: name, Pokemon Player ID (POP ID), birth year; consent box shown for a child birth year (the server sends `consentFromYear` from the new `PlayerProfile::consentFromBirthYear()`); "Not now" kept; heading "Add a player" with "You, or your child if they are under 13.", so a parent who does not play can add only their child (`routes/web.php`, `PlayerProfileController@create`, `PlayerProfile.php`, `pages/profiles/create.tsx`; props in `CreatePlayerProfileTest`, `tests/Browser/AddPlayerTest.php` (renamed `AddTrainerTest.php` in review)) · AC3, AC4
+  - Changed (Bruno, 23 Nov): offered as 3a (form) and 3b (consent box), kept as one slice (~250 lines); a browser test added because Vitest renders static markup only and the box appears as you type. The page's Vitest file was dropped (Bruno): the Inertia Vite plugin bundles every `pages/**/*.tsx`, tests included.
+  - Changed (Bruno, 23 Nov): copy for a parent who does not play; was "Create your player profile" or "Add a profile".
+- [x] Slice 4: profile list: cards with name, Pokemon Player ID (POP ID), birth year, only the account's own; saving a profile that is not the first returns to the list (`routes/web.php`, `PlayerProfileController@index/store`, `app/Data/Private/OwnProfileData.php`, `types/profiles.ts`, `pages/profiles/index.tsx`, `NoPersonalDataLeaksTest` case; `PlayerProfileListTest`, `CreatePlayerProfileTest`) · AC1
+  - Changed (Bruno, 24 Nov): `Data/Own` renamed `Data/Private`, beside `Data/Public`.
+- [x] Slice 4b: profile limits: a second profile aged 13 or older is refused, and a fourth child is refused with a pointer to support; the form tells the parent before they type (`StorePlayerProfileRequest`, `PlayerProfile::MAX_CHILDREN`, `User::canAddAdultProfile()`/`canAddChildProfile()`, `PlayerProfileController@index/create`, `config/app.php` `support_email` + `.env.example` `SUPPORT_EMAIL`, `pages/profiles/create.tsx`, `pages/profiles/index.tsx`, `docs/product.md`; `ProfileLimitsTest`) · AC7
+  - Added (Bruno, 24 Nov): new rule found while testing slice 4. The support address lives in `.env` (the repo is public).
+- [x] Slice 5: signed-in navbar "Trainers (n)", "Settings", "Sign out"; a no-profile notice on every page under the band ("Add a trainer to say you're going: you, or your child." + "Add a trainer"), not on the create page (`layouts/public-layout.tsx`, `HandleInertiaRequests` `auth.profilesCount`, `types/auth.ts`; `public-layout.test.tsx`, `SharedProfilesCountTest`) · AC4, AC5
+  - Changed (Bruno, 24 Nov): profiles are "Trainers" in the UI (navbar, list page, "Add a trainer", messages); `ProfileNoticeTest` became `SharedProfilesCountTest` plus the layout test. The M06 query test in `PendingIntentTest` now ignores the navbar's one `count(*)` (Bruno).
+- [x] Slice 6: edit a profile: Pokemon Player ID (POP ID) unique except itself; turning into a child asks consent, an existing child keeps its consent; the limits of Slice 4b apply when the birth year changes; `PlayerProfilePolicy` gives 403 to anyone but the owner; "Edit" on each card; the form is shared with "Add a trainer" (`routes/web.php`, `PlayerProfileController@edit/update`, `PlayerProfileRequest` (renamed from `StorePlayerProfileRequest`), `Actions\UpdatePlayerProfile`, `app/Policies/PlayerProfilePolicy.php`, `components/pf/profile-form.tsx`, `pages/profiles/edit.tsx`, `create.tsx`, `index.tsx`, `architecture.md`; `UpdatePlayerProfileTest`, `profile-form.test.tsx`) · AC1, AC2, AC3
+  - Changed (Bruno, 24 Nov): offered as 6a (server) and 6b (page), kept as one slice (~350 lines); one request class for store and update.
+- [x] Slice 7: delete a profile from the list with a confirmation dialog; the policy decides; its attendances are deleted; the last profile may go (`PlayerProfileController@destroy`, `PlayerProfilePolicy`, `pages/profiles/index.tsx` with `ResponsiveDialog`, `routes/web.php`; `DeletePlayerProfileTest`, `tests/Browser/DeleteTrainerTest.php`) · AC1, AC6
+  - Changed (24 Nov): no `DeletePlayerProfile` Action: the operation is `$profile->delete()` and the foreign key cascades; an Action can come with M14's account deletion.
+- [x] Slice 8: age asked again after a takeover: `RevokeUnprovenAccess` clears `age_confirmed_at`; the create page shows "I am 13 or older" when it is empty; saving requires it and sets it (`RevokeUnprovenAccess.php`, `PlayerProfileRequest`, `CreatePlayerProfile`, `PlayerProfileController@create`, `profile-form.tsx`, `create.tsx`, `architecture.md` users, `decisions.md`; `TakeoverAgeTest`, `profile-form.test.tsx`) · scope (takeover)
 
 ## Milestones
 
@@ -35,8 +37,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M03 | pokedata.ovh spike | done | PR #5 merged |
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
-| M06 | Sign in: email and password, Google, Discord, X | review | PR to open |
-| M07 | Player profiles | todo | |
+| M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
+| M07 | Player profiles | review | PR to open |
 | M08 | "I'm going" and Maybe | todo | |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
@@ -52,12 +54,93 @@ Status values: todo, in progress, review, done.
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
 
+### 2026-11-23/24 · M07 · Player profiles
+
+**Outcome.** All seven acceptance criteria met and tested.
+- An account manages its trainers (player profiles, called "Trainers" in the UI): list, "Add a trainer", edit and delete with a confirmation. The navbar shows "Trainers (n)", "Settings" and "Sign out".
+- Name, Pokemon Player ID (POP ID) and birth year are required. The POP ID is 1–10 digits and unique across accounts, and the duplicate message never says whose it is.
+- A trainer under 13 needs the parent's consent box; when and by whom is stored. "Child" is decided from the birth year today, never the stored `is_child`, which goes stale on 1 January.
+- Account limits: one trainer aged 13 or older, at most 3 children. The fourth child's message points to the support email, which lives in `.env` because the repo is public.
+- Sign-in still lands on `/`. An account without trainers sees a notice linking to "Add a trainer". From "I'm going", the gate leads to the form and saving returns to the blocked page with the intent.
+- After an account takeover, "Add a trainer" asks "I am 13 or older" again and saves the answer with the trainer in one transaction.
+- Adding and editing is throttled (`throttle:10,1`). Form errors are tied to their fields for screen readers.
+
+`composer verify` green: Pint, Larastan 0 errors, build, `tsc`, `vp check`, 78 Vitest, 301 Pest (9,516 assertions). Built in 9 planned slices (4b added), then `/review` with 9 fixes (A–I), each committed by Bruno.
+
+**Commits** (`main..HEAD`)
+- Slices:
+  - `1e40ffe` player profiles with a no-profile warning (plan)
+  - `05b2dda` save a profile and return to the blocked page; Player ID renamed POP ID (1)
+  - `8606619` tidy the POP ID rename and format routes
+  - `7246663` parental consent for a child (2)
+  - `31f6b86` "Add a player" form with the consent box (3)
+  - `4d9a6db` the account's profile list (4)
+  - `6a73d3a` one adult and three children (4b)
+  - `c1b2310` "Trainers" in the UI
+  - `6b6e551` navbar links and the no-trainer notice (5)
+  - `19dcaae` slice guide raised to about 350 lines
+  - `bbb67a0` edit a trainer with a shared form (6)
+  - `dbb165e` delete a trainer and their answers (7)
+  - `6495f1e` age asked again after a takeover (8)
+- `/review` fixes:
+  - `c0fcd26` child decided from the birth year today (A)
+  - `92cd051` age transaction and another account on the edit page (E), plus the throttle route (H)
+  - `d2462d9` short validation messages and the stronger AC5 test (G, E)
+  - `c9f16e8` form errors tied to fields, 40px inputs, tidy trainer pages (B, C, D, F), plus the throttle test (H)
+  - `818eeb6` review decisions and trainer names in the docs (I)
+- Outside the plan: `b61fb2c` a pulsing mail icon on the unverified-email notice in Settings and on `/email/verify` (Bruno's request after the review)
+
+**Commit scope notes.**
+- `05b2dda` carries the Player ID → POP ID rename across 28 files beside slice 1.
+- `19dcaae` (the slice guide in `CLAUDE.md` and `.claude/commands/slice.md`) has no Plan line.
+- Slice 6 came to about 517 changed lines, over the new 350 guide; Bruno kept it as one slice.
+- The throttle (H) is split: its route change is in `92cd051` and its test in `c9f16e8`. `d2462d9` also carries the stronger AC5 test, which shares a file with the messages test.
+- `b61fb2c` is settings and auth UI, outside M07's scope.
+
+**Decisions by Bruno** (all in `decisions.md`)
+- Profiles are "Trainers" in the UI; sign-in lands on `/` with a notice (AC4 reworded).
+- A parent who does not play holds only child profiles; one adult and 3 children per account, more by email to support.
+- Own-data shapes in `app/Data/Private/`.
+- A slice is about 350 changed lines.
+- Routes grouped by middleware, then by controller with `prefix` and `name` (saved as a preference).
+- Two tabs passing the limits at once is accepted for now.
+
+**Problems hit and how they were solved**
+- A Vitest file under `resources/js/pages/` broke the build: the Inertia Vite plugin bundles every `pages/**/*.tsx`. Page behaviour is tested in components or the browser instead.
+- The browser's own validation blocked the form, in Portuguese: `noValidate` on the trainer form, plus `attributes()` for readable field names.
+- `Rule::when(false, …)` still passed the field into `validated()`: the false branch is `['exclude']`.
+- The navbar wrapped at 360–390px: `whitespace-nowrap` and smaller text and padding below `sm`.
+- Bruno found while testing that an account with a child could add a second adult: slice 4b added the limits.
+- The review found that the stale `is_child` blocked editing a child who turned 14 and kept them counted: fix A.
+- The navbar's `count(*)` broke the M06 query test: that test now ignores it (Bruno).
+- Browser tests need `composer dev` running or a fresh `npm run build`.
+- Clicking "Resend verification email" 7 times in a few seconds gave a bare 429 page: Fortify's `throttle:6,1` worked, but the page invites repeat clicks. Noted for M15.
+
+**`/rethink-tests` outcome.** Skipped for M07 (Bruno, 24 Nov).
+
+**Review outcome.** `code-reviewer`, `privacy-guard` and `ui-reviewer`; 9 fixes, all applied.
+- **Fixed:**
+  - the stale `is_child` (A)
+  - form accessibility: aria links, consent error contrast, the age box lead-in (B)
+  - 40px inputs (C)
+  - notice rules on the list page and before verification (D)
+  - test gaps: AC5 really answers, the age transaction, another account on the edit page (E)
+  - layout polish (F)
+  - short messages (G)
+  - the throttle (H)
+  - docs and the browser test rename (I)
+- **Accepted, not fixed:** two tabs passing the limits; the policy has no `view` (the edit page is guarded by `update`).
+
+**What is left.** Bruno pushes and opens the PR. Then M08 ("I'm going" and Maybe), which acts on the pending intent and uses the trainers.
+
+**Surprising.** The year boundary: `is_child` is right on save and wrong from 1 January, so every rule now reads the birth year.
+
 ### 2026-11-21/23 · M06 · Sign in: email and password, Google, Discord, X
 
 **Outcome.** All six acceptance criteria met and tested.
 - Email and password through Fortify (registration with the "I am 13 or older" box, email verification, password reset). Two-factor auth, passkeys, magic-login tokens, the dashboard and Settings → Appearance are gone.
 - "Continue with Google / Discord / X" through Socialite, with one pair of generic routes restricted by `whereIn`. Only providers with credentials show a button; X is ready but not configured.
-- The player gate: anyone may browse; only a player (verified email + player profile, password optional) answers. After "I'm going", a user who is not ready is walked through verifying and adding a Player ID, and the gate remembers the page.
+- The player gate: anyone may browse; only a player (verified email + player profile, password optional) answers. After "I'm going", a user who is not ready is walked through verifying and adding a Pokemon Player ID (POP ID), and the gate remembers the page.
 - The pending intent: a guest's "I'm going" is a POST that stores the event in the session, signs in, and returns to the same page, which receives the intent once. M08 acts on it.
 - The auth pages are in the Pre-Flight look.
 
@@ -290,7 +373,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - No divisions and no seasons (CLAUDE.md rule 3 rewritten); no "maybe": a row in attendances means going (rule 5 rewritten); `confirmed_at` kept for M12.
 - End-time estimates on `EventType::estimatedHours()`, not a config file; enums as string columns with casts; scopes plural, taking lists.
 - `notification_settings` holds only `reminders` (JSON, so it can grow); "event changed" and "possibly cancelled" are always sent; threshold emails stop by unfollowing.
-- Player ID column is `pop_id`; `event_reports.type` instead of `kind`; `import_runs` counters `events_*`.
+- Pokemon Player ID (POP ID) column is `pop_id`; `event_reports.type` instead of `kind`; `import_runs` counters `events_*`.
 - Account holders must be 13+ (a sign-up checkbox, `users.age_confirmed_at`, built in M06); under-13s only as child profiles; `is_child` keeps its name.
 - `is_child` is true when the person turns 13 or younger this year (the safer reading), refreshed by a yearly 1 January routine (later).
 
@@ -306,7 +389,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 **`/rethink-tests` outcome.** All 11 test files walked through. Accepted: P1 (seeded Lisbon times stored in UTC, tested in July, when Lisbon is UTC+1), P2 (deleting an event deletes its answers, follows and reports; shown red by removing each cascade). Deferred to M05: the scopes combined (P4). Rejected: seeding once in `DemoSeederTest` (P3).
 
-**Review outcome.** `code-reviewer` and `privacy-guard` (the `User` model is shared as `auth.user`); `ui-reviewer` not needed. privacy-guard: no leak today (no routes). Fixed: Pint failure; demo children aged out on 1 Jan (birth years now relative, seeder tests freeze time); `between()` ignored the bounds' time zone (Laravel binds the clock time); demo admin seeded anywhere (now `local`/`testing` only); hook guarantee narrowed to model saves; new users' settings `null` in memory (model `$attributes`); crowd at overlapping events (crowd of 60 in consecutive blocks); two test gaps; import time in Lisbon; shop-deletion behaviour recorded; seeder style. Moved to later milestones: duplicate Player ID errors and logs (M07), consenting-user rule and `consent_by_user_id` on delete (M07), `#[Hidden]` and a `CHECK` constraint (optional, later).
+**Review outcome.** `code-reviewer` and `privacy-guard` (the `User` model is shared as `auth.user`); `ui-reviewer` not needed. privacy-guard: no leak today (no routes). Fixed: Pint failure; demo children aged out on 1 Jan (birth years now relative, seeder tests freeze time); `between()` ignored the bounds' time zone (Laravel binds the clock time); demo admin seeded anywhere (now `local`/`testing` only); hook guarantee narrowed to model saves; new users' settings `null` in memory (model `$attributes`); crowd at overlapping events (crowd of 60 in consecutive blocks); two test gaps; import time in Lisbon; shop-deletion behaviour recorded; seeder style. Moved to later milestones: duplicate Pokemon Player ID (POP ID) errors and logs (M07), consenting-user rule and `consent_by_user_id` on delete (M07), `#[Hidden]` and a `CHECK` constraint (optional, later).
 
 **What is left**
 - Push and open the PR.
@@ -490,6 +573,11 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Resend verification email invites repeat clicks** (Bruno, 24 Nov): Fortify already throttles the resend route (`throttle:6,1`, `config('fortify.limiters.verification')`), but after a send the button keeps pulsing and only a plain line confirms it, so Bruno clicked 7 times (6 emails in 5 seconds) and got the bare 429 page. Fix: after a send, disable the button with "✓ Link sent. Resend in 0:59" and stop the pulse; show "Too many tries. Wait a minute and try again." on the page instead of the 429 page; a Pest test that pins the limit (6 pass, the 7th is 429). Consider tightening to 1 a minute and 6 an hour with a named Fortify limiter. (M15)
+
+- **Error text colour**: the kit's `InputError` uses `text-red-600` (#e7000b), not a design token; it is 4.77:1 on white but fails on tinted boxes (M07 moved the consent error out of the pink box). Add a darker error token (e.g. #B42318) and use it app-wide. (M15)
+- **Linked accounts seeing a child's profile** (Bruno's idea, 24 Nov): today a child profile belongs to exactly one account. Later, another account (a second parent, or the child's own account once they turn 13) could be allowed to see or manage it. `OwnProfileData` is the owner's view and could be reused; needs a link table and consent rules. (later)
+- **Browser validation on the auth pages**: register, sign in, welcome and reset use `required`, so the browser blocks the form with its own bubble in the browser's language (Portuguese for most players, against rule 8) before our English errors show. M07 put `noValidate` on the profile form; decide the same for the kit's auth forms. (M15)
 - **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
 - ~~**Settings → Security for social accounts**~~: done in M06 fix 10b ("Email me a link to set a password").
 - **Kit focus styles**: `ui/toggle.tsx`, `ui/select.tsx`, `ui/navigation-menu.tsx` and `app-header.tsx` still set `outline-none` with the kit's faint ring, hiding design.md's red focus outline; none is on a page players use yet. Fix when a page uses them. (M15)
@@ -499,7 +587,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - ~~**Kit dark mode leftovers**~~: removed in M06 Slice 1b (Appearance page, `HandleAppearance`).
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - ~~**Non-affiliation footer on every page**~~: auth pages use `PublicLayout` since M06 Slice 7a.
-- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Player IDs or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M06, revisit in M07 when profiles arrive)
+- **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Pokemon Player IDs (POP IDs) or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M07: profiles reach the page only through `OwnProfileData` and the `auth.profilesCount` number, and `User` gained no personal fields; M14)
 - **`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it. (M05 `/review`; M09)
 - **Privacy test and partial reloads**: `NoPersonalDataLeaksTest` makes full page loads only. When a page gets an `Inertia::optional()` or `Inertia::defer()` prop, add a partial-reload case (the `X-Inertia-Partial-*` headers) with the same scans. (M05 `/review`; later)
 - ~~**Emails saved in lower case**~~: not needed. `users.email` uses the case-insensitive `utf8mb4_unicode_ci` collation, so uniqueness and lookups already ignore case; social lookups also lower-case. Bruno dropped the mixed-case test in M06 because it could not fail.

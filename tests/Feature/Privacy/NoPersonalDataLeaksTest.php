@@ -10,7 +10,7 @@ use Inertia\Testing\AssertableInertia as Assert;
 
 /*
  * Rule 1 (CLAUDE.md, "Counts only"): no public page shows a player's name,
- * Player ID or birth year (architecture.md, "Privacy enforcement").
+ * Pokemon Player ID (POP ID) or birth year (architecture.md, "Privacy enforcement").
  * A family with easy-to-spot data (an adult and an under-13 child, rule 2's
  * profiles) is going to a listed event, so their data sits right next to what
  * the page shows; every public route must still hide it.
@@ -35,7 +35,7 @@ dataset('sign-in pages', [
 ]);
 
 /**
- * The family's name, Player IDs and birth year appear nowhere in the page.
+ * The family's name, Pokemon Player IDs (POP IDs) and birth year appear nowhere in the page.
  */
 function expectNoPlayerData(TestResponse $response): void
 {
@@ -69,7 +69,7 @@ beforeEach(function () {
     Attendance::factory()->for($child)->for($event)->create();
 });
 
-it('shows no player name, Player ID or birth year', function (string $url, bool $signedIn) {
+it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, bool $signedIn) {
     if ($signedIn) {
         $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     }
@@ -103,3 +103,36 @@ it('shows no player data on the sign-in pages', function (string $route, string 
 
     expectNoPlayerData($response);
 })->with('sign-in pages');
+
+/*
+ * The profile list (M07) is an own-data page: the viewer's own profiles carry
+ * Pokemon Player IDs and birth years there by design, so only the family's
+ * values are checked, not the keys.
+ */
+it('shows another account none of the family on its profile list', function () {
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+
+    $response = $this->get(route('profiles.index'))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('profiles/index')->has('profiles', 1));
+
+    expect(mb_strtolower((string) $response->getContent()))
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655')
+        ->not->toContain('9988776656');
+    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
+});
+
+// Review fix: another account cannot open a family trainer's edit page, nor see its data.
+it('refuses another account the edit page of the family\'s trainers', function () {
+    $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+
+    PlayerProfile::query()->where('name', 'like', 'Zzleak%')->get()->each(function (PlayerProfile $profile) {
+        $response = $this->get(route('profiles.edit', $profile))->assertForbidden();
+
+        expect(mb_strtolower((string) $response->getContent()))
+            ->not->toContain('zzleak')
+            ->not->toContain('9988776655')
+            ->not->toContain('9988776656');
+    });
+});

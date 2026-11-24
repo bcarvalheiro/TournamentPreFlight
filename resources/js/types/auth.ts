@@ -11,4 +11,6 @@ export type User = {
 
 export type Auth = {
     user: User;
+    /** How many trainers (player profiles) the account holds; null for a guest. */
+    profilesCount: number | null;
 };

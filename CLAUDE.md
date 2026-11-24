@@ -22,7 +22,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 ## Rules that never bend
 
-1. **Counts only.** No response, page, prop, email or log visible to another player contains a player's name, Player ID or birth year. Public data goes through the classes in `app/Data/Public/`, never raw models. There is a test for this; keep it green and extend it when you add a public endpoint.
+1. **Counts only.** No response, page, prop, email or log visible to another player contains a player's name, Pokemon Player ID (POP ID) or birth year. Public data goes through the classes in `app/Data/Public/`, never raw models. There is a test for this; keep it green and extend it when you add a public endpoint.
 2. **Under-13s have no login.** A child profile belongs to a parent account, and the parent's consent is recorded.
 3. **No divisions, no seasons.** Pre-Flight never computes or shows Junior/Senior/Masters. Birth year is kept only for the under-13 rule.
 4. **Times stored in UTC, shown in Europe/Lisbon.**
@@ -33,7 +33,7 @@ Laravel 13, PHP 8.4, MySQL 8.4, Inertia + React 19 + TypeScript + Tailwind 4 (of
 
 ## How to work
 
-**In slices.** A milestone is split into slices: one concern, its test and its code together, one commit each. Keep a slice small enough to review comfortably in one sitting; around 150 changed lines is a good guide, not a hard limit. If a slice will clearly be much bigger, say so in its proposal and offer a split. `/slice` runs one. Every slice has two stops, and the next slice never starts without Bruno's OK:
+**In slices.** A milestone is split into slices: one concern, its test and its code together, one commit each. Keep a slice small enough to review comfortably in one sitting; around 350 changed lines is a good guide, not a hard limit. If a slice will clearly be much bigger, say so in its proposal and offer a split. `/slice` runs one. Every slice has two stops, and the next slice never starts without Bruno's OK:
 1. Proposal (goal, files, code sketch, standard way, new things, test), then wait.
 2. After the test goes red → green: diff walkthrough and a suggested commit, then wait.
 
