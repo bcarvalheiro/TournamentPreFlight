@@ -17,7 +17,7 @@ Brief, in this shape:
 - **Standard way**: the doc page it follows, or the existing kit/app code it reuses. Flag any deviation.
 - **New things**: every new class, interface, helper, folder, package or config key, and why this slice needs it now. "None" is the best answer.
 - **Test**: name, what it protects, how it works, the failure you expect.
-- **Size**: rough changed lines; if well over ~150, offer a split.
+- **Size**: rough changed lines; if well over ~350, offer a split.
 
 Then wait for Bruno. If he changes the slice, update its Plan line.
 

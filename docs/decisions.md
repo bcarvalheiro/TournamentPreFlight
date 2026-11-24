@@ -158,6 +158,7 @@ Append new decisions at the bottom of the log with the date and milestone. Never
 | 2026-11-24 | M07: data shapes sent only to the owner live in `app/Data/Private/` (was `Data/Own/` in architecture.md), beside `app/Data/Public/`: `OwnProfileData`, later `OwnAttendanceData` | Bruno: "Data/Own seems weird"; Public and Private read as a pair |
 | 2026-11-24 | M07: **profile limits per account.** At most one profile that is not a child (the holder's own: anyone else 13 or older registers their own account, product.md) and at most 3 child profiles; a fourth child needs an email to support. Checked when a profile is added or its birth year changes, not on existing data: a child who ages out stays on the account | Bruno: "it's unusual, and it's a risk, because someone can keep blocking pop_id's" |
 | 2026-11-24 | M07: **player profiles are "trainers" in the UI**: navbar "Trainers (n)", the list page "Trainers", "Add a trainer", "Save trainer", and the profile messages ("a trainer aged 13 or older", "a trainer under 13"). Code and docs keep "player profile" (`PlayerProfile`, `profiles.*` routes) | Bruno; design.md copy rules already call players "trainers" in counts |
+| 2026-11-24 | M07: **a slice is about 350 changed lines** (was 150) before a split is offered (`CLAUDE.md` "In slices", `/slice`) | Bruno: slices 3 and 6 were kept whole at about 250 to 350 lines and stayed reviewable |
 
 ## Open questions
 
