@@ -6,9 +6,7 @@ use App\Actions\SetAttendance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceRequest;
 use App\Models\Event;
-use App\Models\PlayerProfile;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 
 /**
  * The signed-in account's "I'm going" answers (M08).
@@ -16,20 +14,15 @@ use Illuminate\Support\Facades\DB;
 class AttendanceController extends Controller
 {
     /**
-     * Saves the answers for several trainers at once, all or nothing: one
-     * refused trainer rolls the whole request back. Then back to the page.
+     * Saves the answers for one or several trainers in one call (all or
+     * nothing, see `SetAttendance`), then back to the page.
      */
     public function update(AttendanceRequest $request, Event $event, SetAttendance $setAttendance): RedirectResponse
     {
-        /** @var array<int, bool> $answers */
+        /** @var array<int, mixed> $answers validated booleans: true, false, 1, 0, "1" or "0" */
         $answers = $request->validated('profiles');
-        $profiles = PlayerProfile::query()->findOrFail(array_keys($answers));
 
-        DB::transaction(function () use ($profiles, $request, $event, $setAttendance) {
-            foreach ($profiles as $profile) {
-                $setAttendance->handle($request->user(), $profile, $event, $request->boolean("profiles.{$profile->id}"));
-            }
-        });
+        $setAttendance->handle($request->user(), $event, array_map(boolval(...), $answers));
 
         return back();
     }

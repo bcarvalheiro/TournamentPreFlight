@@ -6,7 +6,7 @@
 The core loop: players answer for each of their profiles and the counts update.
 
 ## Scope
-- `SetAttendance` action: (profile, event, going: bool). Going creates the row if missing (unique key); not going deletes it. Rejects events that are not listed or have ended, and profiles the user does not own.
+- `SetAttendance` action: (user, event, {profile id: going}). Going creates the row if missing (unique key); not going deletes it. Rejects events that are not listed or have ended, and profiles the user does not own, before writing anything; saves all or nothing and dispatches `CheckThresholds` once (changed 24 Nov, Slice 2).
 - Routes: `PUT /events/{event}/attendance` taking `{profiles: {id: bool}}` for several profiles at once.
     - Question from Bruno: id: bool? is right? 
 - Quick button behaviour from `product.md`: one profile toggles going; several opens `ProfilePicker`; signed out, or not a player yet (no verified email or Pokemon Player ID (POP ID)), uses the pending intent from M06/M07 (the same POST; M06's `GoingButton` posts it for everyone, M08 makes it toggle for players) (kept in the session, handed to the page as a prop) and resumes after sign-in.
