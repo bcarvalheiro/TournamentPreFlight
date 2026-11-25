@@ -49,6 +49,27 @@ class EventController extends Controller
             'own' => fn () => $page->canAnswer && $request->user()?->isPlayerReady()
                 ? OwnAttendanceData::forUser($request->user())
                 : null,
-        ]);
+        ])->withViewData(['meta' => $this->linkPreview($event, $page)]);
+    }
+
+    /**
+     * What chat apps show when the page is shared (M09 AC4): the title and
+     * "12 trainers going · Sat 5 Dec, 10:00 · Carta Alta, Porto", in Lisbon
+     * time (rule 4), counts only (rule 1). The root template writes them as
+     * Open Graph tags; previews read the HTML and run no JavaScript.
+     *
+     * @return array{title: string, description: string, url: string}
+     */
+    private function linkPreview(Event $event, EventPageData $page): array
+    {
+        $going = trans_choice(':count trainer going|:count trainers going', $page->goingCount);
+        $when = $event->starts_at->copy()->tz('Europe/Lisbon')->format('D j M, H:i');
+
+        return [
+            'title' => $page->title,
+            'description' => "{$going} · {$when} · {$page->shopName}, {$page->city}",
+            // The page itself, also for a shared ?going link.
+            'url' => $page->url,
+        ];
     }
 }

@@ -132,6 +132,8 @@ Use the same band (navbar only, no hero) and the same card language:
 
 **Shared `?going` link** (M09 AC6): on an event people can still answer, the page opens with a sheet titled "Going to Carta Alta?" (the day under it): the headcount line "12 trainers going · a headcount, not a registration" and the same answer controls as the count card. Opening the link writes nothing; only a tap does. Ended, cancelled, pending and hidden events show no sheet.
 
+**Link preview** (M09 AC4): a shared event link shows the event title, "12 trainers going · Sat 5 Dec, 10:00 · Carta Alta, Porto" (Lisbon time) and the Pre-Flight image (`public/og-image.png`, 1200×630: the playmat, the mark, "PRE-FLIGHT", "Should I go or should I stay at home?"; source `design/og-image.html`). Every other page previews as "Pre-Flight" with "See how many trainers are heading to each TCG tournament in Portugal." and the same image.
+
 **Phones** (below 768px): a bar that sticks to the bottom while the page scrolls and rests above the footer at the end: the red count with "going" and a red button, "Choose who's going" for a player or "Going?" for anyone else, that jumps to the count card (`#going`). Hidden when answers are closed.
 
 Dropped from the sketch: maybe counts, divisions, the TCG chip, registration (pokedata never has it), the listed date and league ID, the raw coordinates chip, the close button.
