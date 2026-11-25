@@ -40,6 +40,9 @@ class EventController extends Controller
 
         return Inertia::render('events/show', [
             'event' => $page,
+            // A shared `?going` link asks "Going to …?" (M09 AC6, decisions.md 23 Nov);
+            // only on an event people can still answer. Opening it writes nothing.
+            'askGoing' => $request->query->has('going') && $page->canAnswer,
             // The account's own trainers and answers (M09 Slice 5), for its eyes only and
             // only while answers are open; a closure, so a partial reload computes it only
             // when asked for. Anyone else's "Going?" uses the pending intent (M06).

@@ -73,6 +73,10 @@ describe('EventDetails', () => {
         );
     });
 
+    it('offers to share the event\'s "Going?" link', () => {
+        expect(html()).toMatch(/<button[^>]*>.*Share<\/button>/s);
+    });
+
     it('leaves Directions to the shop column', () => {
         expect(text(html())).not.toContain('Directions');
     });

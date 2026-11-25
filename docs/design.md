@@ -95,7 +95,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "Going?" tells ot
 
 ## Shared components
 
-- **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
+- **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. On opening, focus goes to the sheet itself, not its first button, so no focus ring shows until the keyboard is used (M09). Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
 - **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
 - **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
 - **ProfilePicker**: list of the account's trainers, each a big toggle row (at least 48px; the whole row is the button): name on the left, "Going?" in grey or "Going ✓" in red on the right, red outline and light red tint once picked (no checkboxes: hard to hit on phones). The rows are the event page's `TrainerToggleRows`: each tap saves that trainer at once, with the toast "Ana is going to Carta Alta, Sat 5 Dec" (no Save button, M09 Slice 5b), and the slip's button follows while the sheet is open. "+ Add a trainer" under the rows; the footer has only "Done". Title "Going to Carta Alta?" with the day under it.
@@ -128,7 +128,9 @@ Use the same band (navbar only, no hero) and the same card language:
 
 **Column 2, Shop** (Slice 3b, `EventShop`; never "venue"): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
 
-**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · ends around 16:00 (estimate)": the end is the type's estimate, never a published time), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then an action grid (Official page, Share, Add to calendar; Directions stays in the shop column only), the pink headcount disclaimer and a mono line "Source: pokedata".
+**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · ends around 16:00 (estimate)": the end is the type's estimate, never a published time), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then an action grid (Official page; Share, which copies the page's `?going` link with the toast "Link copied"; Add to calendar; Directions stays in the shop column only), the pink headcount disclaimer and a mono line "Source: pokedata".
+
+**Shared `?going` link** (M09 AC6): on an event people can still answer, the page opens with a sheet titled "Going to Carta Alta?" (the day under it): the headcount line "12 trainers going · a headcount, not a registration" and the same answer controls as the count card. Opening the link writes nothing; only a tap does. Ended, cancelled, pending and hidden events show no sheet.
 
 **Phones** (below 768px): a bar that sticks to the bottom while the page scrolls and rests above the footer at the end: the red count with "going" and a red button, "Choose who's going" for a player or "Going?" for anyone else, that jumps to the count card (`#going`). Hidden when answers are closed.
 

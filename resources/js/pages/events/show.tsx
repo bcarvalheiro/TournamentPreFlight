@@ -1,10 +1,11 @@
 import { Form, Head, router, usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { EventCounts } from '@/components/pf/event-counts';
 import { EventDetails } from '@/components/pf/event-details';
 import { EventHeader } from '@/components/pf/event-header';
 import { EventShop } from '@/components/pf/event-shop';
+import { ResponsiveDialog } from '@/components/pf/responsive-dialog';
 import { TrainerToggleRows } from '@/components/pf/trainer-toggle-rows';
 import { Button } from '@/components/ui/button';
 import PublicLayout from '@/layouts/public-layout';
@@ -17,10 +18,48 @@ type Props = {
     event: EventPage;
     /** The account's own trainers and answers; null unless a player and answers are open. */
     own: OwnAttendance | null;
+    /** Opened from a shared `?going` link on an event people can answer (M09 AC6). */
+    askGoing: boolean;
 };
 
 /** After a save, the page reloads only the count and the answers. */
 const RELOAD = ['event', 'own'];
+
+/**
+ * How the viewer answers (M09 Slice 5): a player's trainers as toggle rows, or,
+ * for a guest or an account that is not a player yet, one "Going?" that signs
+ * in, verifies, adds a trainer and comes back here (M06). Shown in the count
+ * card and in the `?going` pop-up.
+ */
+function AnswerControls({
+    event,
+    own,
+}: {
+    event: EventPage;
+    own: OwnAttendance | null;
+}) {
+    if (own) {
+        return (
+            <TrainerToggleRows
+                eventId={event.id}
+                place={`${event.shopName}, ${formatDay(event.startsAt)}`}
+                trainers={own.trainers}
+                goingIds={own.going[event.id] ?? []}
+                reload={RELOAD}
+            />
+        );
+    }
+
+    return (
+        <Form {...going.form({ event: event.id })}>
+            {/* The canonical URL, without ?going, so the way back does not ask again. */}
+            <input type="hidden" name="return_to" value={event.url} />
+            <Button type="submit" className="h-12 w-full font-sans text-base">
+                Going?
+            </Button>
+        </Form>
+    );
+}
 
 /**
  * The event page (M09, design.md "Event page"). The header lives in the dark
@@ -28,10 +67,11 @@ const RELOAD = ['event', 'own'];
  * answer controls), the shop and the details, stacked on phones, where a bar
  * at the bottom jumps back to the controls.
  */
-export default function EventShow({ event, own }: Props) {
+export default function EventShow({ event, own, askGoing }: Props) {
     const { pendingIntent } = usePage().props;
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
-    const goingIds = own?.going[event.id] ?? [];
+    // Open on arrival from a shared `?going` link; only a tap inside marks going.
+    const [askOpen, setAskOpen] = useState(askGoing);
 
     // Back from signing in after "Going?" on this page (M06 pending intent):
     // a solo player is set going once; a family sees its rows and picks.
@@ -72,36 +112,30 @@ export default function EventShow({ event, own }: Props) {
                     goingCount={event.goingCount}
                     confirmedCount={event.confirmedCount}
                 >
-                    {event.canAnswer &&
-                        (own ? (
-                            <TrainerToggleRows
-                                eventId={event.id}
-                                place={place}
-                                trainers={own.trainers}
-                                goingIds={goingIds}
-                                reload={RELOAD}
-                            />
-                        ) : (
-                            // A guest, or an account that is not a player yet: sign in,
-                            // verify, add a trainer, then back here (M06).
-                            <Form {...going.form({ event: event.id })}>
-                                <input
-                                    type="hidden"
-                                    name="return_to"
-                                    value={event.url}
-                                />
-                                <Button
-                                    type="submit"
-                                    className="h-12 w-full font-sans text-base"
-                                >
-                                    Going?
-                                </Button>
-                            </Form>
-                        ))}
+                    {event.canAnswer && (
+                        <AnswerControls event={event} own={own} />
+                    )}
                 </EventCounts>
                 <EventShop shop={event} />
                 <EventDetails event={event} />
             </div>
+            {askGoing && (
+                <ResponsiveDialog
+                    open={askOpen}
+                    onOpenChange={setAskOpen}
+                    title={`Going to ${event.shopName}?`}
+                    description={formatDay(event.startsAt)}
+                >
+                    <div className="flex flex-col gap-3">
+                        <p className="text-muted">
+                            {event.goingCount}{' '}
+                            {event.goingCount === 1 ? 'trainer' : 'trainers'}{' '}
+                            going · a headcount, not a registration
+                        </p>
+                        <AnswerControls event={event} own={own} />
+                    </div>
+                </ResponsiveDialog>
+            )}
             {event.canAnswer && (
                 // Phones only: sticks to the bottom while the page scrolls, then rests
                 // above the footer; jumps back to the controls in the count card.

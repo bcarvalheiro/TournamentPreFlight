@@ -57,6 +57,19 @@ export function ResponsiveDialog({
     const isOpen = open ?? ownOpen;
     const setOpen = onOpenChange ?? setOwnOpen;
     const isMobile = useIsMobile();
+    // On opening, focus the sheet itself, not its first button (Radix Dialog docs,
+    // `onOpenAutoFocus`, "can be prevented"). Focus moved by code counts as
+    // keyboard focus, so the first button wore the focus ring on a sheet that
+    // opened by itself (the `?going` pop-up, Bruno, 25 Nov). Screen readers still
+    // land in the sheet and read its title; Tab reaches the first button.
+    function focusSheet(event: Event): void {
+        event.preventDefault();
+
+        if (event.currentTarget instanceof HTMLElement) {
+            event.currentTarget.focus();
+        }
+    }
+
     // Without a description, tell Radix on purpose; otherwise it logs a console warning (Radix Dialog docs).
     const descriptionProps = description
         ? {}
@@ -68,7 +81,8 @@ export function ResponsiveDialog({
                 {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
                 {/* A flex column at most 85% of the screen tall: only the content scrolls. */}
                 <DialogContent
-                    className="flex max-h-[85vh] flex-col rounded-sheet border-line sm:max-w-md"
+                    className="flex max-h-[85vh] flex-col rounded-sheet border-line focus-visible:outline-none sm:max-w-md"
+                    onOpenAutoFocus={focusSheet}
                     {...descriptionProps}
                 >
                     <DialogHeader>
@@ -96,7 +110,8 @@ export function ResponsiveDialog({
         <Drawer open={isOpen} onOpenChange={setOpen} autoFocus>
             {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
             <DrawerContent
-                className="rounded-t-sheet border-line data-[vaul-drawer-direction=bottom]:max-h-[85vh]"
+                className="rounded-t-sheet border-line focus-visible:outline-none data-[vaul-drawer-direction=bottom]:max-h-[85vh]"
+                onOpenAutoFocus={focusSheet}
                 {...descriptionProps}
             >
                 <DrawerClose

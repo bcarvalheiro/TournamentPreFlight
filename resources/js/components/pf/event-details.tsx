@@ -1,7 +1,9 @@
-import { Clock, Euro, ExternalLink, Hash, Layers } from 'lucide-react';
+import { Clock, Euro, ExternalLink, Hash, Layers, Share2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { useClipboard } from '@/hooks/use-clipboard';
 import { formatLongDate, formatTime } from '@/lib/time';
 import { TOURNAMENT_TYPE_LONG_NAMES } from '@/lib/tournament-types';
 import type { EventPage } from '@/types';
@@ -51,12 +53,22 @@ function Row({
 /**
  * The event page's details column (design.md, Event page): when (the end is
  * the type's estimate, never a published time), format and tournament ID; the
- * action grid (Official page when known; Share, Slice 6, and Add to calendar,
- * Slice 10, join it later; Directions lives only in the shop column); the
+ * action grid (Official page when known; Share copies the `?going` link; Add to
+ * calendar, Slice 10, joins it later; Directions lives only in the shop column); the
  * headcount disclaimer; where the event comes from.
  */
 export function EventDetails({ event }: EventDetailsProps): ReactNode {
     const tile = 'h-auto flex-col gap-1 py-3';
+    const [, copy] = useClipboard();
+
+    /** The `?going` link opens the "Going to …?" pop-up (M09 AC6); copy only for now (phones' share sheet: M15). */
+    async function shareLink(): Promise<void> {
+        if (await copy(`${event.url}?going`)) {
+            toast('Link copied');
+        } else {
+            toast.error("Couldn't copy the link.");
+        }
+    }
 
     return (
         <section aria-labelledby="event-details-title">
@@ -101,6 +113,10 @@ export function EventDetails({ event }: EventDetailsProps): ReactNode {
                         </a>
                     </Button>
                 )}
+                <Button variant="outline" className={tile} onClick={shareLink}>
+                    <Share2 aria-hidden="true" />
+                    Share
+                </Button>
             </div>
             <p className="mt-3 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
                 <strong>A headcount, not a registration.</strong> Tapping
