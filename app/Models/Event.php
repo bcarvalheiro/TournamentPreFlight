@@ -144,11 +144,13 @@ class Event extends Model
 
     /**
      * The readable part of the event page URL ("winter-cup"). Never stored: a
-     * changed title gives a new slug, and the old URL redirects (M09).
+     * changed title gives a new slug, and the old URL redirects (M09). A title
+     * with nothing to slug ("!!!") falls back to the type ("league-cup"), as
+     * `/events/12-` matches no route (review).
      */
     public function slug(): string
     {
-        return Str::slug($this->displayTitle());
+        return Str::slug($this->displayTitle()) ?: Str::slug($this->type->longName());
     }
 
     /**

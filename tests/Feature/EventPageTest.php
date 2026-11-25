@@ -98,6 +98,15 @@ it('redirects to the canonical URL and keeps the query string', function (string
     'a wrong slug' => '-old-name',
 ]);
 
+it('falls back to the type for a title with no letters to slug', function () {
+    // Review (M09): Str::slug('!!!') is '', which gave `/events/12-`, a URL no route matches.
+    $event = winterCup(['title' => '!!!']);
+
+    expect($event->slug())->toBe('league-cup');
+    $this->get("/events/{$event->id}")->assertRedirect(url("/events/{$event->id}-league-cup"));
+    $this->get("/events/{$event->id}-league-cup")->assertOk();
+});
+
 it('says whether the event has started, ended or been cancelled, and if answers are open', function (array $attributes, array $expected) {
     $event = winterCup($attributes);
 
