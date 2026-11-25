@@ -36,11 +36,14 @@ class SetAttendance
             throw ValidationException::withMessages(['event' => 'Answers are closed for this event.']);
         }
 
+        // Two saves at once (a double tap, or the resume after sign-in meeting a tap) can
+        // deadlock on the new row; MySQL cancels one, and it runs again, now finding the
+        // row (Laravel "Database › Handling Deadlocks"; M09 review).
         DB::transaction(function () use ($profiles, $event, $answers): void {
             foreach ($profiles as $profile) {
                 $this->save($profile, $event, $answers[$profile->id]);
             }
-        });
+        }, attempts: 3);
     }
 
     /**
