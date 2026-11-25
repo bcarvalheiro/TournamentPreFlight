@@ -16,8 +16,10 @@ type ProfilePickerProps = {
     trainers: OwnAttendance['trainers'];
     /** Ids of the trainers going to this event now. */
     goingIds: number[];
-    /** The button that opens the picker. */
-    trigger: ReactElement;
+    /** The button that opens the picker; none when the page opens it (`defaultOpen`). */
+    trigger?: ReactElement;
+    /** Open on first render: the page resumes a pending "I'm going" (M08). */
+    defaultOpen?: boolean;
 };
 
 /** One trainer's row: the whole row is the button, at least 48px tall for thumbs. */
@@ -38,8 +40,9 @@ export function ProfilePicker({
     trainers,
     goingIds,
     trigger,
+    defaultOpen = false,
 }: ProfilePickerProps): ReactNode {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(defaultOpen);
     const [checked, setChecked] = useState<number[]>(goingIds);
     const [saving, setSaving] = useState(false);
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;

@@ -24,7 +24,8 @@ Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAt
   - Changed (Bruno, 25 Nov): the three older limit tests (sign-in, trainer add/edit, welcome form) now expect the redirect with the error toast instead of a bare 429; the sign-in limit gets the same message.
 - [x] Slice 5: family accounts open `ProfilePicker` (checkbox per trainer, Save, "Add a trainer"); one PUT with per-trainer choices; "Going (2)"; "You: Ana, Tiago" on slips (`components/pf/profile-picker.tsx`, `going-button.tsx`, `event-list-item.tsx`, `design.md`; `profile-picker.test.tsx`, `GoingTest` family case) · AC4
   - Changed (Bruno, 25 Nov): no `profile-picker.test.tsx`: the sheet's content is portalled and only exists once open, so static markup cannot show it; the picker is tested in `GoingTest` (browser), and Vitest covers the family labels and the "You:" line (`going-button.test.tsx`, `event-list-item.test.tsx`). The picker uses big toggle rows instead of checkboxes (Bruno: checkboxes are hard on mobile; a select box cannot pick several on a phone).
-- [ ] Slice 6: resume after sign-in: `pendingIntent` sets a solo account going (never off) and opens the picker for a family (`home.tsx`, `going-button.tsx`; `tests/Browser/ResumeGoingTest.php`) · AC5
+- [x] Slice 6: resume after sign-in: `pendingIntent` sets a solo account going (never off) and opens the picker for a family (`home.tsx`, `going-button.tsx`; `tests/Browser/ResumeGoingTest.php`) · AC5
+  - Changed (25 Nov): one `ProfilePicker` owned by `home.tsx` (the event is often on both the sheet and the agenda, so the slips cannot each open one); `ResponsiveDialog` and `ProfilePicker` take an optional `trigger`, the picker a `defaultOpen`. An event no longer on the page: solo still applies ("You're going."), a family gets nothing.
 
 ### Plan (M07)
 

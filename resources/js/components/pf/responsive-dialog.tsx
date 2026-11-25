@@ -23,8 +23,11 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 
 type ResponsiveDialogProps = {
-    /** The button that opens the dialog. Focus returns to it on close. */
-    trigger: ReactElement;
+    /**
+     * The button that opens the dialog. Focus returns to it on close. Optional
+     * when the parent opens the dialog itself (`open`), e.g. after sign-in.
+     */
+    trigger?: ReactElement;
     title: string;
     description?: string;
     children?: ReactNode;
@@ -62,7 +65,7 @@ export function ResponsiveDialog({
     if (!isMobile) {
         return (
             <Dialog open={isOpen} onOpenChange={setOpen}>
-                <DialogTrigger asChild>{trigger}</DialogTrigger>
+                {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
                 {/* A flex column at most 85% of the screen tall: only the content scrolls. */}
                 <DialogContent
                     className="flex max-h-[85vh] flex-col rounded-sheet border-line sm:max-w-md"
@@ -91,7 +94,7 @@ export function ResponsiveDialog({
         // autoFocus: vaul defaults it to false, which stops focus moving into the
         // drawer on open, so the focus trap never engages (found by the browser test).
         <Drawer open={isOpen} onOpenChange={setOpen} autoFocus>
-            <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+            {trigger && <DrawerTrigger asChild>{trigger}</DrawerTrigger>}
             <DrawerContent
                 className="rounded-t-sheet border-line data-[vaul-drawer-direction=bottom]:max-h-[85vh]"
                 {...descriptionProps}
