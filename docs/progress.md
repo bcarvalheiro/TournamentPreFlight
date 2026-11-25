@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M08 · "I'm going" (in progress).
+- **Milestone**: M08 · "I'm going" (review).
 - **Branch**: m08-attendance
-- **State**: All six slices (plus 2b and 4b) committed; `composer verify` green. `/rethink-tests` done (25 Nov): added to `SetAttendanceTest` an unknown trainer id (403), malformed answers (422, dataset of 3) and an ongoing event (accepted); Vitest `going-button.test.tsx` checks attributes one by one instead of order-dependent regexes; `event-list-item.test.tsx` resets `own` in `beforeEach`. Rejected: an unverified-account case (rare; `verified` is Laravel's own middleware). Left untested on purpose: the going button's "no false success toast" guard after a 429 (earlier toasts are still on screen, so a browser check would be flaky). Next: `/review`.
+- **State**: All slices, `/rethink-tests` and the `/review` fixes committed; `composer verify` green (Pest 331, Vitest 85). Next: Bruno pushes and opens the PR, then M09.
 
 ### Plan (M08)
 
@@ -58,7 +58,7 @@ Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAt
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
 | M07 | Player profiles | done | PR #9 merged |
-| M08 | "I'm going" | in progress | "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
+| M08 | "I'm going" | review | PR to open. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
@@ -72,6 +72,40 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-24/25 · M08 · "I'm going"
+
+**Outcome.** The core loop works. A player answers going or not going for each trainer from the quick button; the counts, the labels and a "You: Ana, Tiago" line refresh with a partial reload and a toast. A family picks per trainer in a sheet and saves once. A signed-out tap carries on after sign-in (solo: applied; family: picker open). All six acceptance criteria have automated tests. Bruno also dropped follows and thresholds: only going players get emails (the day-before reminder with the headcount, plus "event changed" and "possibly cancelled").
+
+**Commits** (`git log --oneline main..HEAD`, oldest first):
+- `81a396f` progress for M08 · `6409ac6` plan, six slices
+- `02c1b86` save going answers for the account's own trainers (Slice 1)
+- `4bdff7e` queue CheckThresholds once per save (Slice 2, later removed)
+- `e50d07b` drop follows and thresholds (Slice 2b)
+- `5f09c5a` the account's own trainers and answers on the home page (Slice 3)
+- `4072d02` solo player toggles going from the quick button (Slice 4)
+- `64749c2` one wait toast whenever a save hits a rate limit (Slice 4b)
+- `8c74d11` a family picks which trainers are going (Slice 5) · `bcfa2ec` big toggle rows in the picker
+- `8322c63` carry on a signed-out "I'm going" after sign-in (Slice 6)
+- `ad68a16` `/rethink-tests`: unknown ids, malformed answers, ongoing events
+- `25493b0`, `25cf2ec`, `3c2c128`, `26df3e4`, `2d808d2`, `b9161ef` `/review` fixes
+
+**Problems and how they were solved.**
+- `Queue::fake()` ignores `afterCommit()`, so a rolled-back save still showed a queued job. Fixed by deciding every refusal before writing, with one entry point (`SetAttendance` takes all answers). Then Bruno dropped thresholds, so the job went (decisions.md, 24 and 25 Nov).
+- The safety check blocked deleting test files; Bruno ran the `rm` himself.
+- `PendingIntentTest`'s "no profile queries" check broke because home now loads trainers on purpose; it now loads Settings → Profile. Second adjustment to that test; a third means rethinking it (decisions.md, 25 Nov).
+- Larastan rejected loose collection types in `OwnAttendanceData`; built the arrays with loops instead.
+- Bruno hit a bare 429 page after many taps: now one app-wide "Too many tries. Wait n seconds and try again." for any limited save (Slice 4b).
+- Bruno found the checkbox picker hard to use on a phone: big toggle rows instead (a select box cannot pick several).
+- Browser tests: `press('Sign in')` clicked the navbar link (fixed with `data-test="login-button"`); a bare "0" matched a start time (now "0 trainers going"). Twice a Pest dataset closure wrapped its value one level too deep; both caught before code went in.
+
+**`/rethink-tests`.** Added: an unknown trainer id is 403, malformed answers are 422 (a dataset, mutation-checked), an ongoing event is accepted. Vitest checks attributes one by one instead of order-dependent regexes, and `event-list-item.test.tsx` resets `own` in `beforeEach`. Rejected: an unverified-account case (Laravel's own middleware). Left untested on purpose: the "no false success toast" guards after a 429 (old toasts still on screen make a browser check flaky).
+
+**`/review`** (code-reviewer, privacy-guard, ui-reviewer). No leaks found. Fixed, all 11 Bruno accepted: `own` only for player-ready accounts (an unverified account got a toggle whose save failed); a darker `red-text` token for small red text (contrast); malformed keys rejected (a crafted "01" key gave a 500); the picker stays open after a 429 and its rows are disabled while saving; the resume checks its save and shows errors; the 429 handler leaves JSON callers alone (plus tests for JSON and page loads); privacy cases for `own` ids and a partial reload; an arch rule for `App\Data\Private`; screen-reader names for picker rows and an event-specific hidden suffix on every "I'm going". Skipped: a hand-filled limiter in the browser test, a cap on answers, focus start and footer sizes in the sheet. Logged for M14: Inertia history encryption.
+
+**Surprising.** In this Laravel version `firstOrCreate` already falls back to `createOrFirst` when the insert hits the unique key, so two simultaneous taps cannot produce an error (the Slice 1 trade-off did not exist). `router.put` keeps state by default in Inertia 3, so the resume effect cannot run twice after a partial reload.
+
+**Left.** Bruno pushes and opens the PR. Then M09 (event page).
 
 ### 2026-11-23/24 · M07 · Player profiles
 
@@ -594,6 +628,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 - **Resend verification email invites repeat clicks** (Bruno, 24 Nov): Fortify already throttles the resend route (`throttle:6,1`, `config('fortify.limiters.verification')`), but after a send the button keeps pulsing and only a plain line confirms it, so Bruno clicked 7 times (6 emails in 5 seconds) and got the bare 429 page. The 429 page part is fixed app-wide by M08 Slice 4b ("Too many tries. Wait n seconds and try again."). Still to do: after a send, disable the button with "✓ Link sent. Resend in 0:59" and stop the pulse; a Pest test that pins the limit (6 pass, the 7th is 429). Consider tightening to 1 a minute and 6 an hour with a named Fortify limiter. (M15)
 
+- **Picker sheet polish on phones** (M08 `/review`, ui-reviewer, optional): footer buttons are 40px while the rows are 48px (`h-11` or `h-12` for thumbs); focus starts on Close in the phone sheet but on the first row in the desktop dialog; a safe-area bottom padding matters only if the viewport ever uses `viewport-fit=cover`. (M15)
 - **Inertia history encryption is off** (M08 `/review`, privacy-guard): after sign-out, Back on a shared device shows pages from the browser's history without asking the server, such as home with the account's trainer names (`own`) or `/profiles` with Pokemon Player IDs (POP IDs) and birth years (M07). Fix: `'history' => ['encrypt' => true]` in `config/inertia.php` and `Inertia::clearHistory()` on sign-out (Inertia docs, "History encryption"), with a test and a `decisions.md` row. (M14)
 - **Error text colour**: the kit's `InputError` uses `text-red-600` (#e7000b), not a design token; it is 4.77:1 on white but fails on tinted boxes (M07 moved the consent error out of the pink box). Add a darker error token and use it app-wide; M08 added `--color-red-text` `#C1121F` for small red text, which may serve. (M15)
 - **Linked accounts seeing a child's profile** (Bruno's idea, 24 Nov): today a child profile belongs to exactly one account. Later, another account (a second parent, or the child's own account once they turn 13) could be allowed to see or manage it. `OwnProfileData` is the owner's view and could be reused; needs a link table and consent rules. (later)

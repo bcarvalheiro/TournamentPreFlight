@@ -86,7 +86,7 @@ Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontall
 ### 3. Agenda
 Grouped by day. Day header: 5px red left border, "SAT 15 NOV" in display font plus an uppercase relative label ("Tomorrow", "In 3 days", "Next week"), side by side on phones. On ≥700px the header sits in a 120px left column and is sticky: the day big (about 32px) on two lines ("SAT 15 / NOV"), the label under it, like the prototype.
 
-**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
+**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a line "You: Ana, Tiago" in red-text (small text, see Contrast). Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
 
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 
