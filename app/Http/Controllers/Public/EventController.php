@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Data\Private\OwnAttendanceData;
 use App\Data\Public\EventPageData;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
@@ -35,8 +36,16 @@ class EventController extends Controller
             'attendances as confirmed_count' => fn (Builder $query) => $query->whereNotNull('confirmed_at'),
         ]);
 
+        $page = EventPageData::fromModel($event);
+
         return Inertia::render('events/show', [
-            'event' => EventPageData::fromModel($event),
+            'event' => $page,
+            // The account's own trainers and answers (M09 Slice 5), for its eyes only and
+            // only while answers are open; a closure, so a partial reload computes it only
+            // when asked for. Anyone else's "I'm going" uses the pending intent (M06).
+            'own' => fn () => $page->canAnswer && $request->user()?->isPlayerReady()
+                ? OwnAttendanceData::forUser($request->user())
+                : null,
         ]);
     }
 }
