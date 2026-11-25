@@ -72,7 +72,11 @@ export function EventHeader({ event }: EventHeaderProps): ReactNode {
                     <dd className={tileValue}>{formatTime(event.startsAt)}</dd>
                 </div>
                 <div className={`${tile} max-w-[12ch] text-sm leading-tight`}>
-                    <WhenLabel event={event} />
+                    {/* A term for screen readers: every child of a <dl> is a term and a value (review). */}
+                    <dt className="sr-only">Status</dt>
+                    <dd>
+                        <WhenLabel event={event} />
+                    </dd>
                 </div>
             </dl>
             {event.possiblyCancelled && (

@@ -113,6 +113,9 @@ export function EventShop({ shop }: EventShopProps): ReactNode {
                         title={`Map of ${shop.shopName}`}
                         src={embedUrl(shop.latitude!, shop.longitude!)}
                         loading="lazy"
+                        // Out of the Tab order: its controls took 7 stops with no visible
+                        // focus; the buttons below serve the keyboard (review).
+                        tabIndex={-1}
                         className="block h-60 w-full border-0"
                     />
                 )}

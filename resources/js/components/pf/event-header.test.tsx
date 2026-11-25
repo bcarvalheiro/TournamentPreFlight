@@ -102,4 +102,11 @@ describe('EventHeader', () => {
     it('links back to all events', () => {
         expect(render()).toMatch(/<a[^>]*href="\/"[^>]*>[^<]*All events/);
     });
+
+    it('names the status tile for screen readers (review)', () => {
+        // Every child of the <dl> is a term and a value; the status label is the value.
+        expect(render({ hasEnded: true, canAnswer: false })).toMatch(
+            /<dt class="sr-only">Status<\/dt><dd[^>]*>.*This event has ended.*<\/dd>/s,
+        );
+    });
 });

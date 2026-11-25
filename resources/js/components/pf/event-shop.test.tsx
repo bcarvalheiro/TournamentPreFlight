@@ -60,6 +60,9 @@ describe('EventShop', () => {
 
         expect(markup).toMatch(/<iframe[^>]*title="Map of Carta Alta"/);
         expect(markup).toMatch(/<iframe[^>]*loading="lazy"/);
+        // Out of the Tab order: its own controls took 7 stops with no visible focus;
+        // Directions, Copy address and Open map serve the keyboard (review).
+        expect(markup).toMatch(/<iframe[^>]*tabindex="-1"/i);
         expect(markup).toContain(
             'https://www.openstreetmap.org/export/embed.html?bbox=',
         );
