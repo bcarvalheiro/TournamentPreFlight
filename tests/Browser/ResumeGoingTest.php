@@ -43,14 +43,14 @@ it('opens the picker for a family after signing in', function () {
     PlayerProfile::factory()->child()->for($parent)->create(['name' => 'Tiago']);
     $event = Event::factory()->for(Shop::factory()->create(['name' => 'Carta Alta']))->create();
 
-    $page = tapGoingThenSignIn($parent)
-        ->assertSee('Going to Carta Alta?')
-        ->assertSee('Save · 0 going');
+    $page = tapGoingThenSignIn($parent);
 
     // Nothing is saved until the family chooses.
     expect($event->attendances()->count())->toBe(0);
 
+    // The click waits for the sheet to open (assertSee would not wait); then it is checked.
     $page->click('Ana')
+        ->assertSee('Going to Carta Alta?')
         ->click('Save · 1 going')
         ->assertSeeIn('[data-slot="card"]', 'Going (1)');
 

@@ -81,9 +81,11 @@ it('lets a family pick who is going, per trainer', function () {
 
     $page = visit(route('home'));
 
+    // Clicks wait for their target (up to 5s); assertSee checks once, at once.
+    // So each sheet is first met with a click, and only then asserted on.
     $page->click("{$slip} button")
-        ->assertSee('Going to Carta Alta?')
         ->click('Ana')
+        ->assertSee('Going to Carta Alta?')
         ->click('Tiago')
         ->click('Save · 2 going')
         ->assertSee('Saved for Carta Alta')
@@ -91,9 +93,10 @@ it('lets a family pick who is going, per trainer', function () {
         ->assertSeeIn($slip, 'You: Ana, Tiago')
         ->assertSeeIn($slip, '2 trainers going');
 
-    // Reopened, the sheet starts from the saved answers (both picked); untick Tiago only.
+    // Reopened, the sheet starts from the saved answers (both picked): unticking
+    // Tiago leaves "Save · 1 going". Had it reopened empty, the tap would pick
+    // Tiago instead, and the last check (only Ana saved) would fail.
     $page->click("{$slip} button")
-        ->assertSee('Save · 2 going')
         ->click('Tiago')
         ->click('Save · 1 going')
         ->assertSeeIn($slip, 'Going (1)')
