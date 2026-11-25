@@ -36,6 +36,7 @@ function render(own: OwnAttendance | null): string {
 }
 
 const ana = { id: 7, name: 'Ana' };
+const tiago = { id: 9, name: 'Tiago' };
 
 describe('GoingButton', () => {
     it('gives a guest the pending-intent form (M06)', () => {
@@ -61,6 +62,23 @@ describe('GoingButton', () => {
 
         expect(markup).toMatch(
             /<button type="button" aria-pressed="true"[^>]*bg-transparent[^>]*>Going ✓<\/button>/,
+        );
+    });
+
+    it('lets a family with nobody going open the picker from "I\'m going"', () => {
+        const markup = render({ trainers: [ana, tiago], going: [] });
+
+        expect(markup).not.toContain('<form');
+        expect(markup).toMatch(
+            /<button type="button" aria-haspopup="dialog"[^>]*>I&#x27;m going<\/button>/,
+        );
+    });
+
+    it('shows a family with two going "Going (2)", outlined', () => {
+        const markup = render({ trainers: [ana, tiago], going: { 1: [7, 9] } });
+
+        expect(markup).toMatch(
+            /<button type="button" aria-haspopup="dialog"[^>]*bg-transparent[^>]*>Going \(2\)<\/button>/,
         );
     });
 });

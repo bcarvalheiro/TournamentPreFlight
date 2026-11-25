@@ -1,10 +1,11 @@
+import { usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { GoingButton } from '@/components/pf/going-button';
 import { TournamentTypeBadge } from '@/components/pf/tournament-type-badge';
 import { Card } from '@/components/ui/card';
 import { formatTime } from '@/lib/time';
 import { TOURNAMENT_TYPE_LONG_NAMES } from '@/lib/tournament-types';
-import type { EventCard } from '@/types';
+import type { EventCard, OwnAttendance } from '@/types';
 
 /** The punched half-circles at the top and bottom of the tear line. */
 const punchedHole =
@@ -15,6 +16,16 @@ const punchedHole =
  * item): type and shop on the left, the headcount and "I'm going" on the stub.
  */
 export function EventListItem({ event }: { event: EventCard }): ReactNode {
+    const { own } = usePage<{ own: OwnAttendance | null }>().props;
+    const goingIds = own?.going[event.id] ?? [];
+    // A family sees which of its trainers are going, oldest first (design.md).
+    const goingNames =
+        own && own.trainers.length > 1
+            ? own.trainers
+                  .filter((trainer) => goingIds.includes(trainer.id))
+                  .map((trainer) => trainer.name)
+            : [];
+
     return (
         // A 104px stub on the right, like the prototype.
         <Card className="grid grid-cols-[1fr_104px] gap-0 overflow-hidden border-t-4 border-t-ink py-0">
@@ -39,6 +50,11 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                     )}
                     <span>{TOURNAMENT_TYPE_LONG_NAMES[event.type]}</span>
                 </p>
+                {goingNames.length > 0 && (
+                    <p className="text-sm font-semibold text-red">
+                        You: {goingNames.join(', ')}
+                    </p>
+                )}
                 {event.possiblyCancelled && (
                     <p className="rounded border-l-4 border-amber bg-amber/20 px-2 py-1 text-sm text-ink">
                         Possibly cancelled, check with the shop

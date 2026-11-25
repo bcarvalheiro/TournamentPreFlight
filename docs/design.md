@@ -98,7 +98,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 - **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
 - **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
 - **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
-- **ProfilePicker**: list of the account's profiles, each with name and a going checkbox; "Save". Shows "Add a profile" link.
+- **ProfilePicker**: list of the account's trainers, each with name and a going checkbox; "Save". Shows an "Add a trainer" link. Title "Going to Carta Alta?" with the day under it; after saving a change, the toast "Saved for Carta Alta, Sat 5 Dec" (M08).
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.

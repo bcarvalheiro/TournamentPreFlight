@@ -2,6 +2,7 @@ import { Form, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
+import { ProfilePicker } from '@/components/pf/profile-picker';
 import { formatDay } from '@/lib/time';
 import { cn } from '@/lib/utils';
 import { going } from '@/routes/events';
@@ -17,10 +18,11 @@ const goingOnClasses = 'bg-transparent text-red';
 /**
  * The quick "I'm going" button (product.md). A player with one trainer taps it
  * to go or not go (M08): the counts and labels refresh with a partial reload
- * and a toast confirms. Everyone else posts the event (M06, a form, so a link
- * cannot set the intent): a guest signs in first, a user without a verified
- * email or a Pokemon Player ID (POP ID) is walked through them, and the page
- * comes back with the intent. Families get the picker in Slice 5.
+ * and a toast confirms. A family opens the picker ("Going (2)" once some go).
+ * Everyone else posts the event (M06, a form, so a link cannot set the
+ * intent): a guest signs in first, a user without a verified email or a
+ * Pokemon Player ID (POP ID) is walked through them, and the page comes back
+ * with the intent.
  */
 export function GoingButton({
     event,
@@ -32,6 +34,33 @@ export function GoingButton({
     const { url, props } = usePage<{ own: OwnAttendance | null }>();
     const [saving, setSaving] = useState(false);
     const trainers = props.own?.trainers ?? [];
+    const goingIds = props.own?.going[event.id] ?? [];
+
+    if (trainers.length > 1) {
+        return (
+            <ProfilePicker
+                event={event}
+                trainers={trainers}
+                goingIds={goingIds}
+                trigger={
+                    <button
+                        type="button"
+                        aria-haspopup="dialog"
+                        className={cn(
+                            goingClasses,
+                            goingIds.length > 0 && goingOnClasses,
+                            className,
+                        )}
+                    >
+                        {goingIds.length > 0
+                            ? `Going (${goingIds.length})`
+                            : "I'm going"}
+                    </button>
+                }
+            />
+        );
+    }
+
     const solo = trainers.length === 1 ? trainers[0] : null;
 
     if (solo === null) {
@@ -46,7 +75,7 @@ export function GoingButton({
     }
 
     const trainerId = solo.id;
-    const isGoing = (props.own?.going[event.id] ?? []).includes(trainerId);
+    const isGoing = goingIds.includes(trainerId);
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
 
     function toggle(): void {

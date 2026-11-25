@@ -1,13 +1,16 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vite-plus/test';
 import { EventListItem } from '@/components/pf/event-list-item';
-import type { EventCard } from '@/types';
+import type { EventCard, OwnAttendance } from '@/types';
 
 // No Inertia app runs here, so usePage() (read by GoingButton) is replaced
 // by a fake page with nobody signed in; Link stays the real one.
 const page = vi.hoisted(() => ({
     url: '/?type[]=cup',
-    props: { auth: { user: null } },
+    props: {
+        auth: { user: null },
+        own: null as OwnAttendance | null,
+    },
 }));
 
 vi.mock('@inertiajs/react', async (importOriginal) => ({
@@ -71,5 +74,30 @@ describe('EventListItem', () => {
         expect(render(card())).toMatch(
             /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<\/button><\/form>/,
         );
+    });
+
+    it('shows a family which of its trainers are going, oldest first', () => {
+        page.props.own = {
+            trainers: [
+                { id: 7, name: 'Ana' },
+                { id: 8, name: 'Rui' },
+                { id: 9, name: 'Tiago' },
+            ],
+            going: { 1: [9, 7] },
+        };
+
+        expect(render(card())).toContain('You: Ana, Tiago');
+        page.props.own = null;
+    });
+
+    it('shows no "You:" line to a solo player or a guest', () => {
+        page.props.own = {
+            trainers: [{ id: 7, name: 'Ana' }],
+            going: { 1: [7] },
+        };
+        expect(render(card())).not.toContain('You:');
+
+        page.props.own = null;
+        expect(render(card())).not.toContain('You:');
     });
 });

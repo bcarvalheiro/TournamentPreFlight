@@ -4,6 +4,7 @@ use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\PlayerProfile;
 use App\Models\Shop;
+use App\Models\User;
 
 /*
  * M08 AC2: a player with one trainer taps "I'm going" on a slip and the page
@@ -63,4 +64,41 @@ it('asks a player who taps too often to wait, without leaving the page', functio
         ->assertSeeIn($slip, "I'm going")
         ->assertSeeIn($slip, '0 trainers going')
         ->assertPathIs('/');
+});
+
+/*
+ * M08 AC4: a family taps "I'm going" and the picker opens with a checkbox per
+ * trainer; Save sends every choice in one request. Opening a sheet and ticking
+ * boxes needs a real browser (the sheet's content is not in static markup).
+ */
+it('lets a family pick who is going, per trainer', function () {
+    $parent = User::factory()->create();
+    $ana = PlayerProfile::factory()->for($parent)->create(['name' => 'Ana']);
+    $tiago = PlayerProfile::factory()->child()->for($parent)->create(['name' => 'Tiago']);
+    $event = Event::factory()->for(Shop::factory()->create(['name' => 'Carta Alta']))->create();
+    $this->actingAs($parent);
+    $slip = '[data-slot="card"]';
+
+    $page = visit(route('home'));
+
+    $page->click("{$slip} button")
+        ->assertSee('Going to Carta Alta?')
+        ->click('Ana')
+        ->click('Tiago')
+        ->click('Save')
+        ->assertSee('Saved for Carta Alta')
+        ->assertSeeIn($slip, 'Going (2)')
+        ->assertSeeIn($slip, 'You: Ana, Tiago')
+        ->assertSeeIn($slip, '2 trainers going');
+
+    // Reopened, the boxes show the saved answers; untick Tiago only.
+    $page->click("{$slip} button")
+        ->assertChecked("#going-{$event->id}-{$tiago->id}")
+        ->click('Tiago')
+        ->click('Save')
+        ->assertSeeIn($slip, 'Going (1)')
+        ->assertSeeIn($slip, 'You: Ana')
+        ->assertSeeIn($slip, '1 trainers going');
+
+    expect($event->attendances()->pluck('player_profile_id')->all())->toBe([$ana->id]);
 });
