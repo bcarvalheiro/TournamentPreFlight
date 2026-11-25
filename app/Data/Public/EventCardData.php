@@ -35,7 +35,7 @@ final readonly class EventCardData
             id: $event->id,
             displayId: $event->display_id,
             type: $event->type,
-            title: $event->title ?? "{$event->type->name} at {$event->shop->name}",
+            title: $event->displayTitle(),
             shopName: $event->shop->name,
             city: $event->shop->city,
             startsAt: $event->starts_at->toIso8601ZuluString(),

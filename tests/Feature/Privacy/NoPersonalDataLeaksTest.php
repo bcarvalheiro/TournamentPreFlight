@@ -17,9 +17,13 @@ use Inertia\Testing\AssertableInertia as Assert;
  * the page shows; every public route must still hide it.
  */
 
-/** Every public page. Each new public route is added here in the same PR. */
+/**
+ * Every public page, with where its props keep the family's event going count.
+ * Each new public route is added here in the same PR.
+ */
 dataset('public pages', [
-    'home' => fn () => route('home'),
+    'home' => [fn () => route('home'), 'events.0.goingCount'],
+    'event page' => [fn () => route('events.show', ['event' => Event::sole(), 'slug' => Event::sole()->slug()]), 'event.goingCount'],
 ]);
 
 /**
@@ -70,26 +74,37 @@ beforeEach(function () {
     Attendance::factory()->for($child)->for($event)->create();
 });
 
-it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, bool $signedIn) {
+it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, string $countProp, bool $signedIn) {
+    if ($signedIn) {
+        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    }
+
+    $response = $this->get($url)->assertOk();
+
+    // Both answers are counted, so the test is not passing on an empty page.
+    expect($response->inertiaProps($countProp))->toBe(2);
+
+    expectNoPlayerData($response);
+})->with('public pages')->with([
+    'guest' => false,
+    'another user' => true,
+]);
+
+it('sends the home page\'s `own` with only the viewer\'s own trainer', function (bool $signedIn) {
     $viewer = $signedIn ? User::factory()->has(PlayerProfile::factory())->create() : null;
 
     if ($viewer) {
         $this->actingAs($viewer);
     }
 
-    $response = $this->get($url)->assertOk();
-
-    // Both answers are counted, so the test is not passing on an empty page.
-    expect($response->inertiaProps('events.0.goingCount'))->toBe(2);
-
-    expectNoPlayerData($response);
+    $response = $this->get(route('home'))->assertOk();
 
     // `own` (M08) holds only the viewer's own trainer, never the family's ids (review fix).
     expect($response->inertiaProps('own'))->toBe($viewer ? [
         'trainers' => [['id' => $viewer->playerProfiles()->sole()->id, 'name' => $viewer->playerProfiles()->sole()->name]],
         'going' => [],
     ] : null);
-})->with('public pages')->with([
+})->with([
     'guest' => false,
     'another user' => true,
 ]);

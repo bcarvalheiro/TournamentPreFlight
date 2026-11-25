@@ -31,3 +31,28 @@ export type ShopFilter = {
     city: string;
     eventCount: number;
 };
+
+/** One event on its page, as App\Data\Public\EventPageData sends it. Times are UTC ISO strings. */
+export type EventPage = {
+    id: number;
+    /** The canonical page URL, slug included. */
+    url: string;
+    displayId: string | null;
+    type: TournamentType;
+    title: string;
+    shopName: string;
+    address: string | null;
+    district: string | null;
+    city: string;
+    startsAt: string;
+    endsAt: string;
+    officialUrl: string | null;
+    goingCount: number;
+    confirmedCount: number;
+    isOngoing: boolean;
+    hasEnded: boolean;
+    isCancelled: boolean;
+    possiblyCancelled: boolean;
+    /** Listed and not ended: the going controls and the pop-up show only then. */
+    canAnswer: boolean;
+};

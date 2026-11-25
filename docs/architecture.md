@@ -20,7 +20,7 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
+  Http/Controllers/Public (HomeController, EventController: the event page), /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
   Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer),
                       AttendanceRequest ("I'm going" answers: {profiles: {id: bool}})
@@ -31,7 +31,7 @@ app/
                       UpdatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
-  Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
+  Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, ShopFilterData
   Data/Private/       shapes sent only to the account that owns the data (never to other players):
                       OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport

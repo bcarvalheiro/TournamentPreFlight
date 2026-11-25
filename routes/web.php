@@ -6,10 +6,16 @@ use App\Http\Controllers\Account\PlayerProfileController;
 use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\WelcomeController;
+use App\Http\Controllers\Public\EventController;
 use App\Http\Controllers\Public\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
+
+// The event page (M09): /events/12-winter-cup; a missing or old slug redirects.
+Route::get('events/{event}-{slug?}', [EventController::class, 'show'])
+    ->whereNumber('event')
+    ->name('events.show');
 
 // Signed-in accounts
 Route::middleware(['auth'])->group(function () {

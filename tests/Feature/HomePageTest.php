@@ -123,7 +123,7 @@ it('sends the card fields, with type and shop as the title when the event has no
             ->has('events.0', fn (AssertableInertia $card) => $card
                 ->where('displayId', '26-12-000123')
                 ->where('type', 'cup')
-                ->where('title', 'Cup at Carta Alta')
+                ->where('title', 'League Cup at Carta Alta')
                 ->where('shopName', 'Carta Alta')
                 ->where('city', 'Porto')
                 ->where('startsAt', '2026-12-06T10:00:00Z')
