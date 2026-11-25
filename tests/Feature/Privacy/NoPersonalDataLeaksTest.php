@@ -109,12 +109,23 @@ it('sends the home page\'s `own` with only the viewer\'s own trainer', function 
     'another user' => true,
 ]);
 
-/*
- * The going button refreshes the home page with a partial reload (M08:
- * `only: events, upNext, own`), a JSON answer instead of the HTML page. It must
- * hide the family's data just the same (review fix).
+/**
+ * The partial reloads public pages make (a JSON answer instead of the HTML
+ * page): the page component, its URL, the props asked for, where the family's
+ * count sits, and a prop the answer must leave out.
  */
-it('shows no player data on a partial reload of the home page', function (bool $signedIn) {
+dataset('partial reloads', [
+    // The going button (M08): `only: events, upNext, own`.
+    'home' => ['home', fn () => route('home'), 'events,upNext,own', 'events.0.goingCount', 'shops'],
+    // The event page's 60s poll (M09 Slice 9): `only: event`.
+    'event page' => ['events/show', fn () => route('events.show', ['event' => Event::sole(), 'slug' => Event::sole()->slug()]), 'event', 'event.goingCount', 'own'],
+]);
+
+/*
+ * A partial reload must hide the family's data just as the full page does
+ * (review fix, M08), and send only what was asked for.
+ */
+it('shows no player data on a partial reload', function (string $component, string $url, string $only, string $countProp, string $leftOut, bool $signedIn) {
     if ($signedIn) {
         $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     }
@@ -122,13 +133,13 @@ it('shows no player data on a partial reload of the home page', function (bool $
     $response = $this->withHeaders([
         'X-Inertia' => 'true',
         'X-Inertia-Version' => (string) app(HandleInertiaRequests::class)->version(request()),
-        'X-Inertia-Partial-Component' => 'home',
-        'X-Inertia-Partial-Data' => 'events,upNext,own',
-    ])->get(route('home'))->assertOk();
+        'X-Inertia-Partial-Component' => $component,
+        'X-Inertia-Partial-Data' => $only,
+    ])->get($url)->assertOk();
 
     // A partial answer: the requested props, not the whole page.
-    expect($response->json('props'))->toHaveKeys(['events', 'upNext', 'own'])->not->toHaveKey('shops');
-    expect($response->json('props.events.0.goingCount'))->toBe(2);
+    expect($response->json('props'))->toHaveKeys(explode(',', $only))->not->toHaveKey($leftOut);
+    expect($response->json("props.{$countProp}"))->toBe(2);
 
     // The same scans as expectNoPlayerData(), on the JSON props (that helper reads an HTML page).
     $props = $response->json('props');
@@ -138,7 +149,7 @@ it('shows no player data on a partial reload of the home page', function (bool $
         ->not->toContain('9988776656');
     expect(json_encode($props))->not->toContain('1913');
     expect(array_keys(Arr::dot($props)))->each->not->toMatch('/pop_?id|birth_?year/i');
-})->with([
+})->with('partial reloads')->with([
     'guest' => false,
     'another user' => true,
 ]);

@@ -47,7 +47,8 @@ Layout from Bruno's sketch (25 Nov): header (type label, title, shop · city, da
   - Dropped (Bruno, 25 Nov): not for now; cancellations are caught by the nightly import (M10). The `event_reports` table stays unused (decisions.md).
 - [x] Slice 8: Open Graph and X card tags in the server HTML with the title and count (Lisbon time), no personal data, a static 1200×630 Pre-Flight image; general tags on every other page (`EventController` (`withViewData`), `resources/views/app.blade.php`, `public/og-image.png`, `design/og-image.html`, `design.md`, `decisions.md`; `EventMetaTagsTest`) · AC4
   - Changed (Bruno, 25 Nov): one static image for every event (option 2); `show.tsx` needed no change (its `<Head>` already sets the tab title).
-- [ ] Slice 9: 60s count poll while visible (`usePoll`, `background: 'pause'`), "updated just now", and the partial-reload privacy case (`show.tsx`, `NoPersonalDataLeaksTest`; partial-reload cases) · scope (optional)
+- [x] Slice 9: 60s count poll while visible (`usePoll`, `only: event`, `background: 'pause'`, only while answers are open) and the partial-reload privacy case (`show.tsx`, `design.md`, `NoPersonalDataLeaksTest`; partial-reload cases) · scope (optional)
+  - Changed (Bruno, 25 Nov): no "updated just now" label; the number changing is enough.
 - [ ] Slice 10: Add to calendar: `GET /events/{event}/calendar.ics` (`text/calendar`, UTC times, the estimated end, shop address, page link; no player data) and a Google Calendar link (`routes/web.php`, `EventController@calendar`, `show.tsx`, `NoPersonalDataLeaksTest`; `EventCalendarTest`) · scope (Bruno, 25 Nov)
 
 ### Plan (M08)

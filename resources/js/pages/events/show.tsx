@@ -1,4 +1,4 @@
-import { Form, Head, router, usePage } from '@inertiajs/react';
+import { Form, Head, router, usePage, usePoll } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { EventCounts } from '@/components/pf/event-counts';
@@ -72,6 +72,14 @@ export default function EventShow({ event, own, askGoing }: Props) {
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
     // Open on arrival from a shared `?going` link; only a tap inside marks going.
     const [askOpen, setAskOpen] = useState(askGoing);
+
+    // The count refreshes each minute while the tab is visible (Inertia "Polling"):
+    // only `event`, so the header follows too; nothing once answers are closed.
+    usePoll(
+        60_000,
+        { only: ['event'] },
+        { background: 'pause', autoStart: event.canAnswer },
+    );
 
     // Back from signing in after "Going?" on this page (M06 pending intent):
     // a solo player is set going once; a family sees its rows and picks.
