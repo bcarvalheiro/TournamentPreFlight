@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M08 · "I'm going" (review).
-- **Branch**: m08-attendance
-- **State**: All slices, `/rethink-tests` and the `/review` fixes committed; `composer verify` green (Pest 331, Vitest 85). Next: Bruno pushes and opens the PR, then M09.
+- **Milestone**: M09 · Event page (in progress).
+- **Branch**: m09-event-page
+- **State**: Plan proposed, waiting for Bruno's OK. No code yet.
 
 ### Plan (M08)
 
@@ -58,8 +58,8 @@ Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAt
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
 | M07 | Player profiles | done | PR #9 merged |
-| M08 | "I'm going" | review | PR to open. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
-| M09 | Event page | todo | |
+| M08 | "I'm going" | done | PR #10 merged. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
+| M09 | Event page | in progress | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
 | M12 | Email notifications | todo | |
