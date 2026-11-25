@@ -153,6 +153,9 @@ it('limits welcome page submissions', function () {
         $this->post(route('welcome.store'), ['name' => 'Ana Lima'])->assertSessionHasErrors('age_confirmed');
     }
 
-    $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'age_confirmed' => '1'])->assertTooManyRequests();
+    // Too many tries: back to the page with the wait message (M08 Slice 4b).
+    $this->post(route('welcome.store'), ['name' => 'Ana Lima', 'age_confirmed' => '1'])
+        ->assertRedirect()
+        ->assertInertiaFlash('toast.type', 'error');
     expect(User::query()->count())->toBe(0);
 });

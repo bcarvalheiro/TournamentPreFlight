@@ -67,7 +67,9 @@ test('users are rate limited', function () {
             ->assertSessionHasErrors('email');
     }
 
+    // Too many tries: back to the page with the wait message (M08 Slice 4b).
     $this->post(route('login.store'), ['email' => $user->email, 'password' => 'password'])
-        ->assertTooManyRequests();
+        ->assertRedirect()
+        ->assertInertiaFlash('toast.type', 'error');
     $this->assertGuest();
 });

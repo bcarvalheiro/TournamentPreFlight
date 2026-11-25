@@ -38,3 +38,29 @@ it('lets a solo player tap to go, then tap again to stop', function () {
 
     expect(Attendance::query()->where('event_id', $event->id)->count())->toBe(0);
 });
+
+/*
+ * Slice 4b: after too many taps the page stays, says how long to wait, and
+ * never claims the tap worked (the redirect back would otherwise look like a
+ * success to the button).
+ */
+it('asks a player who taps too often to wait, without leaving the page', function () {
+    $profile = PlayerProfile::factory()->create();
+    Event::factory()->for(Shop::factory()->create(['name' => 'Carta Alta']))->create();
+    $this->actingAs($profile->user);
+    $slip = '[data-slot="card"]';
+
+    $page = visit(route('home'));
+
+    // 30 taps a minute are allowed; each waits for its label before the next.
+    foreach (range(1, 30) as $tap) {
+        $page->click("{$slip} button")
+            ->assertSeeIn($slip, $tap % 2 === 1 ? 'Going ✓' : "I'm going");
+    }
+
+    $page->click("{$slip} button")
+        ->assertSee('Too many tries. Wait')
+        ->assertSeeIn($slip, "I'm going")
+        ->assertSeeIn($slip, '0 trainers going')
+        ->assertPathIs('/');
+});

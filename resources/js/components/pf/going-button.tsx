@@ -58,12 +58,22 @@ export function GoingButton({
                 preserveScroll: true,
                 onStart: () => setSaving(true),
                 onFinish: () => setSaving(false),
-                onSuccess: () =>
-                    toast.success(
-                        isGoing
-                            ? `You're no longer going to ${place}`
-                            : `You're going to ${place}`,
-                    ),
+                // Only when the server's answer really changed: a save sent back
+                // (too many tries) also ends here, with its own toast.
+                onSuccess: (page) => {
+                    const own = page.props.own as OwnAttendance | null;
+                    const nowGoing = (own?.going[event.id] ?? []).includes(
+                        trainerId,
+                    );
+
+                    if (nowGoing !== isGoing) {
+                        toast.success(
+                            nowGoing
+                                ? `You're going to ${place}`
+                                : `You're no longer going to ${place}`,
+                        );
+                    }
+                },
                 onError: (errors) =>
                     toast.error(errors.event ?? 'Could not save. Try again.'),
             },
