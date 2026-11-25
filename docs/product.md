@@ -67,7 +67,7 @@ See `design.md` for the visual spec. Content:
 
 ## Event page
 
-Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "Going?" / not going per profile, "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
+Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "Going?" / not going per profile, the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
 
 ## Adding a missing event
 

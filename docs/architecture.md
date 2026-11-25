@@ -172,7 +172,7 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 
-**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
+**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change"; the feature is dropped for now (decisions.md, 25 Nov), the table stays unused.
 
 **import_runs**: source, started_at, finished_at, status (ok, failed, aborted), events_created, events_updated, events_flagged, events_unchanged (ints, default 0), error (text, nullable), payload_sample (json, nullable).
 
@@ -225,7 +225,7 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 ## Admin
 
-Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs. No admin package.
+Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), import runs. No admin package.
 
 ## Environments and CI
 

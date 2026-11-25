@@ -9,7 +9,7 @@ A shareable page per event with the counts and full answer controls.
 - Route `/events/{event}-{slug}` (slug optional; redirect to canonical). 404 for pending/hidden events except for admins and the submitter.
 - `EventPageData`: event details, official URL, going count, confirmed count, possibly cancelled flag, ended flag.
 - Per-profile controls: I'm going / not going (uses `SetAttendance`).
-- "Report a change or cancellation" form storing `event_reports` (signed in, rate limited).
+- ~~"Report a change or cancellation" form storing `event_reports` (signed in, rate limited).~~ Dropped for now (Bruno, 25 Nov): cancellations are caught by the nightly import (M10, possibly cancelled).
 - Open Graph and Twitter meta: title, "12 trainers going", no personal data.
 - **Share link** (decided in M06 review): `?going` on an upcoming event's page opens the "Going to …?" pop-up with an "I'm going" button and the headcount line; a "Share" button copies that link. Opening the link changes nothing; only the tap marks going (M08 flow, so guests go through the pending intent). Hidden, cancelled and ended events show no pop-up.
 - Optional 60s poll for counts while the page is visible.
