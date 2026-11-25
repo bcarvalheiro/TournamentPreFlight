@@ -21,6 +21,7 @@ vi.mock('@inertiajs/react', async (importOriginal) => ({
 function card(overrides: Partial<EventCard> = {}): EventCard {
     return {
         id: 1,
+        url: 'https://preflight.test/events/1-cup-at-carta-alta',
         displayId: '26-12-000123',
         type: 'cup',
         title: 'Cup at Carta Alta',
@@ -75,9 +76,9 @@ describe('EventListItem', () => {
         expect(render(card())).not.toContain(warning);
     });
 
-    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
+    it('sends signed-out players to sign in from "Going?", back to this page', () => {
         expect(render(card())).toMatch(
-            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<span class="sr-only"> to Carta Alta, [^<]+<\/span><\/button><\/form>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>Going\?<span class="sr-only">, Carta Alta, [^<]+<\/span><\/button><\/form>/,
         );
     });
 
@@ -103,5 +104,10 @@ describe('EventListItem', () => {
 
         page.props.own = null;
         expect(render(card())).not.toContain('You:');
+    });
+    it('links the shop name to the event page', () => {
+        expect(render(card())).toMatch(
+            /<a[^>]*href="https:\/\/preflight\.test\/events\/1-cup-at-carta-alta"[^>]*>Carta Alta<\/a>/,
+        );
     });
 });

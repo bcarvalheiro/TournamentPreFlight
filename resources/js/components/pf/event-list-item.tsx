@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { GoingButton } from '@/components/pf/going-button';
 import { TournamentTypeBadge } from '@/components/pf/tournament-type-badge';
@@ -13,7 +13,7 @@ const punchedHole =
 
 /**
  * One event in the agenda, styled as a tear-off slip (design.md, Event list
- * item): type and shop on the left, the headcount and "I'm going" on the stub.
+ * item): type and shop on the left, the headcount and "Going?" on the stub.
  */
 export function EventListItem({ event }: { event: EventCard }): ReactNode {
     const { own } = usePage<{ own: OwnAttendance | null }>().props;
@@ -28,11 +28,20 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
 
     return (
         // A 104px stub on the right, like the prototype.
-        <Card className="grid grid-cols-[1fr_104px] gap-0 overflow-hidden border-t-4 border-t-ink py-0">
+        <Card className="group relative grid grid-cols-[1fr_104px] gap-0 overflow-hidden border-t-4 border-t-ink py-0">
             <div className="flex min-w-0 flex-col items-start gap-1.5 px-3.5 py-3">
                 <TournamentTypeBadge type={event.type} />
                 <h3 className="text-lg leading-tight font-bold">
-                    {event.shopName}
+                    {/* Stretched over the slip by its ::after layer (Bootstrap's
+                        .stretched-link); the stub stays above it. Hovering the
+                        slip underlines the name. The focus ring outlines the
+                        whole slip, like the click area (review). */}
+                    <Link
+                        href={event.url}
+                        className="underline-offset-4 group-hover:underline after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-red"
+                    >
+                        {event.shopName}
+                    </Link>
                 </h3>
                 <p className="flex flex-wrap gap-x-3.5 gap-y-1 text-sm text-muted">
                     <span>{event.city}</span>
@@ -61,13 +70,18 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                     </p>
                 )}
             </div>
+            {/* The stub (count and button) is positioned after the link, so it is drawn
+                above the link's layer and keeps its own taps (Bruno, 25 Nov). */}
             <div className="relative flex flex-col items-center justify-center gap-1.5 border-l-2 border-dashed border-sheet-line px-2 py-2.5">
                 <span aria-hidden="true" className={`${punchedHole} -top-2`} />
                 <span
                     aria-hidden="true"
                     className={`${punchedHole} -bottom-2`}
                 />
-                <span className="font-display text-4xl leading-none font-extrabold text-red tabular-nums">
+                <span
+                    data-test="slip-count"
+                    className="font-display text-4xl leading-none font-extrabold text-red tabular-nums"
+                >
                     {event.goingCount}
                     <span className="sr-only"> trainers going</span>
                 </span>

@@ -1,0 +1,118 @@
+<!doctype html>
+<!--
+  Source of public/og-image.png, the picture chat apps show in a link preview
+  (M09 AC4). 1200×630, the size Open Graph and X cards expect. Uses the design
+  tokens (docs/design.md) and the Pre-Flight mark (app-logo-icon.tsx); no
+  official names or artwork (CLAUDE.md rule 7).
+
+  To regenerate: open this file in a browser at a 1200×630 window and save a
+  screenshot of the page as public/og-image.png.
+-->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Pre-Flight link preview</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=IBM+Plex+Sans:wght@500;700&family=IBM+Plex+Mono:wght@600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                width: 1200px;
+                height: 630px;
+                overflow: hidden;
+            }
+            body {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 28px;
+                padding: 0 96px;
+                /* The playmat band (design.md, Band). */
+                background: radial-gradient(
+                    120% 90% at 20% 0%,
+                    #2a3641 0%,
+                    #1f2933 55%,
+                    #182028 100%
+                );
+                color: #e9eef3;
+                font-family: 'IBM Plex Sans', system-ui, sans-serif;
+            }
+            /* The band's faint dashed card outlines, as decoration. */
+            .card {
+                position: absolute;
+                width: 300px;
+                height: 420px;
+                border: 3px dashed rgb(255 255 255 / 0.08);
+                border-radius: 28px;
+            }
+            .card.one {
+                right: 90px;
+                top: -60px;
+                transform: rotate(10deg);
+            }
+            .card.two {
+                right: 250px;
+                bottom: -150px;
+                transform: rotate(-8deg);
+            }
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 28px;
+            }
+            .brand svg {
+                width: 132px;
+                height: 121px;
+            }
+            h1 {
+                font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+                font-size: 150px;
+                font-weight: 800;
+                line-height: 0.9;
+                letter-spacing: 0.01em;
+                color: #fff;
+                text-transform: uppercase;
+            }
+            .question {
+                font-size: 50px;
+                font-weight: 500;
+                color: #fff;
+            }
+            .question b {
+                font-weight: 700;
+                color: #e63946;
+            }
+            .line {
+                font-family: 'IBM Plex Mono', ui-monospace, monospace;
+                font-size: 26px;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: #a9b4bf;
+            }
+        </style>
+    </head>
+    <body>
+        <span class="card one"></span>
+        <span class="card two"></span>
+        <div class="brand">
+            <!-- The Pre-Flight mark (resources/js/components/pf/app-logo-icon.tsx). -->
+            <svg viewBox="0 0 24 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="2" y="4" width="11" height="15" rx="2" transform="rotate(-14 7 12)" fill="none" stroke="#8B97A3" stroke-width="1.6" />
+                <rect x="7" y="3" width="11" height="15" rx="2" fill="#1F2933" stroke="#fff" stroke-width="1.6" />
+                <rect x="11" y="4" width="11" height="15" rx="2" transform="rotate(14 16 12)" fill="#E63946" />
+            </svg>
+            <h1>Pre-Flight</h1>
+        </div>
+        <p class="question">Should I go or should I <b>stay at home?</b></p>
+        <p class="line">Headcount for TCG tournaments in Portugal</p>
+    </body>
+</html>

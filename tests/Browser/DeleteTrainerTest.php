@@ -18,12 +18,26 @@ it('asks before deleting a trainer, then removes only that one', function () {
 
     $page->click('[aria-label="Delete Rui Silva"]')
         ->assertSee('Delete Rui Silva?')
-        ->click('Cancel')
-        ->assertSee('Rui Silva')
-        ->click('[aria-label="Delete Rui Silva"]')
-        ->click('Delete trainer')
-        ->assertDontSee('Rui Silva')
-        ->assertSee('Ana Silva');
+        ->click('Cancel');
+
+    $page->page()
+        ->locator('[role="dialog"]')
+        ->waitFor(['state' => 'detached']);
+
+    $page->click('[aria-label="Delete Rui Silva"]');
+    $page->page()
+        ->locator('[role="dialog"]')
+        ->waitFor(['state' => 'visible']);
+
+    $page->click('Delete trainer');
+
+    $page->page()
+        ->locator('[aria-label="Delete Rui Silva"]')
+        ->waitFor(['state' => 'detached']);
+
+    $page->assertDontSee('Rui Silva')
+        ->assertSee('Ana Silva')
+        ->assertNoJavaScriptErrors();
 
     expect($parent->playerProfiles()->pluck('name')->all())->toBe(['Ana Silva']);
 });

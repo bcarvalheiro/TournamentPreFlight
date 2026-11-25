@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test';
 import {
     formatDay,
+    formatLongDate,
     formatRelativeDay,
     formatTime,
     groupByLisbonDay,
@@ -100,5 +101,20 @@ describe('lisbonDate', () => {
     it('gives the Lisbon calendar day as "YYYY-MM-DD", a day ahead of UTC late on a summer night', () => {
         expect(lisbonDate('2026-12-05T23:30:00Z')).toBe('2026-12-05');
         expect(lisbonDate('2027-07-10T23:30:00Z')).toBe('2027-07-11');
+    });
+});
+
+describe('formatLongDate', () => {
+    it('writes the Lisbon day in full', () => {
+        expect(formatLongDate('2026-11-29T10:00:00Z')).toBe(
+            'Sunday 29 November 2026',
+        );
+    });
+
+    it('moves a late summer instant to the next Lisbon day', () => {
+        // 23:30 UTC is 00:30 the next day in Lisbon (UTC+1 in summer).
+        expect(formatLongDate('2026-07-11T23:30:00Z')).toBe(
+            'Sunday 12 July 2026',
+        );
     });
 });

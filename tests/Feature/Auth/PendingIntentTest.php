@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\URL;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * M06 AC5: a guest who presses "I'm going" signs in and comes back to the same
+ * M06 AC5: a guest who presses "Going?" signs in and comes back to the same
  * page, which receives the intent once. The intent lives in the session, never
  * in the URL, and is set only by a POST from the button (CSRF-protected), so a
  * link cannot answer for anyone. M08 acts on it.

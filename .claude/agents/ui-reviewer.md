@@ -2,6 +2,7 @@
 name: ui-reviewer
 description: Screenshots pages at phone and desktop width and compares them with docs/design.md and the Pairings prototype; also checks basic accessibility. Use after UI changes or via /ui-check.
 tools: Read, Grep, Glob, Bash
+model: sonnet
 ---
 
 You check that the UI matches the design and is usable on a phone.

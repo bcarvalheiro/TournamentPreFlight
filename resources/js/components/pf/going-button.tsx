@@ -16,7 +16,7 @@ const goingClasses =
 const goingOnClasses = 'bg-transparent text-red-text';
 
 /**
- * The quick "I'm going" button (product.md). A player with one trainer taps it
+ * The quick "Going?" button (product.md). A player with one trainer taps it
  * to go or not go (M08): the counts and labels refresh with a partial reload
  * and a toast confirms. A family opens the picker ("Going (2)" once some go).
  * Everyone else posts the event (M06, a form, so a link cannot set the
@@ -38,7 +38,7 @@ export function GoingButton({
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
     // Every slip has the same button; screen readers hear which event it is for.
     // Added after the visible words, so the name still starts with them (WCAG 2.5.3).
-    const forEvent = <span className="sr-only"> to {place}</span>;
+    const forEvent = <span className="sr-only">, {place}</span>;
 
     if (trainers.length > 1) {
         return (
@@ -58,7 +58,7 @@ export function GoingButton({
                     >
                         {goingIds.length > 0
                             ? `Going (${goingIds.length})`
-                            : "I'm going"}
+                            : 'Going?'}
                         {forEvent}
                     </button>
                 }
@@ -73,7 +73,7 @@ export function GoingButton({
             <Form {...going.form({ event: event.id })} className="contents">
                 <input type="hidden" name="return_to" value={url} />
                 <button type="submit" className={cn(goingClasses, className)}>
-                    I'm going
+                    Going?
                     {forEvent}
                 </button>
             </Form>
@@ -122,7 +122,7 @@ export function GoingButton({
             onClick={toggle}
             className={cn(goingClasses, isGoing && goingOnClasses, className)}
         >
-            {isGoing ? 'Going ✓' : "I'm going"}
+            {isGoing ? 'Going ✓' : 'Going?'}
             {forEvent}
         </button>
     );

@@ -4,9 +4,53 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M08 · "I'm going" (review).
-- **Branch**: m08-attendance
-- **State**: All slices, `/rethink-tests` and the `/review` fixes committed; `composer verify` green (Pest 331, Vitest 85). Next: Bruno pushes and opens the PR, then M09.
+- **Milestone**: M09 · Event page (review).
+- **Branch**: m09-event-page
+- **State**: all slices done, `/review` fixes in, `composer verify` green (25 Nov). Next: Bruno pushes and opens the PR; then M10.
+
+### Plan (M09)
+
+Decisions approved with the plan (25 Nov): OG and Twitter tags rendered server-side with `withViewData` in `app.blade.php` (`data-inertia` keys); slug `Str::slug(title)` with the fallback "League Cup at Carta Alta" from `EventType::longName()`, never stored; `EventPolicy::view` reads `is_admin` until M11's Gate; cancelled events stay visible with a note and no controls, only pending and hidden are 404; "(n confirmed)" shown only when n > 0 until M12; no Action for reports (one `create`); the pop-up's `return_to` is the canonical URL without `?going`; `EventCountsData` dropped from `architecture.md`; `Data/Private` allowed in `Public\EventController`.
+
+Layout from Bruno's sketch (25 Nov): header (type label, title, shop · city, date, start, "In 4 days"); "Who's heading there" card with the count and the account's trainers as toggle rows (name only: no divisions, rule 3; no birth year); Shop (map, address, district, Directions menu, Copy address); Details (When with the estimated end "ends around 16:00 (estimate)", "TCG · League Cup", entry fee, tournament ID); action grid (Official page, Share, Add to calendar; Directions only in the shop column); disclaimer; "Source: pokedata"; a sticky going bar on phones; "← All events" instead of a close button. Dropped: maybe, divisions, the TCG chip, registration (always empty in pokedata), listed date and league ID, the raw coordinates chip. Toggle rows save on tap (no Save button), on the page and in the picker.
+
+- [x] Slice 1: `GET /events/{event}-{slug?}` with `EventPageData` (type, title, shop, address, district, city, start/end UTC ISO, tournament ID, official URL, going and confirmed counts, ongoing, possibly cancelled, cancelled, ended, can answer, canonical url); a missing or wrong slug 301s to the canonical URL, query string kept; privacy dataset gains the page. Shape sketched with Bruno first (`routes/web.php`, `Public/EventController@show`, `Data/Public/EventPageData.php`, `Enums/EventType::longName()`, `Event::displayTitle()`/`slug()`, `EventCardData` title fallback, `types/events.ts`, bare `pages/events/show.tsx`, `architecture.md`; `EventPageTest`, `NoPersonalDataLeaksTest` case) · AC1, AC5
+  - Changed (25 Nov): the 301 keeps the raw query string (`getQueryString()` turns `?going` into `?going=`); the privacy dataset now names each page's count prop, and the home `own` check is its own test; `HomePageTest` expects "League Cup at Carta Alta" (was "Cup at Carta Alta").
+- [x] Slice 2: pending and hidden events 404 for guests and other users, visible to the submitter and admins (`Policies/EventPolicy.php`, `routes/web.php` `->can('view', 'event')`, `architecture.md`, `decisions.md`; `EventVisibilityTest`) · AC3
+  - Changed (25 Nov): the event routes were grouped under `events.` first (Bruno, `b576df7`); the policy sits on the route, not in `EventController`, so an old slug on a pending event is a 404 instead of a 301.
+- [x] Slice 3a: header and the "Who's heading there" count card ("36 trainers going (8 confirmed)", headcount line); "This event has ended", cancelled and possibly-cancelled notes; "← All events"; `design.md` Event page rewritten from Bruno's sketch (`pages/events/show.tsx`, `components/pf/event-header.tsx`, `components/pf/event-counts.tsx`, `design.md`; `event-header.test.tsx`, `event-counts.test.tsx`) · AC1, AC2
+  - Changed (25 Nov): no `lib/time.ts` change (`formatRelativeDay` already says "In 4 days"); the header is its own tested component, given to the band by a layout callback (Inertia "Layouts › Callback Props").
+  - Changed (Bruno, 25 Nov): Slice 3 split into 3a, 3b and 3c after the layout sketch.
+- [x] Slice 3b: Shop column: nullable `shops.latitude`/`longitude` (`decimal(9,6)`), OpenStreetMap embed iframe (lazy, only with coordinates), Directions menu (Google Maps, Waze, Apple Maps; coordinates, else the address), Copy address (migration, `Shop`, `ShopFactory`, `DemoSeeder`, `EventPageData`, `components/pf/event-shop.tsx`, `architecture.md` diagram and shops, `decisions.md` (OSM, map brand names), `docs/milestones/M10-*.md` (fill coordinates; fill `shops.district` from pokedata's `state`, mapped to the accented district names, "Setubal" → "Setúbal", unknown → null), `M14` note (third-party tiles in the privacy policy); `event-shop.test.tsx`, `EventPageTest` case) · scope (Bruno, 25 Nov)
+  - Changed (Bruno, 25 Nov): "Shop", never "venue" (decisions.md, 18 Nov): component `EventShop`, column heading "Shop".
+  - Changed (25 Nov): Apple Maps uses its current unified URL (`maps.apple.com/directions?destination=`) instead of the legacy `?daddr=`; the OSM embed format comes from openstreetmap.org's own code (the wiki does not document it). The M10 entry-fee line was added here too, beside the coordinates.
+- [x] Slice 3c: Details (When with `formatLongDate()` and "ends around 16:00 (estimate)", Format "TCG · League Cup", Tournament ID), action grid (Official page when known), the pink headcount disclaimer, "Source: pokedata" or "Added by a player" (`EventPageData` `source`, `types/events.ts`, `lib/time.ts`, `components/pf/event-details.tsx`, `show.tsx`, `design.md`; `event-details.test.tsx`, `time.test.ts`, `EventPageTest` case) · scope (Bruno, 25 Nov)
+  - Changed (Bruno, 25 Nov): split from the entry fee (now 3d); no placeholder tiles (Share comes with Slice 6, Add to calendar with Slice 10); Directions only in the shop column (Bruno: not twice); the When row shows the estimated end, "ends around 16:00 (estimate)" (Bruno: the end is computed, an expectation, not a certainty).
+- [x] Slice 3d: entry fee: nullable `events.cost_cents` (unsigned int) shown as "15 €" / "6,50 €" (pt-PT) or "Free" in Details, row hidden when null (migration, `Event`, `EventFactory`, `DemoSeeder`, `EventPageData`, `event-details.tsx`, `architecture.md` diagram and events; `EventPageTest` case, `event-details.test.tsx` cases) · scope (Bruno, 25 Nov)
+  - Changed (Bruno, 25 Nov): money in the Portuguese format (`pt-PT`), not `en-GB` (decisions.md).
+- [x] Slice 4: a home slip or "Up next" row opens the event page from anywhere but its count-and-button end: the shop name's Inertia `<Link>` is stretched over the row, hovering underlines the name; the count and "I'm going" keep their own taps (`EventCardData` `url`, `types/events.ts`, `event-list-item.tsx`, `pairings-sheet.tsx`; `HomePageTest` case, `event-list-item.test.tsx`, `pairings-sheet.test.tsx`, `tests/Browser/EventLinkTest.php`) · scope
+  - Changed (Bruno, 25 Nov): a page that opens instantly instead of a pop-up over home; a URL pop-up would stack the picker, report and `?going` dialogs on top of a sheet.
+  - Changed (Bruno, 25 Nov): no instant visit or prefetch ("over-engineering: we just want the player to visit the page when it's clicked"); an instant visit would also need the page to render without its props.
+  - Changed (Bruno, 25 Nov): the whole row is clickable, not only the name (stretched link, Bootstrap's `.stretched-link`); a browser test proves the button stays above the link layer.
+  - Changed (Bruno, 25 Nov): on phones a tap on the slip's trainers count opened the event page; the stub now stays above the link layer.
+  - Changed (Bruno, 25 Nov): the "Up next" row's count and button end is protected the same way: one positioned block spanning both columns (subgrid) and the row's padding.
+- [x] Slice 5: in "Who's heading there" a player's trainers are toggle rows, each tap saves (`SetAttendance`, one trainer per PUT, partial reload `event`, `own`, toast); anyone else gets one "I'm going" through the pending intent, and after sign-in a solo player is set going on this page (a family sees its rows); no controls when answers are closed; a phone sticky bar with the count and "Choose who's going" (jumps to the card) (`EventController` (`own` from `OwnAttendanceData`), `ArchTest.php`, `components/pf/trainer-toggle-rows.tsx`, `event-counts.tsx`, `show.tsx`, `architecture.md`, `design.md`; `EventPageOwnAttendanceTest`, `trainer-toggle-rows.test.tsx`, `tests/Browser/EventPageGoingTest.php`) · AC2
+  - Changed (Bruno, 25 Nov): offered as 5 and 5c (resume and sticky bar), kept as one slice ("all in one go"). The rows get their data as props, no `usePage()`; the sticky bar jumps to the card instead of reusing `GoingButton`, which reads home's props.
+- [x] Slice 5b: the picker uses the same toggle rows and saves on tap; no Save button, only Done (`profile-picker.tsx`, `design.md` ProfilePicker, `product.md` quick button step 3, `decisions.md`; `GoingTest` and `ResumeGoingTest` family cases) · scope (Bruno, 25 Nov)
+  - Changed (25 Nov): `going-button.tsx` needed no change (it already hands the picker `trainers` and `goingIds`, which the reload refreshes).
+- [x] Slice 5d: the answer label says whether you have answered: "Going?" before, "Going ✓" after (was "I'm going"), everywhere: slip and "Up next" buttons, family button, picker and event-page rows, guest button, phone bar, disclaimer, screen-reader names; `product.md`, `design.md` copy rules, `decisions.md` (`going-button.tsx`, `trainer-toggle-rows.tsx`, `show.tsx`, `event-details.tsx`, `agenda.tsx`, tests that read the label) · scope (Bruno, 25 Nov)
+  - Added (Bruno, 25 Nov): "I'm going" reads as a statement before anyone taps; "Not going" was rejected (no answer is not a "no", rule 5). Built with 5b, committed separately.
+- [x] Slice 6: `?going` opens the "Going to …?" pop-up only when the event can be answered; "Share" copies the link; opening it writes nothing (`EventController` `askGoing`, `show.tsx` (local `AnswerControls`), `event-details.tsx` (Share), `design.md`; `tests/Feature/EventShareLinkTest.php`, `tests/Browser/EventShareLinkTest.php`, `event-details.test.tsx`) · AC6
+  - Changed (Bruno, 25 Nov): Share copies the link only; the phone share sheet (`navigator.share`) is logged for M15.
+  - Changed (Bruno, 25 Nov): the pop-up opened with a red focus ring on the first trainer (the dialog moved focus there on opening, which counts as keyboard focus); `ResponsiveDialog` now focuses the sheet itself on opening (`onOpenAutoFocus`), for every sheet. Browser case in `EventShareLinkTest`.
+- ~~Slice 7: "Report a change or cancellation": `POST /events/{event}/reports`, auth + verified, `throttle:6,1`, type changed/cancelled/wrong, message required (max 1000), visible and not ended events only; form in a `ResponsiveDialog` (`routes/web.php`, `Account/EventReportController@store`, `Http/Requests/EventReportRequest`, `show.tsx`, `architecture.md`, `decisions.md`; `EventReportFormTest`) · scope~~
+  - Dropped (Bruno, 25 Nov): not for now; cancellations are caught by the nightly import (M10). The `event_reports` table stays unused (decisions.md).
+- [x] Slice 8: Open Graph and X card tags in the server HTML with the title and count (Lisbon time), no personal data, a static 1200×630 Pre-Flight image; general tags on every other page (`EventController` (`withViewData`), `resources/views/app.blade.php`, `public/og-image.png`, `design/og-image.html`, `design.md`, `decisions.md`; `EventMetaTagsTest`) · AC4
+  - Changed (Bruno, 25 Nov): one static image for every event (option 2); `show.tsx` needed no change (its `<Head>` already sets the tab title).
+- [x] Slice 9: 60s count poll while visible (`usePoll`, `only: event`, `background: 'pause'`, only while answers are open) and the partial-reload privacy case (`show.tsx`, `design.md`, `NoPersonalDataLeaksTest`; partial-reload cases) · scope (optional)
+  - Changed (Bruno, 25 Nov): no "updated just now" label; the number changing is enough.
+- [x] Slice 10: Add to calendar: `GET /events/{event}/calendar.ics` (`text/calendar`, UTC times, the estimated end, shop address, page link; no player data) and a Google Calendar link (`routes/web.php`, `EventController@calendar`, `show.tsx`, `NoPersonalDataLeaksTest`; `EventCalendarTest`) · scope (Bruno, 25 Nov)
+  - Changed (Bruno, 25 Nov): the Google link is kept although Google does not document it (community docs; decisions.md); the Calendar API was rejected (OAuth consent, Google review, stored tokens). The tile lives in `event-details.tsx`, not `show.tsx`, and only while answers are open; the file is built from `EventPageData` (a private `pageData()` shared with `show`), not the model (rule 1).
 
 ### Plan (M08)
 
@@ -58,8 +102,8 @@ Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAt
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
 | M07 | Player profiles | done | PR #9 merged |
-| M08 | "I'm going" | review | PR to open. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
-| M09 | Event page | todo | |
+| M08 | "I'm going" | done | PR #10 merged. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
+| M09 | Event page | review | Report a change dropped (decisions.md, 25 Nov) |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
 | M12 | Email notifications | todo | |
@@ -72,6 +116,40 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-25 · M09 · Event page
+
+**Outcome.** Every event has its own page at `/events/{id}-{slug}`, opened from a home slip or "Up next" row (the whole row is the link). The header in the band shows the type, title, shop, date, start and how soon. "Who's heading there" has the count, "(n confirmed)" when there is one, and the account's trainers as toggle rows that save on tap. The Shop column has an OpenStreetMap embed, Directions (Google Maps, Waze, Apple Maps) and Copy address. Details has the date with the estimated end, the format, the entry fee and the tournament ID, then Official page, Share and Add to calendar (`.ics` or Google). Phones get a sticky going bar. A shared `?going` link opens "Going to …?" and writes nothing. Chat apps preview a shared link with the title and count. The count refreshes every minute while the tab is visible. Pending and hidden events are 404 except for their submitter and admins. The home picker now saves on tap too, and the answer button reads "Going?" before and "Going ✓" after. All six acceptance criteria have automated tests.
+
+**Commits** (`git log --oneline main..HEAD`, oldest first):
+- `8b80f36` progress for M09 · `8970a3a` plan
+- `c8d4b1c` route, public data and canonical slug (Slice 1) · `b576df7` events route group
+- `6b13cdd` pending and hidden pages only for submitter and admins (Slice 2)
+- `382d592` header and "Who's heading there" (3a) · `8360880` home hero through a layout callback
+- `0fff2e7` map and shop coordinates (3b) · `ff01404` details, actions, disclaimer (3c) · `c3bd354` entry fee (3d)
+- `a9c92a6` rows open the event page (Slice 4)
+- `72cc250` say who's going from the event page (Slice 5) · `9e40a79` picker saves on tap (5b) · `08cc520` "Going?" / "Going ✓" (5d)
+- `c7be85a` `?going` pop-up and Share (Slice 6) · `3726138` Report a change dropped (Slice 7)
+- `51a6795` link previews (Slice 8) · `b1b916e` count refresh every minute (Slice 9) · `d040602` Add to calendar (Slice 10)
+- `cfb1121`, `dde1c81`, `997c297`, `09522db`, `9ef9443`, `842db3d` `/review` fixes and their docs · `a71237a` browser test fix
+
+**Problems and how they were solved.**
+- The canonical redirect turned a shared `?going` into `?going=`: it now keeps the raw query string.
+- Two ways of giving the band its content (`usePage()` and layout callbacks) were in use: Bruno chose layout callbacks for slots that need the page's props, checked in Inertia's source to run on every render (decisions.md).
+- The OSM embed format and Apple's current Maps URLs are not in their docs pages: taken from openstreetmap.org's code and Apple's documentation JSON.
+- Bruno rejected prefetch and instant visits as over-engineering; the rows became plain stretched links, with the count and button protected above the link layer.
+- A red focus ring appeared on the first trainer when the `?going` pop-up opened: Radix focused the first button on open. Every sheet now focuses itself (`onOpenAutoFocus`).
+- The Open Graph image was rendered from `design/og-image.html` with Playwright; the local Herd widget had to be removed before the screenshot.
+- Google does not document its "add to calendar" link; Bruno kept it over the Calendar API, which needs OAuth consent and a Google review (decisions.md).
+- A test passed "10:00 Lisbon" to the factory, but Eloquent stores the wall time without converting: tests give UTC.
+
+**`/rethink-tests`.** Skipped by Bruno.
+
+**`/review`** (code-reviewer, privacy-guard, ui-reviewer). No leaks found. Fixed: the keyboard focus ring outlines the whole row (it was clipped to a thin bar); an untitled-slug fallback ("!!!" gave a 404); `STATUS:CANCELLED` and carriage returns in the calendar file; the map out of the Tab order and a named status tile; a deadlock retry on attendance saves. Logged: touch targets at 40px and the desktop footer offset (M15), `http(s)` validation of submitted official URLs (M11). Skipped: extra privacy variants, a poll `autoStart` test, hiding the phone bar near the card, darker button red.
+
+**Surprising.** `Str::slug()` returns an empty string for a title with no Latin letters.
+
+**Left.** Bruno pushes and opens the PR. Then M10 (nightly import and sync).
 
 ### 2026-11-24/25 · M08 · "I'm going"
 
@@ -626,9 +704,17 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Touch targets at 40px** (M09 `/review`, ui-reviewer): the kit's `Button` default and `sm` sizes are 36–40px tall, below design.md's 44px: home's row "Going?" buttons, Directions, Copy address, "+ Add a trainer", "← All events", navbar links, Filters and "Any time". Decide once (a 44px default `Button` size, or `min-h-11` where thumbs land) and apply app-wide, not button by button. (M15)
+- **`DeleteTrainerTest` flaky under `--parallel`** (M09 `/review` verify): once in three full runs it timed out at `click('Delete trainer')`, the second opening of the dialog right after Cancel; alone it passed three times out of three. Likely the reopen racing the close animation under load. Try waiting for the dialog to close (`assertMissing('[role=dialog]')`) after Cancel. (M15)
+- **Desktop footer offset** (M09 `/review`, ui-reviewer): at 1280px the footer text starts at about x=260 while the page content starts at x=106; give the footer the page's container in `PublicLayout`. (M15)
+
+- **Share with the phone's share sheet** (Bruno, 25 Nov, M09 Slice 6): most visits will come from phones, so the event page's Share should open the system share sheet (`navigator.share`, Web Share API: WhatsApp, Messages…) with the `?going` link, falling back to copying it where the API is missing (desktop browsers). M09 ships copy only. (M15)
+
+- **Who adds a missing event** (Bruno, 25 Nov, M09): "a player can't add an event, a shop can". Today `product.md` ("Adding a missing event"), M11 and `architecture.md` (`events.source` `player`, `added_by_user_id`) say a signed-in player submits it for moderation, and shops have no accounts in v1. Decide before M11 whether only the wording changes (the player reports a shop's event; rename `player` to e.g. `submitted`) or the rule (only shops add events, which needs shop sign-in). The event page's source line still says "Added by a player" (Bruno: leave it for now). (M11)
+
 - **Resend verification email invites repeat clicks** (Bruno, 24 Nov): Fortify already throttles the resend route (`throttle:6,1`, `config('fortify.limiters.verification')`), but after a send the button keeps pulsing and only a plain line confirms it, so Bruno clicked 7 times (6 emails in 5 seconds) and got the bare 429 page. The 429 page part is fixed app-wide by M08 Slice 4b ("Too many tries. Wait n seconds and try again."). Still to do: after a send, disable the button with "✓ Link sent. Resend in 0:59" and stop the pulse; a Pest test that pins the limit (6 pass, the 7th is 429). Consider tightening to 1 a minute and 6 an hour with a named Fortify limiter. (M15)
 
-- **Picker sheet polish on phones** (M08 `/review`, ui-reviewer, optional): footer buttons are 40px while the rows are 48px (`h-11` or `h-12` for thumbs); focus starts on Close in the phone sheet but on the first row in the desktop dialog; a safe-area bottom padding matters only if the viewport ever uses `viewport-fit=cover`. (M15)
+- **Picker sheet polish on phones** (M08 `/review`, ui-reviewer, optional): footer buttons are 40px while the rows are 48px (`h-11` or `h-12` for thumbs); ~~focus starts on Close in the phone sheet but on the first row in the desktop dialog~~ (M09 Slice 6: both now start on the sheet itself); a safe-area bottom padding matters only if the viewport ever uses `viewport-fit=cover`. (M15)
 - **Inertia history encryption is off** (M08 `/review`, privacy-guard): after sign-out, Back on a shared device shows pages from the browser's history without asking the server, such as home with the account's trainer names (`own`) or `/profiles` with Pokemon Player IDs (POP IDs) and birth years (M07). Fix: `'history' => ['encrypt' => true]` in `config/inertia.php` and `Inertia::clearHistory()` on sign-out (Inertia docs, "History encryption"), with a test and a `decisions.md` row. (M14)
 - **Error text colour**: the kit's `InputError` uses `text-red-600` (#e7000b), not a design token; it is 4.77:1 on white but fails on tinted boxes (M07 moved the consent error out of the pink box). Add a darker error token and use it app-wide; M08 added `--color-red-text` `#C1121F` for small red text, which may serve. (M15)
 - **Linked accounts seeing a child's profile** (Bruno's idea, 24 Nov): today a child profile belongs to exactly one account. Later, another account (a second parent, or the child's own account once they turn 13) could be allowed to see or manage it. `OwnProfileData` is the owner's view and could be reused; needs a link table and consent rules. (later)
@@ -643,7 +729,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - **`fontaine`**: optional dev package for metric-matched fallback fonts (fewer layout shifts while fonts load); the build prints a hint. Ask before adding. (later)
 - ~~**Non-affiliation footer on every page**~~: auth pages use `PublicLayout` since M06 Slice 7a.
 - **`auth.user` shares the whole `User` model** with every Inertia page (`HandleInertiaRequests`). Only the owner receives it today, but once profiles, Pokemon Player IDs (POP IDs) or birth years touch `User`, share a small owner-only shape or a Data object instead. (from privacy-guard; still open after M07: profiles reach the page only through `OwnProfileData` and the `auth.profilesCount` number, and `User` gained no personal fields; M14)
-- **`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it. (M05 `/review`; M09)
+- ~~**`EventCardData.title` is unused and uses the enum names** ("Challenge at Carta Alta") while the UI says "League Challenge": when M09 first shows titles, build the fallback from the same names as `lib/tournament-types.ts`, or drop it.~~ Done in M09 Slice 1: `Event::displayTitle()` with `EventType::longName()` ("League Cup at Carta Alta").
 - **Privacy test and partial reloads**: `NoPersonalDataLeaksTest` makes full page loads only. When a page gets an `Inertia::optional()` or `Inertia::defer()` prop, add a partial-reload case (the `X-Inertia-Partial-*` headers) with the same scans. (M05 `/review`; later)
 - ~~**Emails saved in lower case**~~: not needed. `users.email` uses the case-insensitive `utf8mb4_unicode_ci` collation, so uniqueness and lookups already ignore case; social lookups also lower-case. Bruno dropped the mixed-case test in M06 because it could not fail.
 - **Signed-in `/ui-check`** of the M02 shell with the family demo account: possible now (`family@preflight.test` / `password` after `php artisan migrate:fresh --seed`; the password login still works after M06). (Bruno, M04; later)
@@ -655,6 +741,6 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - ~~**Our components into `resources/js/components/pf/`**~~: done in M05 Slice 1.
 - **Yearly `is_child` refresh**: a scheduled command on 1 January (Lisbon) that saves every child profile through the model, so `is_child` turns false for those who have aged out (`decisions.md`, M04 review). (M10, with the scheduler)
 - **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
-- **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
+- ~~**Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)~~ Moot: the report feature is dropped for now (M09, decisions.md 25 Nov).
 - **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
 - ~~**"Maybe" button in the styleguide**~~: relabelled "Going ✓" in M05 Slice 2.

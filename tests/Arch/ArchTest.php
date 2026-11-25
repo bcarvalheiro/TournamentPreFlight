@@ -28,7 +28,8 @@ arch('public data are immutable DTOs without player data')
 
 /*
  * Owner-only data (M07, M08): only the signed-in account's own pages build it,
- * plus the one owner-only prop on the public home page (`own`, review fix).
+ * plus the owner-only `own` prop on the public home page (review fix) and
+ * event page (M09).
  * A new public controller cannot pick these classes up without changing this rule.
  */
 arch('owner-only data is built only for the account\'s own pages')
@@ -36,4 +37,5 @@ arch('owner-only data is built only for the account\'s own pages')
     ->toOnlyBeUsedIn([
         'App\Http\Controllers\Account',
         'App\Http\Controllers\Public\HomeController',
+        'App\Http\Controllers\Public\EventController',
     ]);

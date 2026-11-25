@@ -17,7 +17,7 @@ type Props = {
     status?: string;
     canResetPassword: boolean;
     socialProviders: SocialProviderName[];
-    /** A guest pressed "I'm going" and was sent here to sign in. */
+    /** A guest pressed "Going?" and was sent here to sign in. */
     signingInToGo: boolean;
 };
 

@@ -7,6 +7,8 @@ Real Portuguese events arrive every night, safely.
 
 ## Scope
 - `ImportedEvent` and the `PokedataClient` service (mapping from `docs/pokedata.md`, tested on the M03 fixtures). No source interface.
+- Shop coordinates and district (M09): fill `shops.latitude`/`longitude` from pokedata's `latitude`/`longitude` (strings: cast, empty becomes null; 8 shops send two sets, decide which wins), and `shops.district` from pokedata's `state`, mapped onto Portugal's 18 districts plus Madeira and Açores with accents restored ("Setubal" → "Setúbal", "Santarem" → "Santarém", "Evora" → "Évora"); an unknown value stays null.
+- Entry fee (M09 Slice 3c adds `events.cost_cents`): parse pokedata's free-text `cost` ("5€", "6.5", "7 euros", "6,5", "€10") into cents; text it cannot read stays null.
 - Shop matching and creation. Name + city is unreliable (spellings vary, `docs/pokedata.md`); decide here whether the pokedata `league` ID is the key.
 - `SyncEvents` action and the `events:sync {--dry-run}` command that runs it, implementing every step in `architecture.md`, writing `import_runs`.
 - Save each event through the model (`create`/`save`), never `upsert()` or bulk `update()`: the `Event` saving hook recomputes `ends_at` (`decisions.md`, M04 review).

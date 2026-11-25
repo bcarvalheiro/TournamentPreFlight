@@ -76,7 +76,7 @@ Dark radial gradient on `ink`, with two faint dashed card outlines as decoration
 - **Navbar** (50px): brand left; right side signed out: "Sign in" (text) and "Sign up" (red pill); signed in: "Trainers (n)", "Settings" and "Sign out" (M07).
 - **Hero** (left column on desktop, 5/12): h1 "Pre-Flight", display font, clamp(2.4rem, 10vw, 4.2rem). Line: "Should I go or should I **stay at home?**" (the bold part red). Small line: "See how many players are heading to each Pokémon TCG tournament in Portugal before you sleeve up."
 - **Coin flip** (decorative fun, keep it): a red "GO" / light "STAY" coin that flips on tap with the line "Still can't decide? Flip for it. Heads you go." The prize-zone grid next to it is decoration, `aria-hidden`.
-- **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: month, weekday and day, and time on three lines ("NOV" / "SAT 21" / "18:30"; or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "I'm going" button. Footer: "Headcount, not registration · Register at the shop".
+- **Pairings sheet** (right column on desktop, 7/12; below the hero on mobile): paper card rotated -0.8°, a red pin at the top, header "UP NEXT" plus "Posted 19:42". Columns When / Event / Trainers. Five rows: month, weekday and day, and time on three lines ("NOV" / "SAT 21" / "18:30"; or NOW / LIVE in red), shop name, icon + TYPE · CITY in mono, red count, small "Going?" button. Footer: "Headcount, not registration · Register at the shop".
 
 ### 2. Sticky filter bar
 Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontally scrollable on mobile: "Filters" pill (graphite, with a red badge showing the number of active filters), "Any time ▾" shortcut when no date filter is set, one removable chip per active filter (date, each type with its icon, each shop), and on the right "12 of 29 events" or "First 25 of 31 events".
@@ -86,19 +86,19 @@ Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontall
 ### 3. Agenda
 Grouped by day. Day header: 5px red left border, "SAT 15 NOV" in display font plus an uppercase relative label ("Tomorrow", "In 3 days", "Next week"), side by side on phones. On ≥700px the header sits in a 120px left column and is sticky: the day big (about 32px) on two lines ("SAT 15 / NOV"), the label under it, like the prototype.
 
-**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a line "You: Ana, Tiago" in red-text (small text, see Contrast). Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
+**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a line "You: Ana, Tiago" in red-text (small text, see Contrast). Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "Going?" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
 
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 
 ### 4. Disclaimer and footer
-Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells other players you plan to attend. Register with the host shop as usual." Footer: the short non-affiliation notice (`product.md`, Privacy and brand), links to privacy, terms, contact, "Add a missing event".
+Pink-tinted box: "**A headcount, not a registration.** Tapping "Going?" tells other players you plan to attend. Register with the host shop as usual." Footer: the short non-affiliation notice (`product.md`, Privacy and brand), links to privacy, terms, contact, "Add a missing event".
 
 ## Shared components
 
-- **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
+- **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. On opening, focus goes to the sheet itself, not its first button, so no focus ring shows until the keyboard is used (M09). Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
 - **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
 - **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
-- **ProfilePicker**: list of the account's trainers, each a big toggle row (at least 48px; the whole row is the button): name on the left, "I'm going" in grey or "Going ✓" in red on the right, red outline and light red tint once picked (no checkboxes: hard to hit on phones). "Save · 2 going" sends every choice at once. Shows an "Add a trainer" link. Title "Going to Carta Alta?" with the day under it; after saving a change, the toast "Saved for Carta Alta, Sat 5 Dec" (M08).
+- **ProfilePicker**: list of the account's trainers, each a big toggle row (at least 48px; the whole row is the button): name on the left, "Going?" in grey or "Going ✓" in red on the right, red outline and light red tint once picked (no checkboxes: hard to hit on phones). The rows are the event page's `TrainerToggleRows`: each tap saves that trainer at once, with the toast "Ana is going to Carta Alta, Sat 5 Dec" (no Save button, M09 Slice 5b), and the slip's button follows while the sheet is open. "+ Add a trainer" under the rows; the footer has only "Done". Title "Going to Carta Alta?" with the day under it.
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
@@ -108,11 +108,36 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 Use the same band (navbar only, no hero) and the same card language:
 
-- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, official link button, disclaimer.
+- **Event page**: see "Event page" below.
 - **Sign in / Sign up**: email and password form with Google, Discord and X buttons (Apple from M13; provider icons from the providers' own brand guidelines). Register adds name and the "I am 13 or older" box.
 - **Profiles**, shown as **"Trainers"** (navbar "Trainers (n)", page "Trainers", "Add a trainer"): list of profile cards (name, Pokemon Player ID (POP ID), birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.
 
+## Event page
+
+`/events/{id}-{slug}`, a real page (not a pop-up over home: it opens its own pop-ups, M09). Drawn from Bruno's sketch (25 Nov 2026). Mobile first: one column on phones, three columns from 1024px.
+
+**Header, in the band** (`EventHeader`, passed to `PublicLayout` as the hero by a layout callback):
+- "← All events" link back home.
+- Type label (`TournamentTypeBadge`, outlined in `board-fg` on the band). No "TCG" chip: every event is TCG.
+- Title in the display font, `clamp(2rem, 8vw, 3.6rem)`, uppercase; under it "**Shop** · City".
+- Three tiles in one outlined box: DATE "SUN 29 NOV", STARTS "10:00" (display font, white) and a third tile that says how soon ("In 4 days", from `formatRelativeDay`) or the state instead: red "● Happening now", muted "This event has ended", white "Cancelled".
+- A possibly cancelled event adds the amber line "Possibly cancelled, check with the shop" (same words as the slip).
+
+**Column 1, "Who's heading there"** (`EventCounts`): small mono letter-spaced label; a paper card like the pairings sheet with the big red count and "TRAINERS GOING" in the display font, "(8 confirmed)" only when there is a confirmed answer (M12), a graphite rule, and the footer "Headcount, not registration · Names never shown". The account's trainers sit inside this card as toggle rows (`TrainerToggleRows`, M09 Slice 5): the ProfilePicker's row look (48px, the whole row is the button, red outline and tint once going), name only, "Going?" / "Going ✓", each tap saves at once with the toast "You're going to Carta Alta, Sat 5 Dec" (one trainer) or "Ana is going to …" (a family), then "+ Add a trainer". Anyone else (guest, unverified, no trainer) sees one full-width red "Going?" that signs in and comes back. No controls once answers are closed (ended, cancelled, pending, hidden). While answers are open the count refreshes quietly every minute when the tab is visible (Slice 9; no "updated" label). No divisions and no birth years (rule 3), no maybe.
+
+**Column 2, Shop** (Slice 3b, `EventShop`; never "venue"): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
+
+**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · ends around 16:00 (estimate)": the end is the type's estimate, never a published time), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then an action grid (Official page; Share, which copies the page's `?going` link with the toast "Link copied"; Add to calendar while the event is ahead, a menu like Directions with "Apple / Outlook (.ics)" (downloads the file) and "Google Calendar"; Directions stays in the shop column only), the pink headcount disclaimer and a mono line "Source: pokedata".
+
+**Shared `?going` link** (M09 AC6): on an event people can still answer, the page opens with a sheet titled "Going to Carta Alta?" (the day under it): the headcount line "12 trainers going · a headcount, not a registration" and the same answer controls as the count card. Opening the link writes nothing; only a tap does. Ended, cancelled, pending and hidden events show no sheet.
+
+**Link preview** (M09 AC4): a shared event link shows the event title, "12 trainers going · Sat 5 Dec, 10:00 · Carta Alta, Porto" (Lisbon time) and the Pre-Flight image (`public/og-image.png`, 1200×630: the playmat, the mark, "PRE-FLIGHT", "Should I go or should I stay at home?"; source `design/og-image.html`). Every other page previews as "Pre-Flight" with "See how many trainers are heading to each TCG tournament in Portugal." and the same image.
+
+**Phones** (below 768px): a bar that sticks to the bottom while the page scrolls and rests above the footer at the end: the red count with "going" and a red button, "Choose who's going" for a player or "Going?" for anyone else, that jumps to the count card (`#going`). Hidden when answers are closed.
+
+Dropped from the sketch: maybe counts, divisions, the TCG chip, registration (pokedata never has it), the listed date and league ID, the raw coordinates chip, the close button.
+
 ## Copy rules
 
-English, short, friendly, trainer flavour without official terms: "trainers" for players in counts, "I'm going", "Still going?". Never imply registration or a reserved seat. Dates "Sat 15 Nov", times 24h "10:00".
+English, short, friendly, trainer flavour without official terms: "trainers" for players in counts, "Still going?". The answer button says whether you have answered: **"Going?"** before (an invitation, never "Not going": no answer is not a no, rule 5) and **"Going ✓"** after ("Going (2)" for a family); never "I'm going", which reads as a statement before anyone taps (M09). Never imply registration or a reserved seat. Dates "Sat 15 Nov", times 24h "10:00".

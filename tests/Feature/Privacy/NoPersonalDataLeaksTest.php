@@ -17,9 +17,13 @@ use Inertia\Testing\AssertableInertia as Assert;
  * the page shows; every public route must still hide it.
  */
 
-/** Every public page. Each new public route is added here in the same PR. */
+/**
+ * Every public page, with where its props keep the family's event going count.
+ * Each new public route is added here in the same PR.
+ */
 dataset('public pages', [
-    'home' => fn () => route('home'),
+    'home' => [fn () => route('home'), 'events.0.goingCount'],
+    'event page' => [fn () => route('events.show', ['event' => Event::sole(), 'slug' => Event::sole()->slug()]), 'event.goingCount'],
 ]);
 
 /**
@@ -70,36 +74,58 @@ beforeEach(function () {
     Attendance::factory()->for($child)->for($event)->create();
 });
 
-it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, bool $signedIn) {
+it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, string $countProp, bool $signedIn) {
+    if ($signedIn) {
+        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    }
+
+    $response = $this->get($url)->assertOk();
+
+    // Both answers are counted, so the test is not passing on an empty page.
+    expect($response->inertiaProps($countProp))->toBe(2);
+
+    expectNoPlayerData($response);
+})->with('public pages')->with([
+    'guest' => false,
+    'another user' => true,
+]);
+
+it('sends the home page\'s `own` with only the viewer\'s own trainer', function (bool $signedIn) {
     $viewer = $signedIn ? User::factory()->has(PlayerProfile::factory())->create() : null;
 
     if ($viewer) {
         $this->actingAs($viewer);
     }
 
-    $response = $this->get($url)->assertOk();
-
-    // Both answers are counted, so the test is not passing on an empty page.
-    expect($response->inertiaProps('events.0.goingCount'))->toBe(2);
-
-    expectNoPlayerData($response);
+    $response = $this->get(route('home'))->assertOk();
 
     // `own` (M08) holds only the viewer's own trainer, never the family's ids (review fix).
     expect($response->inertiaProps('own'))->toBe($viewer ? [
         'trainers' => [['id' => $viewer->playerProfiles()->sole()->id, 'name' => $viewer->playerProfiles()->sole()->name]],
         'going' => [],
     ] : null);
-})->with('public pages')->with([
+})->with([
     'guest' => false,
     'another user' => true,
 ]);
 
-/*
- * The going button refreshes the home page with a partial reload (M08:
- * `only: events, upNext, own`), a JSON answer instead of the HTML page. It must
- * hide the family's data just the same (review fix).
+/**
+ * The partial reloads public pages make (a JSON answer instead of the HTML
+ * page): the page component, its URL, the props asked for, where the family's
+ * count sits, and a prop the answer must leave out.
  */
-it('shows no player data on a partial reload of the home page', function (bool $signedIn) {
+dataset('partial reloads', [
+    // The going button (M08): `only: events, upNext, own`.
+    'home' => ['home', fn () => route('home'), 'events,upNext,own', 'events.0.goingCount', 'shops'],
+    // The event page's 60s poll (M09 Slice 9): `only: event`.
+    'event page' => ['events/show', fn () => route('events.show', ['event' => Event::sole(), 'slug' => Event::sole()->slug()]), 'event', 'event.goingCount', 'own'],
+]);
+
+/*
+ * A partial reload must hide the family's data just as the full page does
+ * (review fix, M08), and send only what was asked for.
+ */
+it('shows no player data on a partial reload', function (string $component, string $url, string $only, string $countProp, string $leftOut, bool $signedIn) {
     if ($signedIn) {
         $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
     }
@@ -107,13 +133,13 @@ it('shows no player data on a partial reload of the home page', function (bool $
     $response = $this->withHeaders([
         'X-Inertia' => 'true',
         'X-Inertia-Version' => (string) app(HandleInertiaRequests::class)->version(request()),
-        'X-Inertia-Partial-Component' => 'home',
-        'X-Inertia-Partial-Data' => 'events,upNext,own',
-    ])->get(route('home'))->assertOk();
+        'X-Inertia-Partial-Component' => $component,
+        'X-Inertia-Partial-Data' => $only,
+    ])->get($url)->assertOk();
 
     // A partial answer: the requested props, not the whole page.
-    expect($response->json('props'))->toHaveKeys(['events', 'upNext', 'own'])->not->toHaveKey('shops');
-    expect($response->json('props.events.0.goingCount'))->toBe(2);
+    expect($response->json('props'))->toHaveKeys(explode(',', $only))->not->toHaveKey($leftOut);
+    expect($response->json("props.{$countProp}"))->toBe(2);
 
     // The same scans as expectNoPlayerData(), on the JSON props (that helper reads an HTML page).
     $props = $response->json('props');
@@ -123,6 +149,29 @@ it('shows no player data on a partial reload of the home page', function (bool $
         ->not->toContain('9988776656');
     expect(json_encode($props))->not->toContain('1913');
     expect(array_keys(Arr::dot($props)))->each->not->toMatch('/pop_?id|birth_?year/i');
+})->with('partial reloads')->with([
+    'guest' => false,
+    'another user' => true,
+]);
+
+/*
+ * "Add to calendar" (M09 Slice 10) is a file, not a page: the same scans on
+ * its text. It goes into people's calendars and gets forwarded.
+ */
+it('puts no player data in the calendar file', function (bool $signedIn) {
+    if ($signedIn) {
+        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    }
+
+    $content = mb_strtolower((string) $this->get(route('events.calendar', Event::sole()))->assertOk()->getContent());
+
+    expect($content)
+        ->toContain('begin:vevent')
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655')
+        ->not->toContain('9988776656')
+        // As a number of its own: the timestamps (…T191300Z at 19:13) contain those digits.
+        ->not->toMatch('/(?<!\d)1913(?!\d)/');
 })->with([
     'guest' => false,
     'another user' => true,

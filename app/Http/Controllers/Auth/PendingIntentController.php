@@ -8,7 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * "I'm going" was pressed (M06): remember the event in the session. A guest
+ * "Going?" was pressed (M06): remember the event in the session. A guest
  * signs in first and comes back to the same page; a signed-in user goes
  * straight back to it. M08 acts on
  * the intent once the page receives it. Only events players can answer for

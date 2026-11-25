@@ -53,7 +53,7 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'status' => $request->session()->get('status'),
             'socialProviders' => SocialProvider::enabled(),
-            // A guest who pressed "I'm going" (M06 pending intent) is told why.
+            // A guest who pressed "Going?" (M06 pending intent) is told why.
             'signingInToGo' => $request->session()->has('pending_intent'),
         ]));
 

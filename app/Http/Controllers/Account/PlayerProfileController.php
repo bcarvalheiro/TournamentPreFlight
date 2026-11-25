@@ -36,7 +36,7 @@ class PlayerProfileController extends Controller
 
     /**
      * The "Add a trainer" form: the account's own profile or a child's. After
-     * "I'm going" the player gate sends a user without a profile here, and the
+     * "Going?" the player gate sends a user without a profile here, and the
      * page offers "Not now".
      */
     public function create(Request $request): Response
@@ -56,7 +56,7 @@ class PlayerProfileController extends Controller
 
     /**
      * Save a new profile, then go back to the page the player gate blocked
-     * (its intended URL), where a pending "I'm going" waits. Otherwise the
+     * (its intended URL), where a pending "Going?" waits. Otherwise the
      * first profile goes home and any later one back to the list.
      */
     public function store(PlayerProfileRequest $request, CreatePlayerProfile $createPlayerProfile): RedirectResponse
@@ -99,7 +99,7 @@ class PlayerProfileController extends Controller
 
     /**
      * Remove the trainer (only its owner gets here: `can:delete`). Their
-     * "I'm going" answers go too: the attendances foreign key cascades.
+     * "Going?" answers go too: the attendances foreign key cascades.
      */
     public function destroy(PlayerProfile $profile): RedirectResponse
     {

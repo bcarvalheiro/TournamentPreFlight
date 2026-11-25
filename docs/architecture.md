@@ -20,10 +20,10 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
+  Http/Controllers/Public (HomeController, EventController: the event page and its calendar file), /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
   Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer),
-                      AttendanceRequest ("I'm going" answers: {profiles: {id: bool}})
+                      AttendanceRequest (going answers: {profiles: {id: bool}})
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
@@ -31,13 +31,13 @@ app/
                       UpdatePlayerProfile, ApproveSubmission, SyncEvents
   Services/           talks to the outside world, or logic several Actions reuse, with no state of its own:
                       PokedataClient
-  Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, EventCountsData
+  Data/Public/        the ONLY shapes sent to other players: EventCardData, EventPageData, ShopFilterData
   Data/Private/       shapes sent only to the account that owns the data (never to other players):
                       OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, PossiblyCancelled, SubmissionReviewed
-  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
+  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes; EventPolicy: pending and hidden events 404 except for their submitter and admins)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
@@ -106,6 +106,8 @@ erDiagram
         string address "nullable"
         string city
         string district "nullable"
+        decimal latitude "nullable, 9,6"
+        decimal longitude "nullable, 9,6"
         string official_name_key UK
     }
     events {
@@ -117,6 +119,7 @@ erDiagram
         string display_id "nullable"
         string type "casual, prerelease, challenge, cup"
         string title "nullable"
+        int cost_cents "nullable, unsigned: entry fee; 0 free"
         timestamp starts_at
         timestamp ends_at "start plus the type's estimate"
         string status "pending, listed, hidden, cancelled"
@@ -163,13 +166,13 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **player_profiles**: user_id (owner), name, pop_id (the Pokemon Player ID, or POP ID, shown as "Pokemon Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
-**shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
+**shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable; M10 fills it from pokedata's `state`), latitude and longitude (nullable `decimal(9,6)`, cast to float; M10 fills them from pokedata; the event page's map and directions, M09), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
-**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
+**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), cost_cents (nullable unsigned int: the entry fee in euro cents, 0 for free, null when unknown; M10 parses pokedata's free-text `cost`; shown "15 €" / "6,50 €" on the event page, M09), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
 **attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 
-**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
+**event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change"; the feature is dropped for now (decisions.md, 25 Nov), the table stays unused.
 
 **import_runs**: source, started_at, finished_at, status (ok, failed, aborted), events_created, events_updated, events_flagged, events_unchanged (ints, default 0), error (text, nullable), payload_sample (json, nullable).
 
@@ -181,7 +184,7 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
-- Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction. One exception (M08): the home page's `own` prop, `Data/Private/OwnAttendanceData`, built only from the signed-in player's own account (`$request->user()`), never from a route parameter. An arch test allows `App\Data\Private` only in `Controllers/Account` and `Public\HomeController`.
+- Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction. One exception (M08, M09): the `own` prop of the home page and the event page, `Data/Private/OwnAttendanceData`, built only from the signed-in player's own account (`$request->user()`), never from a route parameter; the event page sends it only while answers are open. An arch test allows `App\Data\Private` only in `Controllers/Account`, `Public\HomeController` and `Public\EventController`.
 - Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
 - `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Pokemon Player IDs (POP IDs) `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
 - Logs never contain profile names or Pokemon Player IDs (POP IDs).
@@ -217,12 +220,12 @@ Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporar
 
 - Email and password: Fortify login (rate limited), registration with the "I am 13 or older" box, email verification, password reset.
 - Social: generic routes `/auth/{provider}/redirect` and `/auth/{provider}/callback`, restricted with `whereIn` to the enabled providers (google, discord, x; apple in M13). One shared class does the work for every driver. Match by (provider, provider_user_id); if none, match an existing user by email and link, **only when the provider says the email is verified**; else, when the provider certifies for the email, send the person to the welcome page (name, the provider's email read-only, the age box) and create the account there, already verified. The pending sign-up waits in the session for 10 minutes at most; the welcome POST is throttled (6 a minute). An identity whose provider does not vouch for an email (X without one, Discord or Google unverified) never gets an account: back to sign-in with "Your X account has no confirmed email. Sign in another way, or register with your email and a password." So a social login only ever sits on a proven email. Social accounts start without a password and need none: the provider proved the email, and one email is one account. They may add one in Settings → Security: the page skips Laravel's password confirmation when there is no password (`ConfirmPasswordIfSet`, a subclass of `RequirePassword`) and offers "Email me a link to set a password", which sends Laravel's reset email and signs the player out, because Fortify's reset page opens only signed out. "Forgot password" works the same way. Apple sends name only on first login; store it then.
-- **Player gate** (middleware): anyone, signed in or not, may look at every page; only a player answers: a verified email and a player profile (its Pokemon Player ID (POP ID) is required); a password is optional. The gate steps in only on the way to answering, when the session holds a pending "I'm going": a user who is not ready is redirected to the verify notice, then to "Add a trainer" (`redirect()->guest()` keeps the page). Auth pages, settings, logout, `events.going` and `profiles.*` stay open. It decides by route name, so every route it leaves open has one (the kit's `/settings` redirect is named `settings`). Guests are not affected.
-- **Pending intent**: when anyone presses "I'm going" (a form that POSTs to `events/{event}/going`, CSRF-protected; a GET is refused, so a link cannot answer for someone), store `{event_id}` in the session (never in the URL), keep the page as Laravel's intended URL (`return_to`, our host only) and send a guest to sign in; a signed-in user goes straight back to the page. On the profile page, "Not now" (`DELETE events/going`, `events.going.forget`) forgets the intent and returns to the saved page, so a pending intent never holds anyone there. The player gate saves the page it blocks the same way (`redirect()->guest()`, like the `auth` middleware), so verifying the email (Fortify calls `intended()`) and saving the first profile (M07) return there. Only upcoming events (listed, not ended) are accepted; any other gets a 404. After sign-in and the gate, they return to that page and it receives the intent once as a prop. M08 acts on it: one profile applies it, several open the picker.
+- **Player gate** (middleware): anyone, signed in or not, may look at every page; only a player answers: a verified email and a player profile (its Pokemon Player ID (POP ID) is required); a password is optional. The gate steps in only on the way to answering, when the session holds a pending "Going?": a user who is not ready is redirected to the verify notice, then to "Add a trainer" (`redirect()->guest()` keeps the page). Auth pages, settings, logout, `events.going` and `profiles.*` stay open. It decides by route name, so every route it leaves open has one (the kit's `/settings` redirect is named `settings`). Guests are not affected.
+- **Pending intent**: when anyone presses "Going?" (a form that POSTs to `events/{event}/going`, CSRF-protected; a GET is refused, so a link cannot answer for someone), store `{event_id}` in the session (never in the URL), keep the page as Laravel's intended URL (`return_to`, our host only) and send a guest to sign in; a signed-in user goes straight back to the page. On the profile page, "Not now" (`DELETE events/going`, `events.going.forget`) forgets the intent and returns to the saved page, so a pending intent never holds anyone there. The player gate saves the page it blocks the same way (`redirect()->guest()`, like the `auth` middleware), so verifying the email (Fortify calls `intended()`) and saving the first profile (M07) return there. Only upcoming events (listed, not ended) are accepted; any other gets a 404. After sign-in and the gate, they return to that page and it receives the intent once as a prop. M08 acts on it: one profile applies it, several open the picker.
 
 ## Admin
 
-Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), reports, import runs. No admin package.
+Simple Inertia pages behind `can:admin` (Gate on `is_admin`): pending submissions (approve, edit, reject with note), events (search, hide, unhide, mark cancelled), import runs. No admin package.
 
 ## Environments and CI
 

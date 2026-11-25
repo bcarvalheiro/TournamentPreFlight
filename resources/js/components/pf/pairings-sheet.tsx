@@ -1,3 +1,4 @@
+import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { GoingButton } from '@/components/pf/going-button';
 import { TournamentTypeIcon } from '@/components/pf/tournament-type-icon';
@@ -70,12 +71,20 @@ export function PairingsSheet({ events }: { events: EventCard[] }): ReactNode {
                         {events.map((event) => (
                             <li
                                 key={event.id}
-                                className="col-span-full grid grid-cols-subgrid items-center gap-1 border-t border-dashed border-sheet-line px-1.5 py-2.25 odd:bg-ink/3"
+                                data-test="up-next-row"
+                                className="group relative col-span-full grid grid-cols-subgrid items-center gap-1 border-t border-dashed border-sheet-line px-1.5 py-2.25 odd:bg-ink/3"
                             >
                                 <When event={event} />
                                 <div className="min-w-0 pl-3 font-sans leading-tight sm:pl-6">
                                     <strong className="block truncate">
-                                        {event.shopName}
+                                        {/* Stretched over the row by its ::after layer; the count and button end stays above it.
+                                            The focus ring goes on that layer too: around the name it was clipped by `truncate` (review). */}
+                                        <Link
+                                            href={event.url}
+                                            className="underline-offset-4 group-hover:underline after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-red"
+                                        >
+                                            {event.shopName}
+                                        </Link>
                                     </strong>
                                     <span className="inline-flex items-center gap-1 font-mono text-2xs tracking-wide text-muted uppercase">
                                         <TournamentTypeIcon type={event.type} />
@@ -85,14 +94,23 @@ export function PairingsSheet({ events }: { events: EventCard[] }): ReactNode {
                                         {event.city}
                                     </span>
                                 </div>
-                                <span className="text-center text-xl font-semibold text-red tabular-nums">
-                                    {event.goingCount}
-                                    <span className="sr-only">
-                                        {' '}
-                                        trainers going
+                                {/* The count and the button keep their own taps: this block
+                                    spans both columns (subgrid, so they still line up
+                                    with the header), stretches over the row's padding and,
+                                    being positioned, sits above the link's layer (Bruno, 25 Nov). */}
+                                <div className="relative col-span-2 -my-2.25 -mr-1.5 grid grid-cols-subgrid items-center self-stretch py-2.25 pr-1.5">
+                                    <span
+                                        data-test="up-next-count"
+                                        className="text-center text-xl font-semibold text-red tabular-nums"
+                                    >
+                                        {event.goingCount}
+                                        <span className="sr-only">
+                                            {' '}
+                                            trainers going
+                                        </span>
                                     </span>
-                                </span>
-                                <GoingButton event={event} />
+                                    <GoingButton event={event} />
+                                </div>
                             </li>
                         ))}
                     </ul>

@@ -6,7 +6,7 @@ import { forget } from '@/routes/events/going';
 import { store } from '@/routes/profiles';
 
 type Props = {
-    /** The player pressed "I'm going" and the gate sent them here. */
+    /** The player pressed "Going?" and the gate sent them here. */
     signingInToGo: boolean;
     /** The first birth year that needs a parent's consent (the server's rule). */
     consentFromYear: number;

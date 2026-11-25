@@ -24,6 +24,14 @@ const timeFormat = new Intl.DateTimeFormat('en-GB', {
     hourCycle: 'h23',
 });
 
+const longDateParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: DISPLAY_TIME_ZONE,
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+});
+
 const calendarDateParts = new Intl.DateTimeFormat('en-GB', {
     timeZone: DISPLAY_TIME_ZONE,
     year: 'numeric',
@@ -46,6 +54,13 @@ export function formatDay(instant: Instant): string {
     const parts = dayParts.formatToParts(toDate(instant));
 
     return `${part(parts, 'weekday')} ${part(parts, 'day')} ${part(parts, 'month')}`;
+}
+
+/** "Sunday 29 November 2026": the Lisbon calendar day in full (event page details). */
+export function formatLongDate(instant: Instant): string {
+    const parts = longDateParts.formatToParts(toDate(instant));
+
+    return `${part(parts, 'weekday')} ${part(parts, 'day')} ${part(parts, 'month')} ${part(parts, 'year')}`;
 }
 
 /** "10:00": the Lisbon wall-clock time of the instant, 24-hour. */

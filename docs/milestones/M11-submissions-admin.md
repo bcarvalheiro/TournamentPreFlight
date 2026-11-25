@@ -8,7 +8,8 @@ Players fill gaps in the import; an admin keeps the list clean.
 ## Scope
 - "Add a missing event" page (signed in): official locator URL, type, date, start time, shop name, city. Extract the Guid from the URL when its format allows (document the patterns found). Duplicate by Guid or URL redirects to the existing event with a message.
 - Saved as `pending`, source `player`, `added_by_user_id`. Rate limit 5 per day per user.
-- Admin area (`can:admin`): pending queue (approve, edit then approve, reject with note), events search with hide/unhide/mark cancelled, reports list (mark handled), import runs (from M10).
+- The official URL is validated as `http`/`https` only (`url:http,https`): the event page links to it, and a `javascript:` URL would run on tap (M09 review). Titles may hold any character: the event page slug and the calendar file already cope (M09 review).
+- Admin area (`can:admin`): pending queue (approve, edit then approve, reject with note), events search with hide/unhide/mark cancelled, import runs (from M10).
 - `SubmissionReviewed` notification (stub mail until M12 if needed).
 - Admin navigation link visible only to admins.
 

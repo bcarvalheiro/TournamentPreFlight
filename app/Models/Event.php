@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property int $id
@@ -25,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $display_id
  * @property EventType $type
  * @property string|null $title
+ * @property int|null $cost_cents entry fee in euro cents; null unknown, 0 free
  * @property Carbon $starts_at
  * @property Carbon $ends_at
  * @property EventStatus $status
@@ -35,9 +37,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $moderation_note
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read int $confirmed_count only after loadCount(["attendances as confirmed_count" => …]) (M09)
  */
 #[Fillable([
-    'shop_id', 'source', 'official_guid', 'official_url', 'display_id', 'type', 'title',
+    'shop_id', 'source', 'official_guid', 'official_url', 'display_id', 'type', 'title', 'cost_cents',
     'starts_at', 'status', 'possibly_cancelled_at', 'last_seen_at', 'changed_at',
     'added_by_user_id', 'moderation_note',
 ])]
@@ -128,6 +131,26 @@ class Event extends Model
     {
         $query->where('starts_at', '>=', $from->copy()->utc())
             ->when($to, fn (Builder $query) => $query->where('starts_at', '<=', $to->copy()->utc()));
+    }
+
+    /**
+     * The title players see: the source's own, or the type and shop when it has none
+     * ("League Cup at Carta Alta"; pokedata.md, 18 Nov 2026). Needs the shop.
+     */
+    public function displayTitle(): string
+    {
+        return $this->title ?? "{$this->type->longName()} at {$this->shop->name}";
+    }
+
+    /**
+     * The readable part of the event page URL ("winter-cup"). Never stored: a
+     * changed title gives a new slug, and the old URL redirects (M09). A title
+     * with nothing to slug ("!!!") falls back to the type ("league-cup"), as
+     * `/events/12-` matches no route (review).
+     */
+    public function slug(): string
+    {
+        return Str::slug($this->displayTitle()) ?: Str::slug($this->type->longName());
     }
 
     /**
