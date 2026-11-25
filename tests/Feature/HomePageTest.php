@@ -110,7 +110,7 @@ it('counts the going answers of each event', function () {
 
 it('sends the card fields, with type and shop as the title when the event has none', function () {
     $shop = Shop::factory()->create(['name' => 'Carta Alta', 'city' => 'Porto']);
-    eventAt('2026-12-06 10:00', [
+    $cup = eventAt('2026-12-06 10:00', [
         'shop_id' => $shop->id,
         'type' => EventType::Cup,
         'display_id' => '26-12-000123',
@@ -121,6 +121,7 @@ it('sends the card fields, with type and shop as the title when the event has no
     $this->get(route('home'))
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->has('events.0', fn (AssertableInertia $card) => $card
+                ->where('url', url("/events/{$cup->id}-league-cup-at-carta-alta"))
                 ->where('displayId', '26-12-000123')
                 ->where('type', 'cup')
                 ->where('title', 'League Cup at Carta Alta')

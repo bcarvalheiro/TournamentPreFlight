@@ -21,6 +21,7 @@ import type { EventCard } from '@/types';
 const SAMPLE_EVENTS: EventCard[] = [
     {
         id: 1,
+        url: '#', // the styleguide links nowhere
         displayId: '26-12-000123',
         type: 'cup',
         title: 'Cup at Carta Alta',
@@ -34,6 +35,7 @@ const SAMPLE_EVENTS: EventCard[] = [
     },
     {
         id: 2,
+        url: '#', // the styleguide links nowhere
         displayId: '26-12-000124',
         type: 'casual',
         title: 'Casual at Dado Dourado',

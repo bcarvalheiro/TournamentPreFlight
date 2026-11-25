@@ -14,6 +14,7 @@ final readonly class EventCardData
 {
     public function __construct(
         public int $id,
+        public string $url,
         public ?string $displayId,
         public EventType $type,
         public string $title,
@@ -33,6 +34,7 @@ final readonly class EventCardData
     {
         return new self(
             id: $event->id,
+            url: route('events.show', ['event' => $event, 'slug' => $event->slug()]),
             displayId: $event->display_id,
             type: $event->type,
             title: $event->displayTitle(),

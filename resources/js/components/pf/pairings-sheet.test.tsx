@@ -18,6 +18,7 @@ vi.mock('@inertiajs/react', async (importOriginal) => ({
 function card(overrides: Partial<EventCard> = {}): EventCard {
     return {
         id: 1,
+        url: 'https://preflight.test/events/1-cup-at-carta-alta',
         displayId: '26-12-000123',
         type: 'cup',
         title: 'Cup at Carta Alta',
@@ -73,5 +74,10 @@ describe('PairingsSheet', () => {
 
     it('says so when nothing is coming up', () => {
         expect(render([])).toContain('Nothing on the calendar yet.');
+    });
+    it('links the shop name to the event page', () => {
+        expect(render([card()])).toMatch(
+            /<a[^>]*href="https:\/\/preflight\.test\/events\/1-cup-at-carta-alta"[^>]*>Carta Alta<\/a>/,
+        );
     });
 });

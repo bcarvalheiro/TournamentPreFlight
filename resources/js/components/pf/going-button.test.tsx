@@ -18,6 +18,7 @@ vi.mock('@inertiajs/react', async (importOriginal) => ({
 
 const event: EventCard = {
     id: 1,
+    url: 'https://preflight.test/events/1-casual',
     displayId: null,
     type: 'casual',
     title: 'Casual at Carta Alta',

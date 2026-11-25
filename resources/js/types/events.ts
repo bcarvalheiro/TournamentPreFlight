@@ -3,6 +3,8 @@ import type { TournamentType } from '@/lib/tournament-types';
 /** One event card, as App\Data\Public\EventCardData sends it. Times are UTC ISO strings. */
 export type EventCard = {
     id: number;
+    /** The event page, slug included. */
+    url: string;
     displayId: string | null;
     type: TournamentType;
     title: string;
