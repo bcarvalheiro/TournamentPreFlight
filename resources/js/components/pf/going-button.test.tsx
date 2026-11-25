@@ -5,6 +5,7 @@ import type { EventCard, OwnAttendance } from '@/types';
 
 // No Inertia app runs here, so usePage() is replaced by a fake page whose
 // `own` prop (M08: the account's trainers and answers) each test sets.
+// Each attribute is checked on its own, so reordering JSX props is harmless.
 const page = vi.hoisted(() => ({
     url: '/',
     props: { own: null as OwnAttendance | null },
@@ -42,9 +43,9 @@ describe('GoingButton', () => {
     it('gives a guest the pending-intent form (M06)', () => {
         const markup = render(null);
 
-        expect(markup).toMatch(
-            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"/,
-        );
+        expect(markup).toContain('<form');
+        expect(markup).toContain('action="/events/1/going"');
+        expect(markup).toContain('method="post"');
         expect(markup).toContain('I&#x27;m going');
     });
 
@@ -52,33 +53,33 @@ describe('GoingButton', () => {
         const markup = render({ trainers: [ana], going: [] });
 
         expect(markup).not.toContain('<form');
-        expect(markup).toMatch(
-            /<button type="button" aria-pressed="false"[^>]*>I&#x27;m going<\/button>/,
-        );
+        expect(markup).toContain('type="button"');
+        expect(markup).toContain('aria-pressed="false"');
+        expect(markup).toContain('>I&#x27;m going</button>');
     });
 
     it('shows a going solo player "Going ✓", pressed and outlined', () => {
         const markup = render({ trainers: [ana], going: { 1: [7] } });
 
-        expect(markup).toMatch(
-            /<button type="button" aria-pressed="true"[^>]*bg-transparent[^>]*>Going ✓<\/button>/,
-        );
+        expect(markup).toContain('aria-pressed="true"');
+        expect(markup).toContain('bg-transparent');
+        expect(markup).toContain('>Going ✓</button>');
     });
 
     it('lets a family with nobody going open the picker from "I\'m going"', () => {
         const markup = render({ trainers: [ana, tiago], going: [] });
 
         expect(markup).not.toContain('<form');
-        expect(markup).toMatch(
-            /<button type="button" aria-haspopup="dialog"[^>]*>I&#x27;m going<\/button>/,
-        );
+        expect(markup).toContain('aria-haspopup="dialog"');
+        expect(markup).not.toContain('bg-transparent');
+        expect(markup).toContain('>I&#x27;m going</button>');
     });
 
     it('shows a family with two going "Going (2)", outlined', () => {
         const markup = render({ trainers: [ana, tiago], going: { 1: [7, 9] } });
 
-        expect(markup).toMatch(
-            /<button type="button" aria-haspopup="dialog"[^>]*bg-transparent[^>]*>Going \(2\)<\/button>/,
-        );
+        expect(markup).toContain('aria-haspopup="dialog"');
+        expect(markup).toContain('bg-transparent');
+        expect(markup).toContain('>Going (2)</button>');
     });
 });

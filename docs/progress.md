@@ -6,7 +6,7 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M08 · "I'm going" (in progress).
 - **Branch**: m08-attendance
-- **State**: Plan approved (Bruno, 24 Nov). Next: Slice 1.
+- **State**: All six slices (plus 2b and 4b) committed; `composer verify` green. `/rethink-tests` done (25 Nov): added to `SetAttendanceTest` an unknown trainer id (403), malformed answers (422, dataset of 3) and an ongoing event (accepted); Vitest `going-button.test.tsx` checks attributes one by one instead of order-dependent regexes; `event-list-item.test.tsx` resets `own` in `beforeEach`. Rejected: an unverified-account case (rare; `verified` is Laravel's own middleware). Left untested on purpose: the going button's "no false success toast" guard after a 429 (earlier toasts are still on screen, so a browser check would be flaky). Next: `/review`.
 
 ### Plan (M08)
 

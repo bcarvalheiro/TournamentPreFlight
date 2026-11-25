@@ -1,5 +1,5 @@
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vite-plus/test';
+import { beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 import { EventListItem } from '@/components/pf/event-list-item';
 import type { EventCard, OwnAttendance } from '@/types';
 
@@ -40,6 +40,11 @@ function render(event: EventCard): string {
 }
 
 describe('EventListItem', () => {
+    // A failing case must not leave its `own` behind for the next one.
+    beforeEach(() => {
+        page.props.own = null;
+    });
+
     it('shows the shop, city, start time (Lisbon) and long type name, not the ID', () => {
         const markup = render(card());
 
@@ -87,7 +92,6 @@ describe('EventListItem', () => {
         };
 
         expect(render(card())).toContain('You: Ana, Tiago');
-        page.props.own = null;
     });
 
     it('shows no "You:" line to a solo player or a guest', () => {

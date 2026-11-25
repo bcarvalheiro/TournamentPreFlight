@@ -74,6 +74,50 @@ it('refuses another account\'s trainer and saves nothing', function () {
     expect(Attendance::query()->count())->toBe(0);
 });
 
+it('refuses a trainer id that does not exist, like someone else\'s', function () {
+    $profile = PlayerProfile::factory()->create();
+    $event = Event::factory()->create();
+
+    // An unknown id gets the same 403 as another account's trainer (decisions.md, 24 Nov),
+    // so nobody can tell which ids exist.
+    $this->actingAs($profile->user)
+        ->putJson(route('events.attendance.update', $event), [
+            'profiles' => [$profile->id => true, 999999 => true],
+        ])
+        ->assertForbidden();
+
+    expect(Attendance::query()->count())->toBe(0);
+});
+
+it('refuses a malformed answer', function (array $body, string $field) {
+    $profile = PlayerProfile::factory()->create();
+    $event = Event::factory()->create();
+
+    // The shape is checked before anything else (AttendanceRequest), so the ids need not exist.
+    $this->actingAs($profile->user)
+        ->putJson(route('events.attendance.update', $event), $body)
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors($field);
+
+    expect(Attendance::query()->count())->toBe(0);
+})->with([
+    'no answers' => [[], 'profiles'],
+    'an empty map' => [['profiles' => []], 'profiles'],
+    'not a yes or no' => [['profiles' => [1 => 'maybe']], 'profiles.1'],
+]);
+
+it('accepts an event that has started but not ended', function () {
+    $profile = PlayerProfile::factory()->create();
+    // A casual event lasts 2 hours: started an hour ago, it is still on (product.md, Events).
+    $event = Event::factory()->create(['starts_at' => now()->subHour()]);
+
+    $this->actingAs($profile->user)
+        ->put(route('events.attendance.update', $event), ['profiles' => [$profile->id => true]])
+        ->assertRedirect();
+
+    expect(answers($profile, $event))->toBe(1);
+});
+
 it('refuses an event players cannot answer for', function (array $attributes) {
     $profile = PlayerProfile::factory()->create();
     $event = Event::factory()->create($attributes);
