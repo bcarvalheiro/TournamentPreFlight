@@ -19,11 +19,22 @@ it('gives a guest no own data', function () {
         ->assertInertia(fn (Assert $page) => $page->where('own', null));
 });
 
+it('gives an account that is not a player yet no own data', function () {
+    // An email change clears the verification (Settings → Profile), trainers stay.
+    $profile = PlayerProfile::factory()->for(User::factory()->unverified())->create();
+
+    // `own` null makes the quick button use the pending intent (M06), not a save that would fail.
+    $this->actingAs($profile->user)
+        ->get(route('home'))
+        ->assertInertia(fn (Assert $page) => $page->where('own', null));
+});
+
 it('shows an account its own trainers and their answers', function () {
     $parent = User::factory()->create();
     $adult = PlayerProfile::factory()->for($parent)->create(['name' => 'Ana']);
     $child = PlayerProfile::factory()->child()->for($parent)->create(['name' => 'Tiago']);
     [$first, $second] = Event::factory()->count(2)->create();
+    $this->freezeTime();
     $ended = Event::factory()->create(['starts_at' => now()->subHours(3)]);
 
     Attendance::factory()->for($adult)->for($first)->create();

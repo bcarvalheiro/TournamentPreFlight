@@ -55,8 +55,9 @@ class HomeController extends Controller
             ],
             'shops' => $shops->map(ShopFilterData::fromModel(...)),
             // The account's own trainers and answers (M08), for its eyes only; a closure,
-            // so a partial reload computes it only when asked for.
-            'own' => fn () => $request->user() ? OwnAttendanceData::forUser($request->user()) : null,
+            // so a partial reload computes it only when asked for. Only for a player
+            // (verified email and a trainer): anyone else's button uses the pending intent.
+            'own' => fn () => $request->user()?->isPlayerReady() ? OwnAttendanceData::forUser($request->user()) : null,
             'filters' => [
                 'type' => $types,
                 'shop' => $shopIds,
