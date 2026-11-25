@@ -104,9 +104,12 @@ it('refuses a malformed answer', function (array $body, string $field) {
     'no answers' => [[], 'profiles'],
     'an empty map' => [['profiles' => []], 'profiles'],
     'not a yes or no' => [['profiles' => [1 => 'maybe']], 'profiles.1'],
+    // "01" or "5abc" would be read as trainer 1 or 5 by the database (review fix).
+    'a key that is not a whole number' => [['profiles' => ['01' => true]], 'profiles'],
 ]);
 
 it('accepts an event that has started but not ended', function () {
+    $this->freezeTime();
     $profile = PlayerProfile::factory()->create();
     // A casual event lasts 2 hours: started an hour ago, it is still on (product.md, Events).
     $event = Event::factory()->create(['starts_at' => now()->subHour()]);
@@ -119,6 +122,7 @@ it('accepts an event that has started but not ended', function () {
 });
 
 it('refuses an event players cannot answer for', function (array $attributes) {
+    $this->freezeTime();
     $profile = PlayerProfile::factory()->create();
     $event = Event::factory()->create($attributes);
 
