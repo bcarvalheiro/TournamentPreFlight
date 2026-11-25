@@ -6,7 +6,21 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 - **Milestone**: M09 · Event page (in progress).
 - **Branch**: m09-event-page
-- **State**: Plan proposed, waiting for Bruno's OK. No code yet.
+- **State**: Plan approved (25 Nov). Next: Slice 1.
+
+### Plan (M09)
+
+Decisions approved with the plan (25 Nov): OG and Twitter tags rendered server-side with `withViewData` in `app.blade.php` (`data-inertia` keys); slug `Str::slug(title)` with the fallback "League Cup at Carta Alta" from `EventType::longName()`, never stored; `EventPolicy::view` reads `is_admin` until M11's Gate; cancelled events stay visible with a note and no controls, only pending and hidden are 404; "(n confirmed)" shown only when n > 0 until M12; the page reuses `GoingButton` and `ProfilePicker`; no Action for reports (one `create`); the pop-up's `return_to` is the canonical URL without `?going`; `EventCountsData` dropped from `architecture.md`; `Data/Private` allowed in `Public\EventController`.
+
+- [ ] Slice 1: `GET /events/{event}-{slug?}` with `EventPageData` (type, title, shop, address, city, start/end UTC ISO, tournament ID, official URL, going and confirmed counts, possibly cancelled, cancelled, ended, can answer); a missing or wrong slug 301s to the canonical URL; privacy dataset gains the page. Bruno's condition: sketch the `EventPageData` shape together first, then implement (`routes/web.php`, `Public/EventController@show`, `Data/Public/EventPageData.php`, `Enums/EventType::longName()`, `types/`, bare `pages/events/show.tsx`, `architecture.md`; `EventPageTest`, `NoPersonalDataLeaksTest` case) · AC1, AC5
+- [ ] Slice 2: pending and hidden events 404 for guests and other users, visible to the submitter and admins (`Policies/EventPolicy.php`, `EventController`; `EventVisibilityTest`) · AC3
+- [ ] Slice 3: the page: band, big type label, shop, address, Lisbon date and time, tournament ID, official link, counts block "12 going (8 confirmed)", disclaimer, "This event has ended", cancelled and possibly-cancelled notes (`pages/events/show.tsx`, `components/pf/event-counts.tsx`, `lib/time.ts`; `event-counts.test.tsx`) · AC1, AC2
+- [ ] Slice 4: home slips and cards link to the event page (`EventCardData` `url`, `event-list-item.tsx`, `pairings-sheet.tsx`; `HomePageTest` case, `event-list-item.test.tsx`) · scope
+- [ ] Slice 5: per-trainer going controls on the page with `GoingButton` and `ProfilePicker`, `own` for this event; guests resume on this page; ended, cancelled or pending events show no controls (`EventController`, `show.tsx`, `ArchTest.php`, `architecture.md` Privacy enforcement; `EventPageOwnAttendanceTest`, `tests/Browser/EventPageGoingTest.php`) · AC2
+- [ ] Slice 6: `?going` opens the "Going to …?" pop-up only when the event can be answered; "Share" copies the link; opening it writes nothing (`EventController` `askGoing`, `show.tsx`; `EventShareLinkTest`, browser case) · AC6
+- [ ] Slice 7: "Report a change or cancellation": `POST /events/{event}/reports`, auth + verified, `throttle:6,1`, type changed/cancelled/wrong, message required (max 1000), visible and not ended events only; form in a `ResponsiveDialog` (`routes/web.php`, `Account/EventReportController@store`, `Http/Requests/EventReportRequest`, `show.tsx`, `architecture.md`, `decisions.md`; `EventReportFormTest`) · scope
+- [ ] Slice 8: Open Graph and Twitter meta in the server HTML with the count, no personal data (`EventController`, `resources/views/app.blade.php`, `show.tsx`; `EventMetaTagsTest`) · AC4
+- [ ] Slice 9: 60s count poll while visible (`usePoll`, `background: 'pause'`) and the partial-reload privacy case (`show.tsx`, `NoPersonalDataLeaksTest`; partial-reload cases) · scope (optional)
 
 ### Plan (M08)
 
