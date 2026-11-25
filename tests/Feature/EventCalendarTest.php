@@ -77,6 +77,26 @@ it('escapes commas, semicolons and backslashes in text', function () {
         ->toContain('LOCATION:Cards\, Coffee\; Co\, Rua A\\\\B\, Porto');
 });
 
+it('turns carriage returns into escaped new lines', function () {
+    // Review (M09): a bare \r (an import or, from M11, a submission) would end the line early.
+    $event = Event::factory()->create(['title' => "Winter\r\nCup\rFinal"]);
+
+    $response = $this->get(route('events.calendar', $event));
+
+    expect(calendarLines($response))->toContain('SUMMARY:Winter\\nCup\\nFinal');
+    expect(preg_match_all("/\r(?!\n)/", (string) $response->getContent()))->toBe(0);
+});
+
+it('marks a cancelled event as cancelled', function () {
+    // Review (M09): the page stays public with a note; a file added before (or re-imported)
+    // must not look like a normal event. A listed one says nothing about its status.
+    $cancelled = Event::factory()->create(['status' => EventStatus::Cancelled]);
+    $listed = Event::factory()->create();
+
+    expect(calendarLines($this->get(route('events.calendar', $cancelled))))->toContain('STATUS:CANCELLED');
+    expect(calendarLines($this->get(route('events.calendar', $listed))))->not->toContain('STATUS:CANCELLED');
+});
+
 it('folds long lines at 75 bytes, as the standard asks', function () {
     $title = trim(str_repeat('Grand Winter Championship Weekend ', 4));
     $event = Event::factory()->create(['title' => $title]);

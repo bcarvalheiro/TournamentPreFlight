@@ -76,6 +76,8 @@ class EventController extends Controller
             'LOCATION:'.$this->calendarText($place),
             'DESCRIPTION:'.$this->calendarText("Who's going: {$page->url}\nA headcount, not a registration. Register with the shop as usual."),
             "URL:{$page->url}",
+            // Still public with a note (M09); a calendar that has it shows it called off (review).
+            ...($page->isCancelled ? ['STATUS:CANCELLED'] : []),
             'END:VEVENT',
             'END:VCALENDAR',
         ];
@@ -100,9 +102,15 @@ class EventController extends Controller
         return EventPageData::fromModel($event);
     }
 
-    /** RFC 5545 text: a backslash before `\`, `;` and `,`, and `\n` for a new line. */
+    /**
+     * RFC 5545 text: a backslash before `\`, `;` and `,`, and `\n` for a new
+     * line; a carriage return counts as a new line, as a bare one would end
+     * the property early (review).
+     */
     private function calendarText(string $text): string
     {
+        $text = (string) preg_replace("/\r\n?/", "\n", $text);
+
         return str_replace(['\\', ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $text);
     }
 
