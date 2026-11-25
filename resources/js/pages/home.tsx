@@ -28,12 +28,11 @@ type HomeProps = {
 
 /**
  * The band's hero (design.md, Band): headline, question, what the app is and
- * the coin flip, with the pairings sheet beside it. It is a static layout prop,
- * so it reads the page props with usePage().
+ * the coin flip, with the pairings sheet beside it. The layout callback at the
+ * bottom hands it `upNext` (decisions.md, 25 Nov: page props reach a layout
+ * slot through a layout callback).
  */
-function Hero(): ReactNode {
-    const { upNext } = usePage<HomeProps>().props;
-
+function Hero({ upNext }: { upNext: EventCard[] }): ReactNode {
     return (
         // From 900px wide: text and sheet side by side, 5 parts to 7.
         <div className="grid gap-5.5 pt-3.5 pb-6.5 min-[900px]:grid-cols-[5fr_7fr] min-[900px]:items-center min-[900px]:pt-7.5 min-[900px]:pb-10">
@@ -139,4 +138,9 @@ export default function Home({
     );
 }
 
-Home.layout = [PublicLayout, { hero: <Hero /> }];
+// A layout callback (Inertia "Layouts › Callback Props"): it receives the page
+// props, so the band's hero can show the next events.
+Home.layout = (props: HomeProps) => [
+    PublicLayout,
+    { hero: <Hero upNext={props.upNext} /> },
+];
