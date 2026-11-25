@@ -26,6 +26,7 @@ use Illuminate\Support\Str;
  * @property string|null $display_id
  * @property EventType $type
  * @property string|null $title
+ * @property int|null $cost_cents entry fee in euro cents; null unknown, 0 free
  * @property Carbon $starts_at
  * @property Carbon $ends_at
  * @property EventStatus $status
@@ -39,7 +40,7 @@ use Illuminate\Support\Str;
  * @property-read int $confirmed_count only after loadCount(["attendances as confirmed_count" => …]) (M09)
  */
 #[Fillable([
-    'shop_id', 'source', 'official_guid', 'official_url', 'display_id', 'type', 'title',
+    'shop_id', 'source', 'official_guid', 'official_url', 'display_id', 'type', 'title', 'cost_cents',
     'starts_at', 'status', 'possibly_cancelled_at', 'last_seen_at', 'changed_at',
     'added_by_user_id', 'moderation_note',
 ])]

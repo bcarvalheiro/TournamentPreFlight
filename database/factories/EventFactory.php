@@ -29,6 +29,7 @@ class EventFactory extends Factory
             'display_id' => null,
             'type' => EventType::Casual,
             'title' => null,
+            'cost_cents' => null,
             'starts_at' => fake()->dateTimeBetween('+1 day', '+6 weeks'),
             'status' => EventStatus::Listed,
         ];

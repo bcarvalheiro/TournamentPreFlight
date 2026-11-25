@@ -1,4 +1,4 @@
-import { Clock, ExternalLink, Hash, Layers } from 'lucide-react';
+import { Clock, Euro, ExternalLink, Hash, Layers } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,25 @@ import type { EventPage } from '@/types';
 type EventDetailsProps = {
     event: EventPage;
 };
+
+const euros = (fractionDigits: number) =>
+    new Intl.NumberFormat('pt-PT', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: fractionDigits,
+    });
+
+/**
+ * "15 €", "6,50 €" or "Free": an entry fee in euro cents, written the
+ * Portuguese way, as shops price it (decisions.md, 25 Nov).
+ */
+export function formatEntryFee(cents: number): string {
+    if (cents === 0) {
+        return 'Free';
+    }
+
+    return euros(cents % 100 === 0 ? 0 : 2).format(cents / 100);
+}
 
 /** One details row: icon, label, value. */
 function Row({
@@ -58,6 +77,11 @@ export function EventDetails({ event }: EventDetailsProps): ReactNode {
                 <Row icon={Layers} label="Format">
                     TCG · {TOURNAMENT_TYPE_LONG_NAMES[event.type]}
                 </Row>
+                {event.costCents !== null && (
+                    <Row icon={Euro} label="Entry fee">
+                        {formatEntryFee(event.costCents)}
+                    </Row>
+                )}
                 {event.displayId && (
                     <Row icon={Hash} label="Tournament ID">
                         <span className="font-mono">{event.displayId}</span>

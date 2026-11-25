@@ -119,6 +119,7 @@ erDiagram
         string display_id "nullable"
         string type "casual, prerelease, challenge, cup"
         string title "nullable"
+        int cost_cents "nullable, unsigned: entry fee; 0 free"
         timestamp starts_at
         timestamp ends_at "start plus the type's estimate"
         string status "pending, listed, hidden, cancelled"
@@ -167,7 +168,7 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable; M10 fills it from pokedata's `state`), latitude and longitude (nullable `decimal(9,6)`, cast to float; M10 fills them from pokedata; the event page's map and directions, M09), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
-**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
+**events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), cost_cents (nullable unsigned int: the entry fee in euro cents, 0 for free, null when unknown; M10 parses pokedata's free-text `cost`; shown "15 €" / "6,50 €" on the event page, M09), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
 **attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 

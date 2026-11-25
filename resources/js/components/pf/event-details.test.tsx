@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vite-plus/test';
-import { EventDetails } from '@/components/pf/event-details';
+import { EventDetails, formatEntryFee } from '@/components/pf/event-details';
 import type { EventPage } from '@/types';
 
 function event(overrides: Partial<EventPage> = {}): EventPage {
@@ -20,6 +20,7 @@ function event(overrides: Partial<EventPage> = {}): EventPage {
         startsAt: '2026-11-29T10:00:00Z',
         endsAt: '2026-11-29T16:00:00Z',
         officialUrl: 'https://example.test/tournaments/26-11-001729/',
+        costCents: 1500,
         goingCount: 0,
         confirmedCount: 0,
         isOngoing: false,
@@ -53,6 +54,11 @@ describe('EventDetails', () => {
         expect(words).not.toMatch(/Pok[eé]mon/);
     });
 
+    it('shows the entry fee in Portuguese style, only when known', () => {
+        expect(text(html())).toMatch(/Entry fee 15\s€/);
+        expect(text(html({ costCents: null }))).not.toContain('Entry fee');
+    });
+
     it('shows the tournament ID only when there is one', () => {
         expect(text(html())).toContain('26-11-001729');
         expect(text(html({ displayId: null }))).not.toContain('Tournament ID');
@@ -78,5 +84,20 @@ describe('EventDetails', () => {
     it('says where the event comes from', () => {
         expect(text(html())).toContain('Source: pokedata');
         expect(text(html({ source: 'player' }))).toContain('Added by a player');
+    });
+});
+
+describe('formatEntryFee', () => {
+    // pt-PT puts the euro sign after the amount, with a decimal comma (decisions.md, 25 Nov).
+    it('writes whole euros without cents', () => {
+        expect(formatEntryFee(1500)).toMatch(/^15\s€$/);
+    });
+
+    it('writes cents with a decimal comma', () => {
+        expect(formatEntryFee(650)).toMatch(/^6,50\s€$/);
+    });
+
+    it('says "Free" for nothing to pay', () => {
+        expect(formatEntryFee(0)).toBe('Free');
     });
 });

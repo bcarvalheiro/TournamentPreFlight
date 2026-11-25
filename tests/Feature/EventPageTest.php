@@ -34,6 +34,7 @@ function winterCup(array $attributes = []): Event
         'title' => 'Winter Cup',
         'display_id' => '26-11-001729',
         'official_url' => 'https://example.test/tournaments/26-11-001729/',
+        'cost_cents' => 1500,
         'starts_at' => Carbon::parse('2026-11-29 10:00', 'UTC'),
         ...$attributes,
     ]);
@@ -63,6 +64,7 @@ it('shows the event\'s details and nothing else', function () {
                 ->where('startsAt', '2026-11-29T10:00:00Z')
                 ->where('endsAt', '2026-11-29T16:00:00Z') // a Cup lasts 6 hours
                 ->where('officialUrl', 'https://example.test/tournaments/26-11-001729/')
+                ->where('costCents', 1500)
                 ->where('goingCount', 0)
                 ->where('confirmedCount', 0)
                 ->where('isOngoing', false)
@@ -135,6 +137,14 @@ it('sends no coordinates for a shop without them', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->where('event.latitude', null)
             ->where('event.longitude', null));
+});
+
+it('sends no entry fee when it is unknown', function () {
+    $event = winterCup(['cost_cents' => null]);
+
+    $this->get("/events/{$event->id}-winter-cup")
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page->where('event.costCents', null));
 });
 
 it('returns 404 for an unknown event', function () {

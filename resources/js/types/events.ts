@@ -51,6 +51,8 @@ export type EventPage = {
     startsAt: string;
     endsAt: string;
     officialUrl: string | null;
+    /** Entry fee in euro cents; null unknown, 0 free. */
+    costCents: number | null;
     goingCount: number;
     confirmedCount: number;
     isOngoing: boolean;

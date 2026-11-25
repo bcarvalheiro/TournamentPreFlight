@@ -27,6 +27,7 @@ function event(overrides: Partial<EventPage> = {}): EventPage {
         startsAt: '2026-11-29T10:00:00Z',
         endsAt: '2026-11-29T16:00:00Z',
         officialUrl: null,
+        costCents: 1500,
         goingCount: 0,
         confirmedCount: 0,
         isOngoing: false,

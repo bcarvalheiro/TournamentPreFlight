@@ -113,6 +113,13 @@ class DemoSeeder extends Seeder
             $event = Event::factory()->for($shops[$shop])->create([
                 'type' => $type,
                 'starts_at' => $this->startsAt($day, $time),
+                // Plausible entry fees in cents; casual nights show none.
+                'cost_cents' => match ($type) {
+                    EventType::Cup => 1500,
+                    EventType::Challenge => 500,
+                    EventType::Prerelease => 2500,
+                    EventType::Casual => null,
+                },
             ]);
 
             // Each event takes the next block of the crowd (wrapping around, hence
