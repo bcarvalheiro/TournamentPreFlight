@@ -82,3 +82,15 @@ jobs:
 
       - name: Verify
         run: composer verify
+
+      # When a browser test fails, Pest saves a screenshot of the page; keep them
+      # as a downloadable artifact (run page → Artifacts), otherwise they are lost
+      # with the runner.
+      - name: Upload browser test screenshots
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: browser-screenshots
+          path: tests/Browser/Screenshots
+          if-no-files-found: ignore
+          retention-days: 7
