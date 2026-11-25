@@ -108,10 +108,31 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 Use the same band (navbar only, no hero) and the same card language:
 
-- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, official link button, disclaimer.
+- **Event page**: see "Event page" below.
 - **Sign in / Sign up**: email and password form with Google, Discord and X buttons (Apple from M13; provider icons from the providers' own brand guidelines). Register adds name and the "I am 13 or older" box.
 - **Profiles**, shown as **"Trainers"** (navbar "Trainers (n)", page "Trainers", "Add a trainer"): list of profile cards (name, Pokemon Player ID (POP ID), birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.
+
+## Event page
+
+`/events/{id}-{slug}`, a real page (not a pop-up over home: it opens its own pop-ups, M09). Drawn from Bruno's sketch (25 Nov 2026). Mobile first: one column on phones, three columns from 1024px.
+
+**Header, in the band** (`EventHeader`, passed to `PublicLayout` as the hero by a layout callback):
+- "← All events" link back home.
+- Type label (`TournamentTypeBadge`, outlined in `board-fg` on the band). No "TCG" chip: every event is TCG.
+- Title in the display font, `clamp(2rem, 8vw, 3.6rem)`, uppercase; under it "**Shop** · City".
+- Three tiles in one outlined box: DATE "SUN 29 NOV", STARTS "10:00" (display font, white) and a third tile that says how soon ("In 4 days", from `formatRelativeDay`) or the state instead: red "● Happening now", muted "This event has ended", white "Cancelled".
+- A possibly cancelled event adds the amber line "Possibly cancelled, check with the shop" (same words as the slip).
+
+**Column 1, "Who's heading there"** (`EventCounts`): small mono letter-spaced label; a paper card like the pairings sheet with the big red count and "TRAINERS GOING" in the display font, "(8 confirmed)" only when there is a confirmed answer (M12), a graphite rule, and the footer "Headcount, not registration · Names never shown". The account's trainers sit inside this card as toggle rows (Slice 5): name only, "I'm going" / "Going ✓", each tap saves, "+ Add a trainer". No divisions and no birth years (rule 3), no maybe.
+
+**Column 2, Venue** (Slice 3b): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
+
+**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · end time not published"), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then a 2×2 action grid (Add to calendar, Directions, Official page, Share), the pink headcount disclaimer and a mono line "Source: pokedata".
+
+**Phones**: a sticky bottom bar with the count and the going button (Slice 5), hidden when answers are closed.
+
+Dropped from the sketch: maybe counts, divisions, the TCG chip, registration (pokedata never has it), the listed date and league ID, the raw coordinates chip, the close button.
 
 ## Copy rules
 

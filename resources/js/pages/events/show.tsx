@@ -1,4 +1,6 @@
 import { Head } from '@inertiajs/react';
+import { EventCounts } from '@/components/pf/event-counts';
+import { EventHeader } from '@/components/pf/event-header';
 import PublicLayout from '@/layouts/public-layout';
 import type { EventPage } from '@/types';
 
@@ -6,14 +8,28 @@ type Props = {
     event: EventPage;
 };
 
-/** The event page (M09). Slice 1 shows the title only; the layout comes in Slice 3a. */
+/**
+ * The event page (M09, design.md "Event page"). The header lives in the dark
+ * band; below it, three columns from 1024px: who's heading there, the venue
+ * (Slice 3b) and the details (Slice 3c), stacked on phones.
+ */
 export default function EventShow({ event }: Props) {
     return (
         <>
             <Head title={event.title} />
-            <h1 className="text-2xl font-bold">{event.title}</h1>
+            <div className="grid gap-6 lg:grid-cols-3">
+                <EventCounts
+                    goingCount={event.goingCount}
+                    confirmedCount={event.confirmedCount}
+                />
+            </div>
         </>
     );
 }
 
-EventShow.layout = [PublicLayout, {}];
+// A layout callback (Inertia "Layouts › Callback Props"): it receives the page
+// props, so the band's hero can show this event.
+EventShow.layout = (props: Props) => [
+    PublicLayout,
+    { hero: <EventHeader event={props.event} /> },
+];
