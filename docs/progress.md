@@ -49,7 +49,8 @@ Layout from Bruno's sketch (25 Nov): header (type label, title, shop · city, da
   - Changed (Bruno, 25 Nov): one static image for every event (option 2); `show.tsx` needed no change (its `<Head>` already sets the tab title).
 - [x] Slice 9: 60s count poll while visible (`usePoll`, `only: event`, `background: 'pause'`, only while answers are open) and the partial-reload privacy case (`show.tsx`, `design.md`, `NoPersonalDataLeaksTest`; partial-reload cases) · scope (optional)
   - Changed (Bruno, 25 Nov): no "updated just now" label; the number changing is enough.
-- [ ] Slice 10: Add to calendar: `GET /events/{event}/calendar.ics` (`text/calendar`, UTC times, the estimated end, shop address, page link; no player data) and a Google Calendar link (`routes/web.php`, `EventController@calendar`, `show.tsx`, `NoPersonalDataLeaksTest`; `EventCalendarTest`) · scope (Bruno, 25 Nov)
+- [x] Slice 10: Add to calendar: `GET /events/{event}/calendar.ics` (`text/calendar`, UTC times, the estimated end, shop address, page link; no player data) and a Google Calendar link (`routes/web.php`, `EventController@calendar`, `show.tsx`, `NoPersonalDataLeaksTest`; `EventCalendarTest`) · scope (Bruno, 25 Nov)
+  - Changed (Bruno, 25 Nov): the Google link is kept although Google does not document it (community docs; decisions.md); the Calendar API was rejected (OAuth consent, Google review, stored tokens). The tile lives in `event-details.tsx`, not `show.tsx`, and only while answers are open; the file is built from `EventPageData` (a private `pageData()` shared with `show`), not the model (rule 1).
 
 ### Plan (M08)
 

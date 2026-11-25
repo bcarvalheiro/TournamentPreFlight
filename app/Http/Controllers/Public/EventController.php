@@ -9,6 +9,7 @@ use App\Models\Event;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -31,12 +32,7 @@ class EventController extends Controller
             return redirect()->to($query === '' ? $canonical : "{$canonical}?{$query}", 301);
         }
 
-        $event->loadCount([
-            'attendances',
-            'attendances as confirmed_count' => fn (Builder $query) => $query->whereNotNull('confirmed_at'),
-        ]);
-
-        $page = EventPageData::fromModel($event);
+        $page = $this->pageData($event);
 
         return Inertia::render('events/show', [
             'event' => $page,
@@ -50,6 +46,79 @@ class EventController extends Controller
                 ? OwnAttendanceData::forUser($request->user())
                 : null,
         ])->withViewData(['meta' => $this->linkPreview($event, $page)]);
+    }
+
+    /**
+     * "Add to calendar" (M09 Slice 10): the event as an iCalendar file (RFC
+     * 5545) for Apple Calendar and Outlook. Times in UTC (rule 4), the end is
+     * the type's estimate, and the description links back to the page. Built
+     * from EventPageData like the page, so no player data (rule 1).
+     */
+    public function calendar(Event $event): HttpResponse
+    {
+        $event->load('shop:id,name,address,district,city,latitude,longitude');
+        $page = $this->pageData($event);
+        // "2026-11-29T10:00:00Z" → "20261129T100000Z", the UTC form calendars read.
+        $utc = fn (string $iso): string => str_replace(['-', ':'], '', $iso);
+        $place = implode(', ', array_filter([$page->shopName, $page->address, $page->city]));
+
+        $lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Pre-Flight//Events//EN',
+            'METHOD:PUBLISH',
+            'BEGIN:VEVENT',
+            "UID:event-{$page->id}@".parse_url((string) config('app.url'), PHP_URL_HOST),
+            'DTSTAMP:'.$utc(now()->toIso8601ZuluString()),
+            'DTSTART:'.$utc($page->startsAt),
+            'DTEND:'.$utc($page->endsAt),
+            'SUMMARY:'.$this->calendarText($page->title),
+            'LOCATION:'.$this->calendarText($place),
+            'DESCRIPTION:'.$this->calendarText("Who's going: {$page->url}\nA headcount, not a registration. Register with the shop as usual."),
+            "URL:{$page->url}",
+            'END:VEVENT',
+            'END:VCALENDAR',
+        ];
+
+        return response(implode("\r\n", array_map($this->foldCalendarLine(...), $lines))."\r\n", 200, [
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => "attachment; filename=\"{$event->slug()}.ics\"",
+        ]);
+    }
+
+    /**
+     * The public view of an event (rule 1), with the going and confirmed
+     * counts; the shop must be loaded.
+     */
+    private function pageData(Event $event): EventPageData
+    {
+        $event->loadCount([
+            'attendances',
+            'attendances as confirmed_count' => fn (Builder $query) => $query->whereNotNull('confirmed_at'),
+        ]);
+
+        return EventPageData::fromModel($event);
+    }
+
+    /** RFC 5545 text: a backslash before `\`, `;` and `,`, and `\n` for a new line. */
+    private function calendarText(string $text): string
+    {
+        return str_replace(['\\', ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $text);
+    }
+
+    /**
+     * RFC 5545 folds lines longer than 75 bytes: the rest goes on the next
+     * line after one space. Cut on whole characters so accents stay intact.
+     */
+    private function foldCalendarLine(string $line): string
+    {
+        $parts = [mb_strcut($line, 0, 75)];
+
+        for ($offset = strlen($parts[0]); $offset < strlen($line); $offset += strlen(end($parts))) {
+            $parts[] = mb_strcut($line, $offset, 74);
+        }
+
+        return implode("\r\n ", $parts);
     }
 
     /**

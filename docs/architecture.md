@@ -20,7 +20,7 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public (HomeController, EventController: the event page), /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
+  Http/Controllers/Public (HomeController, EventController: the event page and its calendar file), /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
   Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer),
                       AttendanceRequest ("I'm going" answers: {profiles: {id: bool}})

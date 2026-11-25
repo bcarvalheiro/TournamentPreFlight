@@ -67,6 +67,12 @@ Route::prefix('events')->name('events.')->group(function () {
         ->can('view', 'event')
         ->name('show');
 
+    // "Add to calendar" (M09 Slice 10): an iCalendar file, visible like the page.
+    Route::get('{event}/calendar.ics', [EventController::class, 'calendar'])
+        ->whereNumber('event')
+        ->can('view', 'event')
+        ->name('calendar');
+
     Route::controller(PendingIntentController::class)->group(function () {
         // "I'm going" pressed (M06 pending intent): remember it, then sign in or go
         // back to the page. POST only, so a link cannot set it.

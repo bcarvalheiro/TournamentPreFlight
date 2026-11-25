@@ -1,6 +1,10 @@
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vite-plus/test';
-import { EventDetails, formatEntryFee } from '@/components/pf/event-details';
+import {
+    EventDetails,
+    formatEntryFee,
+    googleCalendarLink,
+} from '@/components/pf/event-details';
 import type { EventPage } from '@/types';
 
 function event(overrides: Partial<EventPage> = {}): EventPage {
@@ -77,6 +81,13 @@ describe('EventDetails', () => {
         expect(html()).toMatch(/<button[^>]*>.*Share<\/button>/s);
     });
 
+    it('offers "Add to calendar" only while the event is ahead', () => {
+        expect(html()).toMatch(/<button[^>]*>.*Add to calendar<\/button>/s);
+        expect(text(html({ canAnswer: false, hasEnded: true }))).not.toContain(
+            'Add to calendar',
+        );
+    });
+
     it('leaves Directions to the shop column', () => {
         expect(text(html())).not.toContain('Directions');
     });
@@ -103,5 +114,34 @@ describe('formatEntryFee', () => {
 
     it('says "Free" for nothing to pay', () => {
         expect(formatEntryFee(0)).toBe('Free');
+    });
+});
+
+describe('googleCalendarLink', () => {
+    // Google's template link (undocumented by Google; decisions.md, 25 Nov):
+    // UTC times with Z, so Google shows them in the viewer's zone.
+    it('fills the title, UTC times, place and page link', () => {
+        const url = new URL(googleCalendarLink(event()));
+
+        expect(url.origin + url.pathname).toBe(
+            'https://calendar.google.com/calendar/render',
+        );
+        expect(url.searchParams.get('action')).toBe('TEMPLATE');
+        expect(url.searchParams.get('text')).toBe('Winter Cup');
+        expect(url.searchParams.get('dates')).toBe(
+            '20261129T100000Z/20261129T160000Z',
+        );
+        expect(url.searchParams.get('location')).toBe(
+            'Carta Alta, Rua das Flores 12, Lisboa',
+        );
+        expect(url.searchParams.get('details')).toContain(
+            'https://preflight.test/events/7-winter-cup',
+        );
+    });
+
+    it('leaves out a missing address', () => {
+        const url = new URL(googleCalendarLink(event({ address: null })));
+
+        expect(url.searchParams.get('location')).toBe('Carta Alta, Lisboa');
     });
 });

@@ -1,11 +1,26 @@
-import { Clock, Euro, ExternalLink, Hash, Layers, Share2 } from 'lucide-react';
+import {
+    CalendarPlus,
+    Clock,
+    Euro,
+    ExternalLink,
+    Hash,
+    Layers,
+    Share2,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useClipboard } from '@/hooks/use-clipboard';
 import { formatLongDate, formatTime } from '@/lib/time';
 import { TOURNAMENT_TYPE_LONG_NAMES } from '@/lib/tournament-types';
+import { calendar } from '@/routes/events';
 import type { EventPage } from '@/types';
 
 type EventDetailsProps = {
@@ -31,6 +46,31 @@ export function formatEntryFee(cents: number): string {
     return euros(cents % 100 === 0 ? 0 : 2).format(cents / 100);
 }
 
+/** "2026-11-29T10:00:00Z" → "20261129T100000Z", the UTC form calendars read. */
+function calendarTime(iso: string): string {
+    return new Date(iso).toISOString().replace(/[-:]|\.\d{3}/g, '');
+}
+
+/**
+ * "Add to Google Calendar": Google's template link. Google does not document
+ * it; the format comes from the community "add-event-to-calendar-docs"
+ * (decisions.md, 25 Nov). UTC times with Z, so Google shows the viewer's zone;
+ * the same text as the `.ics` file.
+ */
+export function googleCalendarLink(event: EventPage): string {
+    const search = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: event.title,
+        dates: `${calendarTime(event.startsAt)}/${calendarTime(event.endsAt)}`,
+        location: [event.shopName, event.address, event.city]
+            .filter(Boolean)
+            .join(', '),
+        details: `Who's going: ${event.url}\nA headcount, not a registration. Register with the shop as usual.`,
+    });
+
+    return `https://calendar.google.com/calendar/render?${search}`;
+}
+
 /** One details row: icon, label, value. */
 function Row({
     icon: Icon,
@@ -54,7 +94,8 @@ function Row({
  * The event page's details column (design.md, Event page): when (the end is
  * the type's estimate, never a published time), format and tournament ID; the
  * action grid (Official page when known; Share copies the `?going` link; Add to
- * calendar, Slice 10, joins it later; Directions lives only in the shop column); the
+ * calendar while the event is ahead, as a file or a Google link; Directions lives
+ * only in the shop column); the
  * headcount disclaimer; where the event comes from.
  */
 export function EventDetails({ event }: EventDetailsProps): ReactNode {
@@ -117,6 +158,33 @@ export function EventDetails({ event }: EventDetailsProps): ReactNode {
                     <Share2 aria-hidden="true" />
                     Share
                 </Button>
+                {/* Only while the event is ahead: nothing to plan once it ended or was cancelled. */}
+                {event.canAnswer && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className={tile}>
+                                <CalendarPlus aria-hidden="true" />
+                                Add to calendar
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                                <a href={calendar.url(event.id)} download>
+                                    Apple / Outlook (.ics)
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <a
+                                    href={googleCalendarLink(event)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Google Calendar
+                                </a>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                )}
             </div>
             <p className="mt-3 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
                 <strong>A headcount, not a registration.</strong> Tapping
