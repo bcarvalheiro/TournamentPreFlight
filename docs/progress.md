@@ -4,9 +4,28 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M07 · Player profiles (review).
-- **Branch**: m07-profiles
-- **State**: All slices and review fixes committed; `composer verify` green. `/rethink-tests` skipped for M07 (Bruno, 24 Nov). Next: Bruno pushes and opens the PR, then M08.
+- **Milestone**: M08 · "I'm going" (review).
+- **Branch**: m08-attendance
+- **State**: All slices, `/rethink-tests` and the `/review` fixes committed; `composer verify` green (Pest 331, Vitest 85). Next: Bruno pushes and opens the PR, then M09.
+
+### Plan (M08)
+
+Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAttendance` alone checks ownership (403) and answerable events (422); `own` prop uses a slim `OwnAttendanceData` (not `OwnProfileData`, whose keys would trip the privacy test); toasts built in the browser with `lib/time.ts`; the browser applies the pending intent with the same PUT; PUT throttled `throttle:30,1`.
+
+- [x] Slice 1: `PUT /events/{event}/attendance` with `{profiles: {id: bool}}`; `SetAttendance` creates the row (`firstOrCreate`) or deletes it; someone else's trainer 403; pending, hidden, cancelled or ended event 422; several trainers in one transaction (`routes/web.php`, `Account/AttendanceController@update`, `Http/Requests/AttendanceRequest`, `Actions/SetAttendance`, `architecture.md` Code layout; `SetAttendanceTest`) · AC1, AC3, AC4
+  - Changed (Bruno, 24 Nov): `firstOrCreate` instead of `createOrFirst`, which the Laravel 13 docs do not describe; the unique key still blocks a second row, and `wasRecentlyCreated` serves Slice 2.
+- [x] Slice 2: the Action dispatches `CheckThresholds` (no-op until M12) once per save that changed an answer, after commit (`app/Jobs/CheckThresholds.php`, `SetAttendance`, `AttendanceController`, `M08-attendance.md`, `decisions.md`; `CheckThresholdsDispatchTest`) · scope
+  - Changed (Bruno, 24 Nov): `SetAttendance::handle(user, event, {profile id: going})` takes the set of answers, decides every refusal before writing (an unknown id is now 403 like someone else's trainer), saves in one transaction and dispatches once; the controller makes one call. Reason: `Queue::fake()` ignores `afterCommit()`, and one entry point means no caller (M12's email links) can forget the dispatch.
+- [x] Slice 2b: no follows and no thresholds (Bruno, 25 Nov): remove `CheckThresholds` and its dispatch; drop `event_follows` with a new migration; remove `EventFollow`, its factory and follow tests; docs everywhere the rule reaches (`SetAttendance`, migration, `EventReportsTest` (was `EventFollowsAndReportsTest`), `EventDeletionTest`, `architecture.md`, `product.md`, `design.md`, `decisions.md`, milestones M08/M09/M12/M14; `MigrationsTest` "has no event_follows table") · scope
+- [x] Slice 3: home `own` prop for the account only: its trainers (id, name) and who is going to each upcoming event; `null` for guests; counts follow the answers; privacy test extended (`HomeController`, `Data/Private/OwnAttendanceData.php`, `types/`, `NoPersonalDataLeaksTest`; `HomeOwnAttendanceTest`) · AC2, AC6
+  - Changed (Bruno, 25 Nov): `own` is built in `OwnAttendanceData` from each trainer's answers (Larastan needed typed lists); `PendingIntentTest`'s no-query check now loads Settings → Profile instead of home (decisions.md, 25 Nov; a third adjustment means rethinking that test).
+- [x] Slice 4: quick button toggles for a solo player: partial reload (`only: events, upNext, own`), toast "You're going to Carta Alta, Sat 15 Nov", "Going ✓" outlined; signed out or not a player yet keeps M06's POST (`going-button.tsx`, `event-list-item.tsx`, `pairings-sheet.tsx`, `home.tsx`; `going-button.test.tsx`, `tests/Browser/GoingTest.php`) · AC2
+- [x] Slice 4b: one message for every rate limit on a save (Bruno, 25 Nov): back to the page with "Too many tries. Wait 42 seconds and try again." (Laravel's `Retry-After`) instead of the bare 429 page; the going button shows its success toast only when the answer really changed (`bootstrap/app.php`, `going-button.tsx`, `decisions.md`; `TooManyRequestsTest`, `GoingTest` case) · found while testing Slice 4
+  - Changed (Bruno, 25 Nov): the three older limit tests (sign-in, trainer add/edit, welcome form) now expect the redirect with the error toast instead of a bare 429; the sign-in limit gets the same message.
+- [x] Slice 5: family accounts open `ProfilePicker` (checkbox per trainer, Save, "Add a trainer"); one PUT with per-trainer choices; "Going (2)"; "You: Ana, Tiago" on slips (`components/pf/profile-picker.tsx`, `going-button.tsx`, `event-list-item.tsx`, `design.md`; `profile-picker.test.tsx`, `GoingTest` family case) · AC4
+  - Changed (Bruno, 25 Nov): no `profile-picker.test.tsx`: the sheet's content is portalled and only exists once open, so static markup cannot show it; the picker is tested in `GoingTest` (browser), and Vitest covers the family labels and the "You:" line (`going-button.test.tsx`, `event-list-item.test.tsx`). The picker uses big toggle rows instead of checkboxes (Bruno: checkboxes are hard on mobile; a select box cannot pick several on a phone).
+- [x] Slice 6: resume after sign-in: `pendingIntent` sets a solo account going (never off) and opens the picker for a family (`home.tsx`, `going-button.tsx`; `tests/Browser/ResumeGoingTest.php`) · AC5
+  - Changed (25 Nov): one `ProfilePicker` owned by `home.tsx` (the event is often on both the sheet and the agenda, so the slips cannot each open one); `ResponsiveDialog` and `ProfilePicker` take an optional `trigger`, the picker a `defaultOpen`. An event no longer on the page: solo still applies ("You're going."), a family gets nothing.
 
 ### Plan (M07)
 
@@ -38,8 +57,8 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 | M04 | Domain schema and seed data | done | PR #6 merged |
 | M05 | Home page on seeded data | done | PR #7 merged |
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
-| M07 | Player profiles | review | PR to open |
-| M08 | "I'm going" and Maybe | todo | |
+| M07 | Player profiles | done | PR #9 merged |
+| M08 | "I'm going" | review | PR to open. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
 | M09 | Event page | todo | |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
@@ -53,6 +72,40 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-24/25 · M08 · "I'm going"
+
+**Outcome.** The core loop works. A player answers going or not going for each trainer from the quick button; the counts, the labels and a "You: Ana, Tiago" line refresh with a partial reload and a toast. A family picks per trainer in a sheet and saves once. A signed-out tap carries on after sign-in (solo: applied; family: picker open). All six acceptance criteria have automated tests. Bruno also dropped follows and thresholds: only going players get emails (the day-before reminder with the headcount, plus "event changed" and "possibly cancelled").
+
+**Commits** (`git log --oneline main..HEAD`, oldest first):
+- `81a396f` progress for M08 · `6409ac6` plan, six slices
+- `02c1b86` save going answers for the account's own trainers (Slice 1)
+- `4bdff7e` queue CheckThresholds once per save (Slice 2, later removed)
+- `e50d07b` drop follows and thresholds (Slice 2b)
+- `5f09c5a` the account's own trainers and answers on the home page (Slice 3)
+- `4072d02` solo player toggles going from the quick button (Slice 4)
+- `64749c2` one wait toast whenever a save hits a rate limit (Slice 4b)
+- `8c74d11` a family picks which trainers are going (Slice 5) · `bcfa2ec` big toggle rows in the picker
+- `8322c63` carry on a signed-out "I'm going" after sign-in (Slice 6)
+- `ad68a16` `/rethink-tests`: unknown ids, malformed answers, ongoing events
+- `25493b0`, `25cf2ec`, `3c2c128`, `26df3e4`, `2d808d2`, `b9161ef` `/review` fixes
+
+**Problems and how they were solved.**
+- `Queue::fake()` ignores `afterCommit()`, so a rolled-back save still showed a queued job. Fixed by deciding every refusal before writing, with one entry point (`SetAttendance` takes all answers). Then Bruno dropped thresholds, so the job went (decisions.md, 24 and 25 Nov).
+- The safety check blocked deleting test files; Bruno ran the `rm` himself.
+- `PendingIntentTest`'s "no profile queries" check broke because home now loads trainers on purpose; it now loads Settings → Profile. Second adjustment to that test; a third means rethinking it (decisions.md, 25 Nov).
+- Larastan rejected loose collection types in `OwnAttendanceData`; built the arrays with loops instead.
+- Bruno hit a bare 429 page after many taps: now one app-wide "Too many tries. Wait n seconds and try again." for any limited save (Slice 4b).
+- Bruno found the checkbox picker hard to use on a phone: big toggle rows instead (a select box cannot pick several).
+- Browser tests: `press('Sign in')` clicked the navbar link (fixed with `data-test="login-button"`); a bare "0" matched a start time (now "0 trainers going"). Twice a Pest dataset closure wrapped its value one level too deep; both caught before code went in.
+
+**`/rethink-tests`.** Added: an unknown trainer id is 403, malformed answers are 422 (a dataset, mutation-checked), an ongoing event is accepted. Vitest checks attributes one by one instead of order-dependent regexes, and `event-list-item.test.tsx` resets `own` in `beforeEach`. Rejected: an unverified-account case (Laravel's own middleware). Left untested on purpose: the "no false success toast" guards after a 429 (old toasts still on screen make a browser check flaky).
+
+**`/review`** (code-reviewer, privacy-guard, ui-reviewer). No leaks found. Fixed, all 11 Bruno accepted: `own` only for player-ready accounts (an unverified account got a toggle whose save failed); a darker `red-text` token for small red text (contrast); malformed keys rejected (a crafted "01" key gave a 500); the picker stays open after a 429 and its rows are disabled while saving; the resume checks its save and shows errors; the 429 handler leaves JSON callers alone (plus tests for JSON and page loads); privacy cases for `own` ids and a partial reload; an arch rule for `App\Data\Private`; screen-reader names for picker rows and an event-specific hidden suffix on every "I'm going". Skipped: a hand-filled limiter in the browser test, a cap on answers, focus start and footer sizes in the sheet. Logged for M14: Inertia history encryption.
+
+**Surprising.** In this Laravel version `firstOrCreate` already falls back to `createOrFirst` when the insert hits the unique key, so two simultaneous taps cannot produce an error (the Slice 1 trade-off did not exist). `router.put` keeps state by default in Inertia 3, so the resume effect cannot run twice after a partial reload.
+
+**Left.** Bruno pushes and opens the PR. Then M09 (event page).
 
 ### 2026-11-23/24 · M07 · Player profiles
 
@@ -573,9 +626,11 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
-- **Resend verification email invites repeat clicks** (Bruno, 24 Nov): Fortify already throttles the resend route (`throttle:6,1`, `config('fortify.limiters.verification')`), but after a send the button keeps pulsing and only a plain line confirms it, so Bruno clicked 7 times (6 emails in 5 seconds) and got the bare 429 page. Fix: after a send, disable the button with "✓ Link sent. Resend in 0:59" and stop the pulse; show "Too many tries. Wait a minute and try again." on the page instead of the 429 page; a Pest test that pins the limit (6 pass, the 7th is 429). Consider tightening to 1 a minute and 6 an hour with a named Fortify limiter. (M15)
+- **Resend verification email invites repeat clicks** (Bruno, 24 Nov): Fortify already throttles the resend route (`throttle:6,1`, `config('fortify.limiters.verification')`), but after a send the button keeps pulsing and only a plain line confirms it, so Bruno clicked 7 times (6 emails in 5 seconds) and got the bare 429 page. The 429 page part is fixed app-wide by M08 Slice 4b ("Too many tries. Wait n seconds and try again."). Still to do: after a send, disable the button with "✓ Link sent. Resend in 0:59" and stop the pulse; a Pest test that pins the limit (6 pass, the 7th is 429). Consider tightening to 1 a minute and 6 an hour with a named Fortify limiter. (M15)
 
-- **Error text colour**: the kit's `InputError` uses `text-red-600` (#e7000b), not a design token; it is 4.77:1 on white but fails on tinted boxes (M07 moved the consent error out of the pink box). Add a darker error token (e.g. #B42318) and use it app-wide. (M15)
+- **Picker sheet polish on phones** (M08 `/review`, ui-reviewer, optional): footer buttons are 40px while the rows are 48px (`h-11` or `h-12` for thumbs); focus starts on Close in the phone sheet but on the first row in the desktop dialog; a safe-area bottom padding matters only if the viewport ever uses `viewport-fit=cover`. (M15)
+- **Inertia history encryption is off** (M08 `/review`, privacy-guard): after sign-out, Back on a shared device shows pages from the browser's history without asking the server, such as home with the account's trainer names (`own`) or `/profiles` with Pokemon Player IDs (POP IDs) and birth years (M07). Fix: `'history' => ['encrypt' => true]` in `config/inertia.php` and `Inertia::clearHistory()` on sign-out (Inertia docs, "History encryption"), with a test and a `decisions.md` row. (M14)
+- **Error text colour**: the kit's `InputError` uses `text-red-600` (#e7000b), not a design token; it is 4.77:1 on white but fails on tinted boxes (M07 moved the consent error out of the pink box). Add a darker error token and use it app-wide; M08 added `--color-red-text` `#C1121F` for small red text, which may serve. (M15)
 - **Linked accounts seeing a child's profile** (Bruno's idea, 24 Nov): today a child profile belongs to exactly one account. Later, another account (a second parent, or the child's own account once they turn 13) could be allowed to see or manage it. `OwnProfileData` is the owner's view and could be reused; needs a link table and consent rules. (later)
 - **Browser validation on the auth pages**: register, sign in, welcome and reset use `required`, so the browser blocks the form with its own bubble in the browser's language (Portuguese for most players, against rule 8) before our English errors show. M07 put `noValidate` on the profile form; decide the same for the kit's auth forms. (M15)
 - **Pairings sheet shop names** are cut with an ellipsis at 390px ("Toca do T…"); try a smaller font or two lines. (from the M06 browser checks; later)
@@ -599,7 +654,7 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 - **Footer links** point to `#` until their pages exist: privacy and terms (M14), contact (M14), add a missing event (M11).
 - ~~**Our components into `resources/js/components/pf/`**~~: done in M05 Slice 1.
 - **Yearly `is_child` refresh**: a scheduled command on 1 January (Lisbon) that saves every child profile through the model, so `is_child` turns false for those who have aged out (`decisions.md`, M04 review). (M10, with the scheduler)
-- **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players and followers, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
+- **Alerts as topics, and grouped reports** (Bruno's idea): outgoing change and cancellation alerts are published once per event and fanned out to going players, never stored per user; an `event_changes` log is proposed so emails can say what changed. Reports stay one row per user but are grouped by event and type in the admin list. Both are open questions in `decisions.md`. (M10, M11, M12)
 - **Reports "mark handled"** (M11 scope) needs a column the data model does not have yet (e.g. `event_reports.handled_at`). Add it in M11. (M11)
 - **Sync must save events one by one**: `ends_at` is written by the `Event` model's `saving` hook, and mass updates (`Event::where(…)->update([...])`) skip model events (Laravel docs, Eloquent "Mass Updates"), so they would leave `ends_at` stale. (M10)
 - ~~**"Maybe" button in the styleguide**~~: relabelled "Going ✓" in M05 Slice 2.

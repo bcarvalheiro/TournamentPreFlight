@@ -20,9 +20,10 @@ Laravel defaults first, plus Actions and Services. KISS: no domain or module fol
 
 ```
 app/
-  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController), /Admin,
+  Http/Controllers/Public, /Account (the signed-in account's own data: PlayerProfileController, AttendanceController), /Admin,
                       /Auth (sign-in our code adds beside Fortify: social, pending intent)
-  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer)
+  Http/Requests/      Form Requests: HomeFilterRequest, PlayerProfileRequest (add and edit a trainer),
+                      AttendanceRequest ("I'm going" answers: {profiles: {id: bool}})
                       thin: a Form Request validates, a Policy authorizes, one Action does the work,
                       the controller returns Inertia with Data objects
   Actions/            one class per operation that changes state, one public `handle()` method; called from
@@ -35,14 +36,14 @@ app/
                       OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
-  Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
+  Notifications/      StillGoingNotification, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
   components/         the starter kit's own components (app-header, app-sidebar, nav-*, ...), left as the kit ships them
   components/pf/      our components, kebab-case files like the kit, each with its test beside it: app-logo,
-                      app-logo-icon, tournament-type-icon, tournament-type-badge, responsive-dialog; later
+                      app-logo-icon, tournament-type-icon, tournament-type-badge, responsive-dialog,
                       pairings-sheet, event-list-item, going-button, profile-picker, filter-bar
   components/ui/      shadcn/ui files we own and restyle with the tokens (button, card, dialog, drawer, empty, sonner, ...)
   lib/time.ts         all date formatting, Europe/Lisbon, en-GB style
@@ -65,12 +66,10 @@ erDiagram
     users |o--o{ player_profiles : "gave consent for"
     users ||--o{ social_accounts : "signs in with"
     users |o--o{ events : "added"
-    users ||--o{ event_follows : "follows"
     users ||--o{ event_reports : "reports"
     shops ||--o{ events : "hosts"
     events ||--o{ attendances : "has going"
     player_profiles |o--o{ attendances : "is going"
-    events ||--o{ event_follows : "is followed"
     events ||--o{ event_reports : "is reported"
 
     users {
@@ -134,14 +133,6 @@ erDiagram
         timestamp confirmed_at "nullable"
         timestamp anonymised_at "nullable"
     }
-    event_follows {
-        bigint id PK
-        bigint event_id FK "cascade on delete; UK with user_id"
-        bigint user_id FK "cascade on delete"
-        smallint notify_at_count
-        boolean notify_on_drop "default false"
-        timestamp notified_at "nullable"
-    }
     event_reports {
         bigint id PK
         bigint event_id FK "cascade on delete"
@@ -178,8 +169,6 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
 
-**event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
-
 **event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
 
 **import_runs**: source, started_at, finished_at, status (ok, failed, aborted), events_created, events_updated, events_flagged, events_unchanged (ints, default 0), error (text, nullable), payload_sample (json, nullable).
@@ -192,7 +181,7 @@ Computed with `withCount` on attendances. No denormalised counter in v1. If the 
 
 ## Privacy enforcement (rule 1 in CLAUDE.md)
 
-- Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction.
+- Public controllers return only `app/Data/Public` objects. These classes have no name, Pokemon Player ID (POP ID) or birth-year fields by construction. One exception (M08): the home page's `own` prop, `Data/Private/OwnAttendanceData`, built only from the signed-in player's own account (`$request->user()`), never from a route parameter. An arch test allows `App\Data\Private` only in `Controllers/Account` and `Public\HomeController`.
 - Arch tests (`tests/Arch/ArchTest.php`): public controllers and the `app/Data/Public` classes never use `User` or `PlayerProfile`, and those classes are final and readonly. They do not stop a raw model such as `Event` being sent as a prop; the feature test below checks what pages actually send.
 - `tests/Feature/Privacy/NoPersonalDataLeaksTest.php` seeds an adult and a child profile named like `Zzleak Name 4711` with Pokemon Player IDs (POP IDs) `9988776655`/`9988776656` and birth year 1913, visits every route in a dataset as guest and as another user, and asserts no name or ID appears in the HTML (in any letter case) and the birth year not in the Inertia props. A second dataset covers the sign-in pages (login, register, forgot password, welcome, verify email, first profile), each opened by the viewer who can reach it, because they share the same Inertia props. Each new public route is added to a dataset in the same PR.
 - Logs never contain profile names or Pokemon Player IDs (POP IDs).
@@ -222,7 +211,7 @@ Player-submitted events go through the same matching (Guid, then URL) before the
 
 ## Notifications
 
-Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `thresholds:check` runs after every `SetAttendance` (dispatched job), not on a schedule; `attendances:anonymise` daily. Reminders respect `notification_settings.reminders` and carry a signed one-click unsubscribe. "Event changed" and "possibly cancelled" are always sent. Threshold emails stop by unfollowing; moderation emails are a one-off reply to the submitter.
+Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `attendances:anonymise` daily. Reminders respect `notification_settings.reminders` and carry a signed one-click unsubscribe. "Event changed" and "possibly cancelled" are always sent. Moderation emails are a one-off reply to the submitter. No follows and no threshold emails (decisions.md, 25 Nov): only going players get event emails.
 
 ## Auth flows
 

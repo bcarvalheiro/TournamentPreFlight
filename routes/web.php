@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\SocialProvider;
+use App\Http\Controllers\Account\AttendanceController;
 use App\Http\Controllers\Account\PlayerProfileController;
 use App\Http\Controllers\Auth\PendingIntentController;
 use App\Http\Controllers\Auth\SocialAuthController;
@@ -30,6 +31,12 @@ Route::middleware(['auth'])->group(function () {
                 });
                 Route::delete('{profile}', 'destroy')->can('delete', 'profile')->name('destroy');
             });
+
+        // "I'm going" answers for the account's own trainers (M08): {profiles: {id: bool}}.
+        Route::put('events/{event}/attendance', [AttendanceController::class, 'update'])
+            ->whereNumber('event')
+            ->middleware('throttle:30,1')
+            ->name('events.attendance.update');
     });
 });
 

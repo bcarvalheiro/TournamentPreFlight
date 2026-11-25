@@ -104,6 +104,9 @@ it('slows down an account that keeps adding or editing trainers', function () {
         $this->post(route('profiles.store'), ['pop_id' => "77{$attempt}"])->assertRedirect();
     }
 
-    $this->post(route('profiles.store'), ['pop_id' => '7799'])->assertTooManyRequests();
-    $this->put(route('profiles.update', $profile), ['pop_id' => '7799'])->assertTooManyRequests();
+    // Too many tries: back to the page with the wait message (M08 Slice 4b), and nothing saved.
+    $this->post(route('profiles.store'), ['pop_id' => '7799'])->assertRedirect()->assertInertiaFlash('toast.type', 'error');
+    $this->put(route('profiles.update', $profile), ['pop_id' => '7799'])->assertRedirect()->assertInertiaFlash('toast.type', 'error');
+    expect($user->playerProfiles()->count())->toBe(1)
+        ->and($profile->fresh()->pop_id)->not->toBe('7799');
 });

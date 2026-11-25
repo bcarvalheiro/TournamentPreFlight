@@ -26,6 +26,8 @@
     --color-line: #e1e7ed;
     --color-line-strong: #848f9b;
     --color-red: #e63946;
+    /* Red for small text (14px and below): 6.2:1 on white, 5.7:1 on the red/5 tint. --color-red is 4.2:1, for large text and fills only (design.md, Contrast). */
+    --color-red-text: #c1121f;
     --color-paper: #fbfbf8;
     --color-board-fg: #e9eef3;
     --color-amber: #f6c453;

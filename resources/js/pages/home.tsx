@@ -1,11 +1,21 @@
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { toast } from 'sonner';
 import { Agenda } from '@/components/pf/agenda';
 import { CoinFlip } from '@/components/pf/coin-flip';
 import { FilterBar } from '@/components/pf/filter-bar';
 import { PairingsSheet } from '@/components/pf/pairings-sheet';
+import { ProfilePicker } from '@/components/pf/profile-picker';
 import PublicLayout from '@/layouts/public-layout';
-import type { EventCard, HomeFilters, ShopFilter } from '@/types';
+import { formatDay } from '@/lib/time';
+import { update } from '@/routes/events/attendance';
+import type {
+    EventCard,
+    HomeFilters,
+    OwnAttendance,
+    ShopFilter,
+} from '@/types';
 
 type HomeProps = {
     events: EventCard[];
@@ -13,6 +23,7 @@ type HomeProps = {
     totals: { matched: number; all: number };
     filters: HomeFilters;
     shops: ShopFilter[];
+    own: OwnAttendance | null;
 };
 
 /**
@@ -46,8 +57,67 @@ function Hero(): ReactNode {
     );
 }
 
-/** The home page body: the sticky filter bar and the agenda. */
-export default function Home({ events, totals, filters, shops }: HomeProps) {
+/**
+ * The home page body: the sticky filter bar and the agenda. After a signed-out
+ * "I'm going", the server hands the page the event once (`pendingIntent`, M06)
+ * and the tap carries on here (M08): a solo account is set going (never
+ * toggled off), a family gets the picker open for that event.
+ */
+export default function Home({
+    events,
+    upNext,
+    totals,
+    filters,
+    shops,
+    own,
+}: HomeProps) {
+    const { pendingIntent } = usePage().props;
+    const intentEvent =
+        [...events, ...upNext].find(
+            (event) => event.id === pendingIntent?.event_id,
+        ) ?? null;
+    const isFamily = (own?.trainers.length ?? 0) > 1;
+
+    // Once, on arrival: the server hands the intent over only once.
+    useEffect(() => {
+        if (!pendingIntent || own?.trainers.length !== 1) {
+            return;
+        }
+
+        const trainerId = own.trainers[0].id;
+
+        router.put(
+            update.url(pendingIntent.event_id),
+            { profiles: { [trainerId]: true } },
+            {
+                only: ['events', 'upNext', 'own'],
+                preserveScroll: true,
+                // Only once the answer is really saved: a save sent back (too
+                // many tries) also ends here, with its own toast.
+                onSuccess: (page) => {
+                    const now = page.props.own as OwnAttendance | null;
+
+                    if (
+                        !(now?.going[pendingIntent.event_id] ?? []).includes(
+                            trainerId,
+                        )
+                    ) {
+                        return;
+                    }
+
+                    toast.success(
+                        intentEvent
+                            ? `You're going to ${intentEvent.shopName}, ${formatDay(intentEvent.startsAt)}`
+                            : "You're going.",
+                    );
+                },
+                // The event may have closed while they signed in.
+                onError: (errors) =>
+                    toast.error(errors.event ?? 'Could not save. Try again.'),
+            },
+        );
+    }, []);
+
     return (
         <>
             <FilterBar
@@ -57,6 +127,14 @@ export default function Home({ events, totals, filters, shops }: HomeProps) {
                 totals={totals}
             />
             <Agenda events={events} totalUpcoming={totals.all} />
+            {pendingIntent && own && isFamily && intentEvent && (
+                <ProfilePicker
+                    event={intentEvent}
+                    trainers={own.trainers}
+                    goingIds={own.going[intentEvent.id] ?? []}
+                    defaultOpen
+                />
+            )}
         </>
     );
 }

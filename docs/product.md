@@ -11,7 +11,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 | Who | What they do |
 | --- | --- |
 | Guest | Browses events and counts, opens event pages, shares links |
-| Player (account holder) | Signs in, manages profiles, answers "I'm going" per profile, follows events, gets emails |
+| Player (account holder) | Signs in, manages profiles, answers "I'm going" per profile, gets emails about events they are going to |
 | Parent | A player whose account also holds profiles for their children (under 13 have no login of their own) |
 | Admin | Moderates player-submitted events, sees import runs, hides wrong events |
 | Shop | Not in v1. Later, optional (see "Later phase") |
@@ -48,7 +48,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 1. Signed out, or signed in without a verified email or a Pokemon Player ID (POP ID): sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
-3. Signed in with several profiles: open a picker listing each profile with a checkbox for going. Save applies the choices per profile. The button then reads "Going (2)".
+3. Signed in with several profiles: open a picker with one big toggle per profile ("I'm going" / "Going ✓"). Save applies the choices per profile in one go. The button then reads "Going (2)".
 4. The button toggles going; the event page has the same per-profile controls.
 
 ## Home page
@@ -67,7 +67,7 @@ See `design.md` for the visual spec. Content:
 
 ## Event page
 
-Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, follow with a threshold ("tell me when 16 are going"), "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
+Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
 
 ## Adding a missing event
 
@@ -75,16 +75,15 @@ A signed-in player pastes the official Event Locator link of a tournament and fi
 
 ## Notifications (email)
 
-- **Day-before reminder**: the day before the event, each account with a going answer gets one email listing its profiles: "Still going?" with Yes and No buttons (signed links, no login needed). Yes sets confirmed; No removes the going answer.
+- **Day-before reminder**: the day before the event, each account with a going answer gets one email listing its profiles: "Still going?" with how many trainers are going and Yes and No buttons (signed links, no login needed). Yes sets confirmed; No removes the going answer.
 - **Event changed**: when the sync changes an event's date, time or shop, going answers become unconfirmed and the same "still going?" email goes out, saying what changed.
-- **Possibly cancelled**: when the sync flags an event, followers and going players get one email suggesting they check with the shop.
-- **Threshold**: a follower is emailed once when the going count first reaches their number. Optionally also when it drops back below (setting on the follow).
+- **Possibly cancelled**: when the sync flags an event, going players get one email suggesting they check with the shop.
 - **Moderation**: submitter is told when their event is approved or rejected.
-- Reminders can be turned off, with a one-click unsubscribe link in each one. Threshold emails stop when the player unfollows the event. Moderation emails are a one-off reply to the submitter. "Event changed" and "possibly cancelled" emails are always sent: they are rare and matter to anyone planning to go.
+- Reminders can be turned off, with a one-click unsubscribe link in each one. Moderation emails are a one-off reply to the submitter. "Event changed" and "possibly cancelled" emails are always sent: they are rare and matter to anyone planning to go.
 
 ## Privacy and brand
 
-- Data kept: account email and name, linked logins, profile name, Pokemon Player ID (POP ID), birth year, answers, follows.
+- Data kept: account email and name, linked logins, profile name, Pokemon Player ID (POP ID), birth year, answers.
 - Past answers are anonymised 90 days after the event (the profile link is removed, counts stay).
 - Account deletion removes the account, its profiles and answers.
 - Privacy policy and terms pages (English), a contact address for data requests.

@@ -25,3 +25,15 @@ arch('public data are immutable DTOs without player data')
     ->toBeFinal()
     ->toBeReadonly()
     ->not->toUse([User::class, PlayerProfile::class]);
+
+/*
+ * Owner-only data (M07, M08): only the signed-in account's own pages build it,
+ * plus the one owner-only prop on the public home page (`own`, review fix).
+ * A new public controller cannot pick these classes up without changing this rule.
+ */
+arch('owner-only data is built only for the account\'s own pages')
+    ->expect('App\Data\Private')
+    ->toOnlyBeUsedIn([
+        'App\Http\Controllers\Account',
+        'App\Http\Controllers\Public\HomeController',
+    ]);

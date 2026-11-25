@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Data\Private\OwnAttendanceData;
 use App\Data\Public\EventCardData;
 use App\Data\Public\ShopFilterData;
 use App\Enums\EventType;
@@ -53,6 +54,10 @@ class HomeController extends Controller
                 'all' => Event::upcoming()->count(),
             ],
             'shops' => $shops->map(ShopFilterData::fromModel(...)),
+            // The account's own trainers and answers (M08), for its eyes only; a closure,
+            // so a partial reload computes it only when asked for. Only for a player
+            // (verified email and a trainer): anyone else's button uses the pending intent.
+            'own' => fn () => $request->user()?->isPlayerReady() ? OwnAttendanceData::forUser($request->user()) : null,
             'filters' => [
                 'type' => $types,
                 'shop' => $shopIds,

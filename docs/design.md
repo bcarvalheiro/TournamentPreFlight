@@ -34,7 +34,7 @@ Fonts (Google Fonts, `display=swap`), loaded through the Laravel Vite plugin's `
 
 Radii: cards 6px, sheets 14px, buttons 9px, chips fully rounded. Focus: 2px red outline, 2px offset, on every interactive element. Respect `prefers-reduced-motion`.
 
-Contrast: red on white is 4.2:1, so use red for large text (counts) and for buttons with white bold text at 14px+ bold; never for small body text. Muted on bg-2 passes AA.
+Contrast: red on white is 4.2:1, so use red for large text (counts), borders, tints and buttons with white bold text at 14px+ bold; never for small text. Small red text (the outlined "Going ✓" button, "You: Ana, Tiago", a picked trainer's "Going ✓") uses **red-text** `#C1121F` (6.2:1 on white, 5.7:1 on the red/5 tint; M08 review). Muted on bg-2 passes AA.
 
 ## Type icons ("balls")
 
@@ -86,7 +86,7 @@ Sticks to the top on scroll, translucent `bg-2` with blur. Contents, horizontall
 ### 3. Agenda
 Grouped by day. Day header: 5px red left border, "SAT 15 NOV" in display font plus an uppercase relative label ("Tomorrow", "In 3 days", "Next week"), side by side on phones. On ≥700px the header sits in a 120px left column and is sticky: the day big (about 32px) on two lines ("SAT 15 / NOV"), the label under it, like the prototype.
 
-**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a red line "You: Ana, Tiago". Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
+**Event list item** (`EventListItem`, one per event, styled as a tear-off slip): white, 4px graphite top border, 6px radius. Left part: the type label (icon + name; Cup label is filled graphite, others outlined); shop name bold; row with city, "Starts 10:00" or red "● Happening now", long type name; for multi-profile accounts a line "You: Ana, Tiago" in red-text (small text, see Contrast). Right stub (104px), separated by a dashed tear line with two punched half-circles: big red count, "TRAINERS" label, full-width red "I'm going" button (outlined once going; label "Going ✓" for one profile, "Going (2)" for several).
 
 A "possibly cancelled" event shows an amber "Possibly cancelled, check with the shop" line on the slip.
 
@@ -98,7 +98,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 - **Sheet** (`ResponsiveDialog`): bottom sheet (vaul Drawer) below 768px, centred dialog above. Close button, Escape, backdrop click, focus trap, returns focus. Built like shadcn's "Responsive Dialog" (Dialog + Drawer), restyled.
 - **Card**: the shadcn `Card` restyled with the tokens (6px radius, line border, no shadow); every card builds on it.
 - **Type label** (`TournamentTypeBadge`): icon plus type name, Cup filled graphite, others outlined.
-- **ProfilePicker**: list of the account's profiles, each with name and a going checkbox; "Save". Shows "Add a profile" link.
+- **ProfilePicker**: list of the account's trainers, each a big toggle row (at least 48px; the whole row is the button): name on the left, "I'm going" in grey or "Going ✓" in red on the right, red outline and light red tint once picked (no checkboxes: hard to hit on phones). "Save · 2 going" sends every choice at once. Shows an "Add a trainer" link. Title "Going to Carta Alta?" with the day under it; after saving a change, the toast "Saved for Carta Alta, Sat 5 Dec" (M08).
 - **Toast**: top right, graphite, 2.6s, a little larger than Sonner's default (420px wide, 15px text), announced politely to screen readers (Sonner's `aria-live="polite"`).
 - **Buttons**: primary (red fill, white bold), ghost (outlined graphite), link.
 - **Empty state**: muted centred text with one red action.
@@ -108,7 +108,7 @@ Pink-tinted box: "**A headcount, not a registration.** Tapping "I'm going" tells
 
 Use the same band (navbar only, no hero) and the same card language:
 
-- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, follow form, official link button, disclaimer.
+- **Event page**: big type label and icon, shop, date/time, a counts block styled like the pairings sheet (Going, Confirmed), answer controls per profile, official link button, disclaimer.
 - **Sign in / Sign up**: email and password form with Google, Discord and X buttons (Apple from M13; provider icons from the providers' own brand guidelines). Register adds name and the "I am 13 or older" box.
 - **Profiles**, shown as **"Trainers"** (navbar "Trainers (n)", page "Trainers", "Add a trainer"): list of profile cards (name, Pokemon Player ID (POP ID), birth year), add/edit form, consent checkbox for under-13s.
 - **Admin**: plain and functional; tables in the same tokens.

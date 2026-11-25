@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\HandleInertiaRequests;
 use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\PlayerProfile;
@@ -70,8 +71,10 @@ beforeEach(function () {
 });
 
 it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (string $url, bool $signedIn) {
-    if ($signedIn) {
-        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    $viewer = $signedIn ? User::factory()->has(PlayerProfile::factory())->create() : null;
+
+    if ($viewer) {
+        $this->actingAs($viewer);
     }
 
     $response = $this->get($url)->assertOk();
@@ -80,10 +83,71 @@ it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (s
     expect($response->inertiaProps('events.0.goingCount'))->toBe(2);
 
     expectNoPlayerData($response);
+
+    // `own` (M08) holds only the viewer's own trainer, never the family's ids (review fix).
+    expect($response->inertiaProps('own'))->toBe($viewer ? [
+        'trainers' => [['id' => $viewer->playerProfiles()->sole()->id, 'name' => $viewer->playerProfiles()->sole()->name]],
+        'going' => [],
+    ] : null);
 })->with('public pages')->with([
     'guest' => false,
     'another user' => true,
 ]);
+
+/*
+ * The going button refreshes the home page with a partial reload (M08:
+ * `only: events, upNext, own`), a JSON answer instead of the HTML page. It must
+ * hide the family's data just the same (review fix).
+ */
+it('shows no player data on a partial reload of the home page', function (bool $signedIn) {
+    if ($signedIn) {
+        $this->actingAs(User::factory()->has(PlayerProfile::factory())->create());
+    }
+
+    $response = $this->withHeaders([
+        'X-Inertia' => 'true',
+        'X-Inertia-Version' => (string) app(HandleInertiaRequests::class)->version(request()),
+        'X-Inertia-Partial-Component' => 'home',
+        'X-Inertia-Partial-Data' => 'events,upNext,own',
+    ])->get(route('home'))->assertOk();
+
+    // A partial answer: the requested props, not the whole page.
+    expect($response->json('props'))->toHaveKeys(['events', 'upNext', 'own'])->not->toHaveKey('shops');
+    expect($response->json('props.events.0.goingCount'))->toBe(2);
+
+    // The same scans as expectNoPlayerData(), on the JSON props (that helper reads an HTML page).
+    $props = $response->json('props');
+    expect(mb_strtolower((string) $response->getContent()))
+        ->not->toContain('zzleak')
+        ->not->toContain('9988776655')
+        ->not->toContain('9988776656');
+    expect(json_encode($props))->not->toContain('1913');
+    expect(array_keys(Arr::dot($props)))->each->not->toMatch('/pop_?id|birth_?year/i');
+})->with([
+    'guest' => false,
+    'another user' => true,
+]);
+
+/*
+ * M08 AC6: the home page carries one owner-only prop, `own`, so the family's
+ * slips can say "You: Zzleak Name 4711, Zzleak Child 4712". The family sees its
+ * names there, still with no Pokemon Player ID (POP ID) or birth year; the
+ * guest and other-user cases above prove nobody else does.
+ */
+it('shows the family their own trainers\' names on the home page', function () {
+    $this->actingAs(User::query()->where('email', 'zzleak@example.test')->sole());
+
+    $response = $this->get(route('home'))->assertOk();
+
+    expect(collect($response->inertiaProps('own.trainers'))->pluck('name')->all())
+        ->toBe(['Zzleak Name 4711', 'Zzleak Child 4712']);
+
+    $content = (string) $response->getContent();
+    expect($content)->not->toContain('9988776655')->not->toContain('9988776656');
+    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
+    expect(array_keys(Arr::dot($response->inertiaProps())))
+        ->each->not->toMatch('/pop_?id|birth_?year/i');
+});
 
 it('shows no player data on the sign-in pages', function (string $route, string $component, string $viewer) {
     match ($viewer) {
