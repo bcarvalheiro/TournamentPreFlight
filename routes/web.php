@@ -59,22 +59,24 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-Route::prefix('events')->name('events.')->group(function() {
+Route::prefix('events')->name('events.')->group(function () {
     // The event page (M09): /events/12-winter-cup; a missing or old slug redirects.
+    // Pending and hidden events: 404 except for their submitter and admins (EventPolicy).
     Route::get('{event}-{slug?}', [EventController::class, 'show'])
         ->whereNumber('event')
+        ->can('view', 'event')
         ->name('show');
 
-        Route::controller(PendingIntentController::class)->group(function () {
-            // "I'm going" pressed (M06 pending intent): remember it, then sign in or go
-            // back to the page. POST only, so a link cannot set it.
-            Route::post('{event}/going', 'store')
-                ->whereNumber('event')
-                ->name('going');
+    Route::controller(PendingIntentController::class)->group(function () {
+        // "I'm going" pressed (M06 pending intent): remember it, then sign in or go
+        // back to the page. POST only, so a link cannot set it.
+        Route::post('{event}/going', 'store')
+            ->whereNumber('event')
+            ->name('going');
 
-            // "Not now" on the profile page: forget the pending intent.
-            Route::delete('going', 'destroy')->name('going.forget');
-        });
+        // "Not now" on the profile page: forget the pending intent.
+        Route::delete('going', 'destroy')->name('going.forget');
+    });
 });
 
 // Developer page with every shared component; it does not exist outside local.

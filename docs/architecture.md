@@ -37,7 +37,7 @@ app/
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
   Notifications/      StillGoingNotification, PossiblyCancelled, SubmissionReviewed
-  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
+  Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes; EventPolicy: pending and hidden events 404 except for their submitter and admins)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
   layouts/            public-layout.tsx (band, optional hero, footer) plus the kit's layouts
