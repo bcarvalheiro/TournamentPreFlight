@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { EventCounts } from '@/components/pf/event-counts';
+import { EventDetails } from '@/components/pf/event-details';
 import { EventHeader } from '@/components/pf/event-header';
 import { EventShop } from '@/components/pf/event-shop';
 import PublicLayout from '@/layouts/public-layout';
@@ -24,6 +25,7 @@ export default function EventShow({ event }: Props) {
                     confirmedCount={event.confirmedCount}
                 />
                 <EventShop shop={event} />
+                <EventDetails event={event} />
             </div>
         </>
     );

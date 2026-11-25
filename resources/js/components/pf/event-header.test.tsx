@@ -14,6 +14,7 @@ function event(overrides: Partial<EventPage> = {}): EventPage {
     return {
         id: 7,
         url: 'https://preflight.test/events/7-winter-cup',
+        source: 'pokedata',
         displayId: '26-11-001729',
         type: 'cup',
         title: 'Winter Cup',

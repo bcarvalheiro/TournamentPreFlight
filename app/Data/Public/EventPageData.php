@@ -2,6 +2,7 @@
 
 namespace App\Data\Public;
 
+use App\Enums\EventSourceKey;
 use App\Enums\EventStatus;
 use App\Enums\EventType;
 use App\Models\Event;
@@ -16,6 +17,7 @@ final readonly class EventPageData
     public function __construct(
         public int $id,
         public string $url,
+        public EventSourceKey $source,
         public ?string $displayId,
         public EventType $type,
         public string $title,
@@ -49,6 +51,7 @@ final readonly class EventPageData
         return new self(
             id: $event->id,
             url: route('events.show', ['event' => $event, 'slug' => $event->slug()]),
+            source: $event->source,
             displayId: $event->display_id,
             type: $event->type,
             title: $event->displayTitle(),

@@ -51,6 +51,7 @@ it('shows the event\'s details and nothing else', function () {
                 ->where('id', $event->id)
                 ->where('url', url("/events/{$event->id}-winter-cup"))
                 ->where('displayId', '26-11-001729')
+                ->where('source', 'pokedata')
                 ->where('type', 'cup')
                 ->where('title', 'Winter Cup')
                 ->where('shopName', 'Carta Alta')

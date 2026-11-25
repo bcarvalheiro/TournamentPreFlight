@@ -37,6 +37,8 @@ export type EventPage = {
     id: number;
     /** The canonical page URL, slug included. */
     url: string;
+    /** Imported from pokedata, or added by a player (M11). */
+    source: 'pokedata' | 'player';
     displayId: string | null;
     type: TournamentType;
     title: string;

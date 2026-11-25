@@ -128,7 +128,7 @@ Use the same band (navbar only, no hero) and the same card language:
 
 **Column 2, Shop** (Slice 3b, `EventShop`; never "venue"): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
 
-**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · end time not published"), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then a 2×2 action grid (Add to calendar, Directions, Official page, Share), the pink headcount disclaimer and a mono line "Source: pokedata".
+**Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · ends around 16:00 (estimate)": the end is the type's estimate, never a published time), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then an action grid (Official page, Share, Add to calendar; Directions stays in the shop column only), the pink headcount disclaimer and a mono line "Source: pokedata".
 
 **Phones**: a sticky bottom bar with the count and the going button (Slice 5), hidden when answers are closed.
 
