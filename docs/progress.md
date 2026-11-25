@@ -670,6 +670,10 @@ Server side: `Public\HomeController` sends `EventCardData` and `ShopFilterData` 
 
 <!-- Problems or ideas outside the current milestone. Each gets a milestone or "later". -->
 
+- **Touch targets at 40px** (M09 `/review`, ui-reviewer): the kit's `Button` default and `sm` sizes are 36–40px tall, below design.md's 44px: home's row "Going?" buttons, Directions, Copy address, "+ Add a trainer", "← All events", navbar links, Filters and "Any time". Decide once (a 44px default `Button` size, or `min-h-11` where thumbs land) and apply app-wide, not button by button. (M15)
+- **`DeleteTrainerTest` flaky under `--parallel`** (M09 `/review` verify): once in three full runs it timed out at `click('Delete trainer')`, the second opening of the dialog right after Cancel; alone it passed three times out of three. Likely the reopen racing the close animation under load. Try waiting for the dialog to close (`assertMissing('[role=dialog]')`) after Cancel. (M15)
+- **Desktop footer offset** (M09 `/review`, ui-reviewer): at 1280px the footer text starts at about x=260 while the page content starts at x=106; give the footer the page's container in `PublicLayout`. (M15)
+
 - **Share with the phone's share sheet** (Bruno, 25 Nov, M09 Slice 6): most visits will come from phones, so the event page's Share should open the system share sheet (`navigator.share`, Web Share API: WhatsApp, Messages…) with the `?going` link, falling back to copying it where the API is missing (desktop browsers). M09 ships copy only. (M15)
 
 - **Who adds a missing event** (Bruno, 25 Nov, M09): "a player can't add an event, a shop can". Today `product.md` ("Adding a missing event"), M11 and `architecture.md` (`events.source` `player`, `added_by_user_id`) say a signed-in player submits it for moderation, and shops have no accounts in v1. Decide before M11 whether only the wording changes (the player reports a shop's event; rename `player` to e.g. `submitted`) or the rule (only shops add events, which needs shop sign-in). The event page's source line still says "Added by a player" (Bruno: leave it for now). (M11)
