@@ -58,17 +58,17 @@ describe('PairingsSheet', () => {
         expect(live).not.toContain('10:00');
     });
 
-    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
+    it('sends signed-out players to sign in from "Going?", back to this page', () => {
         expect(render([card()])).toMatch(
-            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<span class="sr-only"> to Carta Alta, [^<]+<\/span><\/button><\/form>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>Going\?<span class="sr-only">, Carta Alta, [^<]+<\/span><\/button><\/form>/,
         );
     });
 
-    it('gives signed-in players the same "I\'m going" form', () => {
+    it('gives signed-in players the same "Going?" form', () => {
         // M06: the server decides what comes next (verify, Pokemon Player ID (POP ID), or the
         // intent handed back); M08 turns it into a toggle for ready players.
         expect(render([card()], true)).toMatch(
-            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<button type="submit"[^>]*>I(&#x27;|')m going<span class="sr-only"> to Carta Alta, [^<]+<\/span><\/button><\/form>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<button type="submit"[^>]*>Going\?<span class="sr-only">, Carta Alta, [^<]+<\/span><\/button><\/form>/,
         );
     });
 

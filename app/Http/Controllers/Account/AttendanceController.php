@@ -9,7 +9,7 @@ use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 
 /**
- * The signed-in account's "I'm going" answers (M08).
+ * The signed-in account's "Going?" answers (M08).
  */
 class AttendanceController extends Controller
 {

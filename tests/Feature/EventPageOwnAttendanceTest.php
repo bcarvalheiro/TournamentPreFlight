@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 /*
  * M09 AC2 and Slice 5: the event page's `own` prop gives a player their own
  * trainers and who of them is going, so the page can show toggle rows. Nobody
- * else gets it (their "I'm going" uses the pending intent), and nobody gets it
+ * else gets it (their "Going?" uses the pending intent), and nobody gets it
  * once answers are closed: no controls on an ended or cancelled event.
  */
 beforeEach(function () {

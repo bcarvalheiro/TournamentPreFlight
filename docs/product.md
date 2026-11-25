@@ -11,7 +11,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 | Who | What they do |
 | --- | --- |
 | Guest | Browses events and counts, opens event pages, shares links |
-| Player (account holder) | Signs in, manages profiles, answers "I'm going" per profile, gets emails about events they are going to |
+| Player (account holder) | Signs in, manages profiles, answers "Going?" per profile, gets emails about events they are going to |
 | Parent | A player whose account also holds profiles for their children (under 13 have no login of their own) |
 | Admin | Moderates player-submitted events, sees import runs, hides wrong events |
 | Shop | Not in v1. Later, optional (see "Later phase") |
@@ -19,7 +19,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 ## Accounts and profiles
 
 - Login methods: email and password (with email verification), Google, Discord, X; Apple later (M13). A social sign-up needs an email the provider confirms; without one the player registers with email and a password.
-- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Pokemon Player ID (POP ID) is required). Pressing "I'm going" before that walks the account through verifying the email and adding a Pokemon Player ID (POP ID), then back to the page. A password is optional for social sign-ups; they can add one in Settings. A signed-in account without a profile is not redirected: it lands on the home page, and every page shows a notice linking to "Add a trainer". The navbar links to Profiles and Settings.
+- Anyone can look at every page. Only a player answers: a signed-in account with a verified email and at least one player profile (the Pokemon Player ID (POP ID) is required). Pressing "Going?" before that walks the account through verifying the email and adding a Pokemon Player ID (POP ID), then back to the page. A password is optional for social sign-ups; they can add one in Settings. A signed-in account without a profile is not redirected: it lands on the home page, and every page shows a notice linking to "Add a trainer". The navbar links to Profiles and Settings.
 - Only people aged 13 or older can have an account: sign-up asks them to confirm it (self-declared; it cannot be verified). Under-13s exist only as child profiles on a parent's account.
 - One account (a login) holds one or more **player profiles**. A parent has their own profile plus one per child.
 - Limits per account: **at most one profile aged 13 or older** (the account holder's own; anyone else 13 or older signs up with their own account) and **at most 3 child profiles**. More children need an email to support: it is unusual, and an account holding many profiles could block other players' Pokemon Player IDs.
@@ -44,11 +44,11 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 - **Others see counts only, never names.** The account holder sees which of their own profiles are going.
 - Answers can only be given for listed events that have not ended.
 
-### The quick "I'm going" button (cards and pairings sheet)
+### The quick "Going?" button (cards and pairings sheet)
 
 1. Signed out, or signed in without a verified email or a Pokemon Player ID (POP ID): sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
-3. Signed in with several profiles: open a picker with one big toggle per profile ("I'm going" / "Going ✓"). Each tap saves that profile's answer at once (no Save button, M09). The button then reads "Going (2)".
+3. Signed in with several profiles: open a picker with one big toggle per profile ("Going?" / "Going ✓"). Each tap saves that profile's answer at once (no Save button, M09). The button then reads "Going (2)".
 4. The button toggles going; the event page has the same per-profile controls.
 
 ## Home page
@@ -60,14 +60,14 @@ See `design.md` for the visual spec. Content:
 - **Up next** (the pairings sheet): the next 5 upcoming or ongoing events by start time, ignoring filters.
 - **Event list**: up to 25 upcoming and ongoing events, grouped by day, after filters. The count line says "12 of 29 events" or "First 25 of 31".
 - Filters, all multi-select and combined with AND between groups: type (Casual, Prerelease, Challenge, Cup), host shop (only shops with upcoming events, with their counts), date range (Any time, This week, This weekend, Next 7 days, Next 30 days, Pick dates with From and To). The date filter applies before the 25 cap. Filters live in the URL query string so a filtered view can be shared.
-- Card: date and start time, tournament ID, type with its icon, shop name and city, total going count, quick "I'm going" button. "Happening now" replaces the start time for ongoing events.
+- Card: date and start time, tournament ID, type with its icon, shop name and city, total going count, quick "Going?" button. "Happening now" replaces the start time for ongoing events.
 - Empty state: "Nothing matches these filters" with Clear filters.
 - Disclaimer line under the list and the non-affiliation footer.
 - Later, not v1: city or region filter.
 
 ## Event page
 
-Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "I'm going" / not going per profile, "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
+Shareable URL (`/events/{id}-{slug}`). Shows: type, title, shop, address, date and time in Lisbon time, tournament ID, link to the official listing, counts (going, confirmed), the viewer's own answers with "Going?" / not going per profile, "Report a change or cancellation", the headcount disclaimer. Open Graph tags so shared links preview with the count. Past events show "This event has ended" and no buttons. A shared link with `?going` opens a "Going to …?" pop-up on an upcoming event; only tapping its button marks going (a link alone never does).
 
 ## Adding a missing event
 

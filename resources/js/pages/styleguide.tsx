@@ -136,7 +136,7 @@ export default function Styleguide() {
 
                 <Section title="Buttons">
                     <div className="flex flex-wrap items-center gap-3">
-                        <Button>I'm going</Button>
+                        <Button>Going?</Button>
                         <Button variant="outline">Going ✓</Button>
                         <Button variant="link">Add a profile</Button>
                         <Button disabled>Disabled</Button>

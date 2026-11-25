@@ -6,7 +6,7 @@ use App\Models\Shop;
 use App\Models\User;
 
 /*
- * M08 AC5: a signed-out player taps "I'm going" on a slip, signs in with email
+ * M08 AC5: a signed-out player taps "Going?" on a slip, signs in with email
  * and password, and lands back on the home page where the tap carries on: a
  * solo account's answer is applied, a family gets the picker open (each tap
  * there saves, M09 Slice 5b). The whole

@@ -110,7 +110,7 @@ export function TrainerToggleRows({
                                             : 'text-muted',
                                     )}
                                 >
-                                    {isGoing ? 'Going ✓' : "I'm going"}
+                                    {isGoing ? 'Going ✓' : 'Going?'}
                                 </span>
                             </button>
                         </li>

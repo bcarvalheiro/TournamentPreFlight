@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Route;
  * M06 AC2: anyone can look at every page; only a player answers. A player has
  * a verified email and a player profile (its Pokemon Player ID (POP ID) is required); a
  * password is optional. The gate steps in only on the way to answering, when
- * the session holds a pending "I'm going": then a user who is not ready yet is
+ * the session holds a pending "Going?": then a user who is not ready yet is
  * sent to verify their email, then to add their Pokemon Player ID (POP ID). Auth pages,
  * settings and logout always stay open; guests are not affected.
  */
 
 /**
- * The session as it is after pressing "I'm going".
+ * The session as it is after pressing "Going?".
  */
 function onTheWayToAnswer(): void
 {

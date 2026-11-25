@@ -39,7 +39,7 @@ test('users can not authenticate with invalid password', function () {
 });
 
 // M06 AC6: signing out ends the session: a new session id, and nothing a
-// guest or the player left in it (a pending "I'm going", a social sign-up).
+// guest or the player left in it (a pending "Going?", a social sign-up).
 test('users can logout', function () {
     $user = User::factory()->create();
     $this->actingAs($user)->withSession([

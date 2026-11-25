@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 /*
  * M09 AC2 and Slice 5: on the event page a player's trainers are toggle rows
  * in "Who's heading there", and each tap saves (a partial reload and a toast);
- * anyone else's "I'm going" signs in and comes back here; an ended event has
+ * anyone else's "Going?" signs in and comes back here; an ended event has
  * no controls; phones get a bar that jumps to the card. Taps, partial reloads,
  * toasts and the sign-in round trip need a real browser.
  */
@@ -65,7 +65,7 @@ it('shows no controls on an ended event', function () {
     visit($this->url)
         ->assertSee('This event has ended')
         ->assertDontSeeIn(COUNTS, 'Ana')
-        // Not assertDontSee("I'm going"): the disclaimer quotes those words.
+        // Not assertDontSee("Going?"): the disclaimer quotes those words.
         ->assertMissing(COUNTS.' button')
         ->assertMissing('[data-test="going-bar"]');
 });

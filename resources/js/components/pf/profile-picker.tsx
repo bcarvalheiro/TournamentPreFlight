@@ -14,7 +14,7 @@ type ProfilePickerProps = {
     goingIds: number[];
     /** The button that opens the picker; none when the page opens it (`defaultOpen`). */
     trigger?: ReactElement;
-    /** Open on first render: the page resumes a pending "I'm going" (M08). */
+    /** Open on first render: the page resumes a pending "Going?" (M08). */
     defaultOpen?: boolean;
 };
 

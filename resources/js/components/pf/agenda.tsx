@@ -97,8 +97,8 @@ export function Agenda({ events, totalUpcoming }: AgendaProps): ReactNode {
             )}
             <p className="rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
                 <strong>A headcount, not a registration.</strong> Tapping
-                &quot;I&apos;m going&quot; tells other players you plan to
-                attend. Register with the host shop as usual.
+                &quot;Going?&quot; tells other players you plan to attend.
+                Register with the host shop as usual.
             </p>
         </div>
     );

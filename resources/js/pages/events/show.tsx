@@ -33,7 +33,7 @@ export default function EventShow({ event, own }: Props) {
     const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
     const goingIds = own?.going[event.id] ?? [];
 
-    // Back from signing in after "I'm going" on this page (M06 pending intent):
+    // Back from signing in after "Going?" on this page (M06 pending intent):
     // a solo player is set going once; a family sees its rows and picks.
     useEffect(() => {
         if (
@@ -94,7 +94,7 @@ export default function EventShow({ event, own }: Props) {
                                     type="submit"
                                     className="h-12 w-full font-sans text-base"
                                 >
-                                    I'm going
+                                    Going?
                                 </Button>
                             </Form>
                         ))}
@@ -117,7 +117,7 @@ export default function EventShow({ event, own }: Props) {
                     </p>
                     <Button asChild className="h-11">
                         <a href="#going">
-                            {own ? "Choose who's going" : "I'm going"}
+                            {own ? "Choose who's going" : 'Going?'}
                         </a>
                     </Button>
                 </div>

@@ -58,7 +58,7 @@ function Hero({ upNext }: { upNext: EventCard[] }): ReactNode {
 
 /**
  * The home page body: the sticky filter bar and the agenda. After a signed-out
- * "I'm going", the server hands the page the event once (`pendingIntent`, M06)
+ * "Going?", the server hands the page the event once (`pendingIntent`, M06)
  * and the tap carries on here (M08): a solo account is set going (never
  * toggled off), a family gets the picker open for that event.
  */

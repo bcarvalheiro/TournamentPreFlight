@@ -76,9 +76,9 @@ describe('EventListItem', () => {
         expect(render(card())).not.toContain(warning);
     });
 
-    it('sends signed-out players to sign in from "I\'m going", back to this page', () => {
+    it('sends signed-out players to sign in from "Going?", back to this page', () => {
         expect(render(card())).toMatch(
-            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>I(&#x27;|')m going<span class="sr-only"> to Carta Alta, [^<]+<\/span><\/button><\/form>/,
+            /<form[^>]*action="\/events\/1\/going"[^>]*method="post"[^>]*>.*<input type="hidden" name="return_to" value="\/\?type\[\]=cup"\/>.*<button type="submit"[^>]*>Going\?<span class="sr-only">, Carta Alta, [^<]+<\/span><\/button><\/form>/,
         );
     });
 

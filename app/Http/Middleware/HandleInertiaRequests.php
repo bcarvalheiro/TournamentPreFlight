@@ -43,7 +43,7 @@ class HandleInertiaRequests extends Middleware
                 // The account's trainers (M07), for the navbar and the no-profile notice.
                 'profilesCount' => fn () => $request->user()?->playerProfiles()->count(),
             ],
-            // "I'm going" pressed while signed out (M06): handed over once, only
+            // "Going?" pressed while signed out (M06): handed over once, only
             // when the player gate lets the player in. The session is checked
             // first, so most requests ask the database nothing.
             'pendingIntent' => fn () => $request->session()->has('pending_intent') && $request->user()?->isPlayerReady()

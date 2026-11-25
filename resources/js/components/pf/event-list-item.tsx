@@ -13,7 +13,7 @@ const punchedHole =
 
 /**
  * One event in the agenda, styled as a tear-off slip (design.md, Event list
- * item): type and shop on the left, the headcount and "I'm going" on the stub.
+ * item): type and shop on the left, the headcount and "Going?" on the stub.
  */
 export function EventListItem({ event }: { event: EventCard }): ReactNode {
     const { own } = usePage<{ own: OwnAttendance | null }>().props;

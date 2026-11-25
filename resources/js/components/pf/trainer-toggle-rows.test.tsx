@@ -32,7 +32,7 @@ describe('TrainerToggleRows', () => {
         expect(ana).toContain('Going ✓');
         expect(ana).toContain('aria-pressed="true"');
         expect(tiago).toContain('Tiago');
-        expect(tiago).toContain('I&#x27;m going');
+        expect(tiago).toContain('Going?');
         expect(tiago).toContain('aria-pressed="false"');
     });
 

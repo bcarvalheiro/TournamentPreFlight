@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
- * A profile's "I'm going" to an event. No row means not going.
+ * A profile's "Going?" to an event. No row means not going.
  *
  * @property int $id
  * @property int $event_id

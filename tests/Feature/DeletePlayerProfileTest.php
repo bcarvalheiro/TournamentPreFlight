@@ -7,7 +7,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
 /*
- * M07 AC1 and AC6: the owner deletes a trainer, and the trainer's "I'm going"
+ * M07 AC1 and AC6: the owner deletes a trainer, and the trainer's "Going?"
  * answers go with it (the attendances foreign key cascades). Anyone else gets
  * 403. The last trainer may go too.
  */

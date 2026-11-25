@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * The signed-in account's own "I'm going" answers (M08), for the home page:
+ * The signed-in account's own "Going?" answers (M08), for the home page:
  * its trainers (id and name only) and which of them are going to each
  * upcoming event. Sent only to that account, never to other players
  * (CLAUDE.md rule 1). Covers every upcoming event, not only those on screen,

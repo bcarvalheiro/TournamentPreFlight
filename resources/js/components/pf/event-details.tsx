@@ -104,8 +104,8 @@ export function EventDetails({ event }: EventDetailsProps): ReactNode {
             </div>
             <p className="mt-3 rounded-xl border border-red/20 bg-red/5 px-3.5 py-3 text-sm">
                 <strong>A headcount, not a registration.</strong> Tapping
-                &quot;I&apos;m going&quot; tells other players you plan to
-                attend. Register with the host shop as usual.
+                &quot;Going?&quot; tells other players you plan to attend.
+                Register with the host shop as usual.
             </p>
             <p className="mt-2 font-mono text-2xs tracking-wider text-muted uppercase">
                 {event.source === 'pokedata'

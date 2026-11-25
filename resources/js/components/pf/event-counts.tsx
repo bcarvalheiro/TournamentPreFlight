@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 type EventCountsProps = {
     goingCount: number;
     confirmedCount: number;
-    /** The answer controls under the count (M09 Slice 5): trainer rows or "I'm going". */
+    /** The answer controls under the count (M09 Slice 5): trainer rows or "Going?". */
     children?: ReactNode;
 };
 

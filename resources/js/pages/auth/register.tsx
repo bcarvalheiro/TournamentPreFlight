@@ -15,7 +15,7 @@ import { store } from '@/routes/register';
 type Props = {
     passwordRules: string;
     socialProviders: SocialProviderName[];
-    /** A guest pressed "I'm going" and was sent here to sign up. */
+    /** A guest pressed "Going?" and was sent here to sign up. */
     signingInToGo: boolean;
 };
 

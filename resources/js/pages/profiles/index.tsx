@@ -25,7 +25,7 @@ type Props = {
 
 /**
  * "Delete" on a trainer card: asks first (design.md "Sheet"), and only
- * "Delete trainer" removes them, with their "I'm going" answers.
+ * "Delete trainer" removes them, with their "Going?" answers.
  */
 function DeleteTrainer({ profile }: { profile: OwnProfile }) {
     const [open, setOpen] = useState(false);
@@ -44,7 +44,7 @@ function DeleteTrainer({ profile }: { profile: OwnProfile }) {
                 </button>
             }
             title={`Delete ${profile.name}?`}
-            description="Their “I'm going” answers go too. This can't be undone."
+            description="Their going answers go too. This can't be undone."
             footer={
                 <>
                     <Button variant="outline" onClick={() => setOpen(false)}>

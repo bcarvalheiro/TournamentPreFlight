@@ -7,7 +7,7 @@ use App\Models\Shop;
 use App\Models\User;
 
 /*
- * M08 AC2: a player with one trainer taps "I'm going" on a slip and the page
+ * M08 AC2: a player with one trainer taps "Going?" on a slip and the page
  * answers in place: a toast, the count and the label change without a full
  * reload; a second tap takes it back. The click, the partial reload and the
  * toast need a real browser.
@@ -34,7 +34,7 @@ it('lets a solo player tap to go, then tap again to stop', function () {
 
     $page->click("{$slip} button")
         ->assertSee("You're no longer going to Carta Alta")
-        ->assertSeeIn($slip, "I'm going")
+        ->assertSeeIn($slip, 'Going?')
         ->assertSeeIn($slip, '0 trainers going');
 
     expect(Attendance::query()->where('event_id', $event->id)->count())->toBe(0);
@@ -56,18 +56,18 @@ it('asks a player who taps too often to wait, without leaving the page', functio
     // 30 taps a minute are allowed; each waits for its label before the next.
     foreach (range(1, 30) as $tap) {
         $page->click("{$slip} button")
-            ->assertSeeIn($slip, $tap % 2 === 1 ? 'Going ✓' : "I'm going");
+            ->assertSeeIn($slip, $tap % 2 === 1 ? 'Going ✓' : 'Going?');
     }
 
     $page->click("{$slip} button")
         ->assertSee('Too many tries. Wait')
-        ->assertSeeIn($slip, "I'm going")
+        ->assertSeeIn($slip, 'Going?')
         ->assertSeeIn($slip, '0 trainers going')
         ->assertPathIs('/');
 });
 
 /*
- * M08 AC4, M09 Slice 5b: a family taps "I'm going" and the picker opens with a
+ * M08 AC4, M09 Slice 5b: a family taps "Going?" and the picker opens with a
  * big toggle row per trainer; each tap saves that trainer at once (no Save
  * button) and the slip follows while the sheet is still open. Opening a sheet
  * and tapping rows needs a real browser (its content is not in static markup).
