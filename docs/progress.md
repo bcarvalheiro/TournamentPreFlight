@@ -4,9 +4,9 @@ Claude updates this file at the end of every session (`/wrap-up`). Read it at th
 
 ## Current
 
-- **Milestone**: M09 · Event page (in progress).
+- **Milestone**: M09 · Event page (review).
 - **Branch**: m09-event-page
-- **State**: Plan approved (25 Nov). Next: Slice 1.
+- **State**: all slices done, `/review` fixes in, `composer verify` green (25 Nov). Next: Bruno pushes and opens the PR; then M10.
 
 ### Plan (M09)
 
@@ -103,7 +103,7 @@ Decisions approved with the plan (24 Nov): body `{profiles: {id: bool}}`; `SetAt
 | M06 | Sign in: email and password, Google, Discord, X | done | PR #8 merged |
 | M07 | Player profiles | done | PR #9 merged |
 | M08 | "I'm going" | done | PR #10 merged. "and Maybe" dropped: no maybe (decisions.md, 19 Nov) |
-| M09 | Event page | in progress | |
+| M09 | Event page | review | Report a change dropped (decisions.md, 25 Nov) |
 | M10 | Nightly import and sync | todo | |
 | M11 | Submitted events and admin | todo | |
 | M12 | Email notifications | todo | |
@@ -116,6 +116,40 @@ Status values: todo, in progress, review, done.
 ## Session log
 
 <!-- Newest first. One entry per session: date, milestone, what was done, what is left, anything surprising. -->
+
+### 2026-11-25 · M09 · Event page
+
+**Outcome.** Every event has its own page at `/events/{id}-{slug}`, opened from a home slip or "Up next" row (the whole row is the link). The header in the band shows the type, title, shop, date, start and how soon. "Who's heading there" has the count, "(n confirmed)" when there is one, and the account's trainers as toggle rows that save on tap. The Shop column has an OpenStreetMap embed, Directions (Google Maps, Waze, Apple Maps) and Copy address. Details has the date with the estimated end, the format, the entry fee and the tournament ID, then Official page, Share and Add to calendar (`.ics` or Google). Phones get a sticky going bar. A shared `?going` link opens "Going to …?" and writes nothing. Chat apps preview a shared link with the title and count. The count refreshes every minute while the tab is visible. Pending and hidden events are 404 except for their submitter and admins. The home picker now saves on tap too, and the answer button reads "Going?" before and "Going ✓" after. All six acceptance criteria have automated tests.
+
+**Commits** (`git log --oneline main..HEAD`, oldest first):
+- `8b80f36` progress for M09 · `8970a3a` plan
+- `c8d4b1c` route, public data and canonical slug (Slice 1) · `b576df7` events route group
+- `6b13cdd` pending and hidden pages only for submitter and admins (Slice 2)
+- `382d592` header and "Who's heading there" (3a) · `8360880` home hero through a layout callback
+- `0fff2e7` map and shop coordinates (3b) · `ff01404` details, actions, disclaimer (3c) · `c3bd354` entry fee (3d)
+- `a9c92a6` rows open the event page (Slice 4)
+- `72cc250` say who's going from the event page (Slice 5) · `9e40a79` picker saves on tap (5b) · `08cc520` "Going?" / "Going ✓" (5d)
+- `c7be85a` `?going` pop-up and Share (Slice 6) · `3726138` Report a change dropped (Slice 7)
+- `51a6795` link previews (Slice 8) · `b1b916e` count refresh every minute (Slice 9) · `d040602` Add to calendar (Slice 10)
+- `cfb1121`, `dde1c81`, `997c297`, `09522db`, `9ef9443`, `842db3d` `/review` fixes and their docs · `a71237a` browser test fix
+
+**Problems and how they were solved.**
+- The canonical redirect turned a shared `?going` into `?going=`: it now keeps the raw query string.
+- Two ways of giving the band its content (`usePage()` and layout callbacks) were in use: Bruno chose layout callbacks for slots that need the page's props, checked in Inertia's source to run on every render (decisions.md).
+- The OSM embed format and Apple's current Maps URLs are not in their docs pages: taken from openstreetmap.org's code and Apple's documentation JSON.
+- Bruno rejected prefetch and instant visits as over-engineering; the rows became plain stretched links, with the count and button protected above the link layer.
+- A red focus ring appeared on the first trainer when the `?going` pop-up opened: Radix focused the first button on open. Every sheet now focuses itself (`onOpenAutoFocus`).
+- The Open Graph image was rendered from `design/og-image.html` with Playwright; the local Herd widget had to be removed before the screenshot.
+- Google does not document its "add to calendar" link; Bruno kept it over the Calendar API, which needs OAuth consent and a Google review (decisions.md).
+- A test passed "10:00 Lisbon" to the factory, but Eloquent stores the wall time without converting: tests give UTC.
+
+**`/rethink-tests`.** Skipped by Bruno.
+
+**`/review`** (code-reviewer, privacy-guard, ui-reviewer). No leaks found. Fixed: the keyboard focus ring outlines the whole row (it was clipped to a thin bar); an untitled-slug fallback ("!!!" gave a 404); `STATUS:CANCELLED` and carriage returns in the calendar file; the map out of the Tab order and a named status tile; a deadlock retry on attendance saves. Logged: touch targets at 40px and the desktop footer offset (M15), `http(s)` validation of submitted official URLs (M11). Skipped: extra privacy variants, a poll `autoStart` test, hiding the phone bar near the card, darker button red.
+
+**Surprising.** `Str::slug()` returns an empty string for a title with no Latin letters.
+
+**Left.** Bruno pushes and opens the PR. Then M10 (nightly import and sync).
 
 ### 2026-11-24/25 · M08 · "I'm going"
 
