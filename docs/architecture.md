@@ -36,7 +36,7 @@ app/
                       OwnProfileData, OwnAttendanceData
   Data/Import/        ImportedEvent, SyncReport
   Enums/              EventType, EventStatus, EventSourceKey, SocialProvider
-  Notifications/      StillGoingNotification, ThresholdReached, PossiblyCancelled, SubmissionReviewed
+  Notifications/      StillGoingNotification, PossiblyCancelled, SubmissionReviewed
   Models/ Policies/ Jobs/ Console/Commands/   Laravel defaults (PlayerProfilePolicy: only the owner edits or deletes)
 resources/js/
   pages/              Inertia pages: home, events/show, profiles/*, admin/*
@@ -66,12 +66,10 @@ erDiagram
     users |o--o{ player_profiles : "gave consent for"
     users ||--o{ social_accounts : "signs in with"
     users |o--o{ events : "added"
-    users ||--o{ event_follows : "follows"
     users ||--o{ event_reports : "reports"
     shops ||--o{ events : "hosts"
     events ||--o{ attendances : "has going"
     player_profiles |o--o{ attendances : "is going"
-    events ||--o{ event_follows : "is followed"
     events ||--o{ event_reports : "is reported"
 
     users {
@@ -135,14 +133,6 @@ erDiagram
         timestamp confirmed_at "nullable"
         timestamp anonymised_at "nullable"
     }
-    event_follows {
-        bigint id PK
-        bigint event_id FK "cascade on delete; UK with user_id"
-        bigint user_id FK "cascade on delete"
-        smallint notify_at_count
-        boolean notify_on_drop "default false"
-        timestamp notified_at "nullable"
-    }
     event_reports {
         bigint id PK
         bigint event_id FK "cascade on delete"
@@ -178,8 +168,6 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 **events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 
 **attendances**: event_id, player_profile_id, confirmed_at (nullable), anonymised_at (nullable). No status column: a row means the profile is going; not going means no row, so removing an answer deletes the row. Unique (event_id, player_profile_id), which also serves lookups by event. After anonymisation player_profile_id becomes null and the unique key no longer applies (MySQL allows several NULLs).
-
-**event_follows**: event_id, user_id, notify_at_count, notify_on_drop (bool), notified_at (nullable). Unique (event_id, user_id).
 
 **event_reports**: event_id, user_id, type (changed, cancelled, wrong), message. For "Report a change".
 
@@ -223,7 +211,7 @@ Player-submitted events go through the same matching (Guid, then URL) before the
 
 ## Notifications
 
-Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `thresholds:check` runs after every `SetAttendance` (dispatched job), not on a schedule; `attendances:anonymise` daily. Reminders respect `notification_settings.reminders` and carry a signed one-click unsubscribe. "Event changed" and "possibly cancelled" are always sent. Threshold emails stop by unfollowing; moderation emails are a one-off reply to the submitter.
+Laravel Notifications on the `mail` channel, queued. Signed URLs (`URL::temporarySignedRoute`, valid until the event ends) for Yes/No answers in emails so no login is needed. Schedules (Lisbon time): `reminders:day-before` at 18:00 for events starting the next day; `attendances:anonymise` daily. Reminders respect `notification_settings.reminders` and carry a signed one-click unsubscribe. "Event changed" and "possibly cancelled" are always sent. Moderation emails are a one-off reply to the submitter. No follows and no threshold emails (decisions.md, 25 Nov): only going players get event emails.
 
 ## Auth flows
 

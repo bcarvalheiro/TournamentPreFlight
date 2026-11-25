@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Jobs\CheckThresholds;
 use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\PlayerProfile;
@@ -18,8 +17,7 @@ use Illuminate\Validation\ValidationException;
  * for, not listed or ended, the `upcoming` scope (422). Then the answers are
  * saved all or nothing: going creates the row if it is missing, so answering
  * twice never makes a second one (the unique key backs this up); not going
- * deletes it (CLAUDE.md rule 5). A save that changed something queues
- * `CheckThresholds` once for the event; a tap that changes nothing does not.
+ * deletes it (CLAUDE.md rule 5).
  */
 class SetAttendance
 {
@@ -38,33 +36,24 @@ class SetAttendance
             throw ValidationException::withMessages(['event' => 'Answers are closed for this event.']);
         }
 
-        $changed = DB::transaction(function () use ($profiles, $event, $answers): bool {
-            $changed = false;
-
+        DB::transaction(function () use ($profiles, $event, $answers): void {
             foreach ($profiles as $profile) {
-                if ($this->save($profile, $event, $answers[$profile->id])) {
-                    $changed = true;
-                }
+                $this->save($profile, $event, $answers[$profile->id]);
             }
-
-            return $changed;
         });
-
-        // Once per save; afterCommit in case a caller wraps this in its own transaction.
-        if ($changed) {
-            CheckThresholds::dispatch($event)->afterCommit();
-        }
     }
 
     /**
-     * Whether the answer changed: a row created or deleted.
+     * Going creates the row if it is missing; not going deletes it.
      */
-    private function save(PlayerProfile $profile, Event $event, bool $going): bool
+    private function save(PlayerProfile $profile, Event $event, bool $going): void
     {
         $answer = ['event_id' => $event->id, 'player_profile_id' => $profile->id];
 
-        return $going
-            ? Attendance::query()->firstOrCreate($answer)->wasRecentlyCreated
-            : Attendance::query()->where($answer)->delete() > 0;
+        if ($going) {
+            Attendance::query()->firstOrCreate($answer);
+        } else {
+            Attendance::query()->where($answer)->delete();
+        }
     }
 }
