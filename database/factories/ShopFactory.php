@@ -25,6 +25,8 @@ class ShopFactory extends Factory
             'address' => fake()->streetAddress(),
             'city' => $city,
             'district' => null,
+            'latitude' => null,
+            'longitude' => null,
             'official_name_key' => mb_strtolower("{$name}|{$city}"),
         ];
     }

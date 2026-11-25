@@ -20,7 +20,7 @@ class EventController extends Controller
      */
     public function show(Request $request, Event $event, ?string $slug = null): Response|RedirectResponse
     {
-        $event->load('shop:id,name,address,district,city');
+        $event->load('shop:id,name,address,district,city,latitude,longitude');
 
         if ($slug !== $event->slug()) {
             // The raw query string: getQueryString() would turn `?going` into `?going=`.

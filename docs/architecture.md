@@ -106,6 +106,8 @@ erDiagram
         string address "nullable"
         string city
         string district "nullable"
+        decimal latitude "nullable, 9,6"
+        decimal longitude "nullable, 9,6"
         string official_name_key UK
     }
     events {
@@ -163,7 +165,7 @@ How to read the lines: `||--o{` is "one to many" (a user owns zero or more profi
 
 **player_profiles**: user_id (owner), name, pop_id (the Pokemon Player ID, or POP ID, shown as "Pokemon Player ID"; string of digits, unique), birth_year (smallint), is_child (bool, computed on every model save: current Lisbon year minus birth year is 13 or less), consent_given_at (nullable, required when is_child), consent_by_user_id (nullable). Soft deletes: no; deletion cascades to attendances.
 
-**shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
+**shops** (a host shop; not a shop account): name, address (nullable), city, district (nullable; M10 fills it from pokedata's `state`), latitude and longitude (nullable `decimal(9,6)`, cast to float; M10 fills them from pokedata; the event page's map and directions, M09), official_name_key (normalized name + city, for matching imported events). Unique (official_name_key). Name + city is not reliable for pokedata (spellings vary, `docs/pokedata.md`); the pokedata `league` ID is the candidate key, decided in M10.
 
 **events**: shop_id, source (pokedata, player), official_guid (nullable, unique; pokedata's `guid`), official_url (nullable, unique), display_id (official tournament ID, nullable), type (casual, prerelease, challenge, cup), title (nullable), starts_at, ends_at (always the type's estimate from `EventType::estimatedHours()`; written by the model's `saving` hook, recomputed whenever starts_at or type changes), status (pending, listed, hidden, cancelled), possibly_cancelled_at (nullable), last_seen_at (nullable, set by sync), changed_at (nullable, last significant change), added_by_user_id (nullable), moderation_note (nullable). Index (status, ends_at, starts_at).
 

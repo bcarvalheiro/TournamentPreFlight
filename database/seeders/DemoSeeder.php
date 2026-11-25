@@ -21,18 +21,20 @@ use Illuminate\Support\Collection;
 class DemoSeeder extends Seeder
 {
     /**
-     * @var array<string, array{string, string, string}> key => [name, city, district]
+     * Invented shops at their city centres' coordinates.
+     *
+     * @var array<string, array{string, string, string, float, float}> key => [name, city, district, latitude, longitude]
      */
     private const SHOPS = [
-        'dado' => ['Dado Dourado', 'Lisboa', 'Lisboa'],
-        'cartaalta' => ['Carta Alta', 'Porto', 'Porto'],
-        'toca' => ['Toca do Tabuleiro', 'Braga', 'Braga'],
-        'meeples' => ['Casa dos Meeples', 'Coimbra', 'Coimbra'],
-        'farol' => ['Farol Geek', 'Faro', 'Faro'],
-        'ria' => ['Ria Cartas & Jogos', 'Aveiro', 'Aveiro'],
-        'sado' => ['Sado Games', 'Setúbal', 'Setúbal'],
-        'levada' => ['Levada TCG', 'Funchal', 'Madeira'],
-        'liz' => ['Liz Card Club', 'Leiria', 'Leiria'],
+        'dado' => ['Dado Dourado', 'Lisboa', 'Lisboa', 38.7139, -9.1394],
+        'cartaalta' => ['Carta Alta', 'Porto', 'Porto', 41.1496, -8.6110],
+        'toca' => ['Toca do Tabuleiro', 'Braga', 'Braga', 41.5503, -8.4200],
+        'meeples' => ['Casa dos Meeples', 'Coimbra', 'Coimbra', 40.2033, -8.4103],
+        'farol' => ['Farol Geek', 'Faro', 'Faro', 37.0194, -7.9322],
+        'ria' => ['Ria Cartas & Jogos', 'Aveiro', 'Aveiro', 40.6405, -8.6538],
+        'sado' => ['Sado Games', 'Setúbal', 'Setúbal', 38.5244, -8.8882],
+        'levada' => ['Levada TCG', 'Funchal', 'Madeira', 32.6669, -16.9241],
+        'liz' => ['Liz Card Club', 'Leiria', 'Leiria', 39.7436, -8.8071],
     ];
 
     /**
@@ -96,6 +98,8 @@ class DemoSeeder extends Seeder
             'name' => $shop[0],
             'city' => $shop[1],
             'district' => $shop[2],
+            'latitude' => $shop[3],
+            'longitude' => $shop[4],
             'official_name_key' => mb_strtolower("{$shop[0]}|{$shop[1]}"),
         ]));
 

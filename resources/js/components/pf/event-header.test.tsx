@@ -21,6 +21,8 @@ function event(overrides: Partial<EventPage> = {}): EventPage {
         address: 'Rua das Flores 12',
         district: 'Lisboa',
         city: 'Lisboa',
+        latitude: null,
+        longitude: null,
         startsAt: '2026-11-29T10:00:00Z',
         endsAt: '2026-11-29T16:00:00Z',
         officialUrl: null,

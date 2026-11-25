@@ -126,7 +126,7 @@ Use the same band (navbar only, no hero) and the same card language:
 
 **Column 1, "Who's heading there"** (`EventCounts`): small mono letter-spaced label; a paper card like the pairings sheet with the big red count and "TRAINERS GOING" in the display font, "(8 confirmed)" only when there is a confirmed answer (M12), a graphite rule, and the footer "Headcount, not registration · Names never shown". The account's trainers sit inside this card as toggle rows (Slice 5): name only, "I'm going" / "Going ✓", each tap saves, "+ Add a trainer". No divisions and no birth years (rule 3), no maybe.
 
-**Column 2, Venue** (Slice 3b): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
+**Column 2, Shop** (Slice 3b, `EventShop`; never "venue"): an OpenStreetMap embed with a pin (only when the shop has coordinates), shop name, address, district, a red "Directions" button (Google Maps, Waze, Apple Maps) and "Copy address".
 
 **Column 3, Details** (Slice 3c): rows with an icon each: When (full date, "Starts 10:00 · end time not published"), Format ("TCG · League Cup"), Entry fee (when known), Tournament ID. Then a 2×2 action grid (Add to calendar, Directions, Official page, Share), the pink headcount disclaimer and a mono line "Source: pokedata".
 

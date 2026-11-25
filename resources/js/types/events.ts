@@ -44,6 +44,8 @@ export type EventPage = {
     address: string | null;
     district: string | null;
     city: string;
+    latitude: number | null;
+    longitude: number | null;
     startsAt: string;
     endsAt: string;
     officialUrl: string | null;

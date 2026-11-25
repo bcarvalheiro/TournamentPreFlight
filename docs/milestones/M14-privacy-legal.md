@@ -6,6 +6,7 @@
 The trust basics before real users arrive.
 
 ## Scope
+- Third parties the pages load (M09): the event page embeds an OpenStreetMap map (openstreetmap.org sees the visitor's IP address and the shop's location; no player data); the Directions links open Google Maps, Waze or Apple Maps only when tapped. Say so in the privacy policy.
 - Pages: Privacy policy, Terms, About (what the app is and is not), Contact (an email address from config). Write clear English drafts marked "Draft, needs review" at the top; Bruno will have them reviewed. Not legal advice.
 - Account deletion (settings page): confirmation step, deletes account, social accounts, profiles, answers, reports; counts drop accordingly.
 - "Download my data" as JSON (account, profiles, answers, reports).

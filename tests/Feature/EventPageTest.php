@@ -25,6 +25,8 @@ function winterCup(array $attributes = []): Event
         'address' => 'Rua das Flores 12',
         'city' => 'Lisboa',
         'district' => 'Lisboa',
+        'latitude' => 38.7578,
+        'longitude' => -9.25036,
     ]);
 
     return Event::factory()->for($shop)->create([
@@ -55,6 +57,8 @@ it('shows the event\'s details and nothing else', function () {
                 ->where('address', 'Rua das Flores 12')
                 ->where('district', 'Lisboa')
                 ->where('city', 'Lisboa')
+                ->where('latitude', 38.7578)
+                ->where('longitude', -9.25036)
                 ->where('startsAt', '2026-11-29T10:00:00Z')
                 ->where('endsAt', '2026-11-29T16:00:00Z') // a Cup lasts 6 hours
                 ->where('officialUrl', 'https://example.test/tournaments/26-11-001729/')
@@ -119,6 +123,17 @@ it('falls back to the type and shop for an event without a title', function () {
         ->assertInertia(fn (AssertableInertia $page) => $page
             ->where('event.title', 'League Cup at Carta Alta')
             ->where('event.url', url("/events/{$event->id}-league-cup-at-carta-alta")));
+});
+
+it('sends no coordinates for a shop without them', function () {
+    $event = winterCup();
+    $event->shop->update(['latitude' => null, 'longitude' => null]);
+
+    $this->get("/events/{$event->id}-winter-cup")
+        ->assertOk()
+        ->assertInertia(fn (AssertableInertia $page) => $page
+            ->where('event.latitude', null)
+            ->where('event.longitude', null));
 });
 
 it('returns 404 for an unknown event', function () {
