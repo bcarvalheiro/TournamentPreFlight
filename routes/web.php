@@ -12,11 +12,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 
-// The event page (M09): /events/12-winter-cup; a missing or old slug redirects.
-Route::get('events/{event}-{slug?}', [EventController::class, 'show'])
-    ->whereNumber('event')
-    ->name('events.show');
-
 // Signed-in accounts
 Route::middleware(['auth'])->group(function () {
     Route::middleware(['verified'])->group(function () {
@@ -64,13 +59,23 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-// "I'm going" pressed (M06 pending intent): remember it, then sign in or go
-// back to the page. POST only, so a link cannot set it.
-Route::post('events/{event}/going', [PendingIntentController::class, 'store'])
-    ->whereNumber('event')
-    ->name('events.going');
-// "Not now" on the profile page: forget the pending intent.
-Route::delete('events/going', [PendingIntentController::class, 'destroy'])->name('events.going.forget');
+Route::prefix('events')->name('events.')->group(function() {
+    // The event page (M09): /events/12-winter-cup; a missing or old slug redirects.
+    Route::get('{event}-{slug?}', [EventController::class, 'show'])
+        ->whereNumber('event')
+        ->name('show');
+
+        Route::controller(PendingIntentController::class)->group(function () {
+            // "I'm going" pressed (M06 pending intent): remember it, then sign in or go
+            // back to the page. POST only, so a link cannot set it.
+            Route::post('{event}/going', 'store')
+                ->whereNumber('event')
+                ->name('going');
+
+            // "Not now" on the profile page: forget the pending intent.
+            Route::delete('going', 'destroy')->name('going.forget');
+        });
+});
 
 // Developer page with every shared component; it does not exist outside local.
 if (app()->isLocal()) {
