@@ -8,7 +8,8 @@ use App\Models\User;
 /*
  * M08 AC5: a signed-out player taps "I'm going" on a slip, signs in with email
  * and password, and lands back on the home page where the tap carries on: a
- * solo account's answer is applied, a family gets the picker open. The whole
+ * solo account's answer is applied, a family gets the picker open (each tap
+ * there saves, M09 Slice 5b). The whole
  * sign-in round trip needs a real browser.
  */
 function tapGoingThenSignIn(User $user): mixed
@@ -48,10 +49,10 @@ it('opens the picker for a family after signing in', function () {
     // Nothing is saved until the family chooses.
     expect($event->attendances()->count())->toBe(0);
 
-    // The click waits for the sheet to open (assertSee would not wait); then it is checked.
+    // The click waits for the sheet to open (assertSee would not wait); the tap saves Ana at once.
     $page->click('Ana')
         ->assertSee('Going to Carta Alta?')
-        ->click('Save · 1 going')
+        ->assertSee('Ana is going to Carta Alta')
         ->assertSeeIn('[data-slot="card"]', 'Going (1)');
 
     expect($event->attendances()->pluck('player_profile_id')->all())->toBe([$ana->id]);

@@ -67,17 +67,19 @@ it('asks a player who taps too often to wait, without leaving the page', functio
 });
 
 /*
- * M08 AC4: a family taps "I'm going" and the picker opens with a checkbox per
- * trainer (a big toggle row); Save sends every choice in one request. Opening a sheet and ticking
- * boxes needs a real browser (the sheet's content is not in static markup).
+ * M08 AC4, M09 Slice 5b: a family taps "I'm going" and the picker opens with a
+ * big toggle row per trainer; each tap saves that trainer at once (no Save
+ * button) and the slip follows while the sheet is still open. Opening a sheet
+ * and tapping rows needs a real browser (its content is not in static markup).
  */
-it('lets a family pick who is going, per trainer', function () {
+it('lets a family pick who is going, one tap per trainer', function () {
     $parent = User::factory()->create();
     $ana = PlayerProfile::factory()->for($parent)->create(['name' => 'Ana']);
     $tiago = PlayerProfile::factory()->child()->for($parent)->create(['name' => 'Tiago']);
     $event = Event::factory()->for(Shop::factory()->create(['name' => 'Carta Alta']))->create();
     $this->actingAs($parent);
     $slip = '[data-slot="card"]';
+    $going = fn () => $event->attendances()->orderBy('player_profile_id')->pluck('player_profile_id')->all();
 
     $page = visit(route('home'));
 
@@ -85,23 +87,29 @@ it('lets a family pick who is going, per trainer', function () {
     // So each sheet is first met with a click, and only then asserted on.
     $page->click("{$slip} button")
         ->click('Ana')
-        ->assertSee('Going to Carta Alta?')
-        ->click('Tiago')
-        ->click('Save · 2 going')
-        ->assertSee('Saved for Carta Alta')
+        ->assertSee('Ana is going to Carta Alta')
+        ->assertSeeIn($slip, 'Going (1)');
+
+    expect($going())->toBe([$ana->id]);
+
+    // The rows wait while a save runs; the click waits for them to come back.
+    $page->click('Tiago')
+        ->assertSee('Tiago is going to Carta Alta')
         ->assertSeeIn($slip, 'Going (2)')
         ->assertSeeIn($slip, 'You: Ana, Tiago')
         ->assertSeeIn($slip, '2 trainers going');
 
-    // Reopened, the sheet starts from the saved answers (both picked): unticking
-    // Tiago leaves "Save · 1 going". Had it reopened empty, the tap would pick
-    // Tiago instead, and the last check (only Ana saved) would fail.
-    $page->click("{$slip} button")
+    expect($going())->toBe([$ana->id, $tiago->id]);
+
+    // Done closes the sheet; reopened, it shows the saved answers, so a tap on
+    // Tiago takes him off (had it reopened empty, the tap would add him again).
+    $page->click('Done')
+        ->click("{$slip} button")
         ->click('Tiago')
-        ->click('Save · 1 going')
+        ->assertSee('Tiago is no longer going to Carta Alta')
         ->assertSeeIn($slip, 'Going (1)')
         ->assertSeeIn($slip, 'You: Ana')
         ->assertSeeIn($slip, '1 trainers going');
 
-    expect($event->attendances()->pluck('player_profile_id')->all())->toBe([$ana->id]);
+    expect($going())->toBe([$ana->id]);
 });

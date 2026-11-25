@@ -48,7 +48,7 @@ It is **a headcount, not a registration**. It reserves no seat, takes no payment
 
 1. Signed out, or signed in without a verified email or a Pokemon Player ID (POP ID): sign in, verify the email and add the first profile as needed, then come back to the same page and continue with step 2 for that event.
 2. Signed in with one profile: toggle that profile's going answer. Show a short confirmation ("You're going to Carta Alta, Sat 15 Nov").
-3. Signed in with several profiles: open a picker with one big toggle per profile ("I'm going" / "Going ✓"). Save applies the choices per profile in one go. The button then reads "Going (2)".
+3. Signed in with several profiles: open a picker with one big toggle per profile ("I'm going" / "Going ✓"). Each tap saves that profile's answer at once (no Save button, M09). The button then reads "Going (2)".
 4. The button toggles going; the event page has the same per-profile controls.
 
 ## Home page
