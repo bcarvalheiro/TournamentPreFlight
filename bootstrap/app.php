@@ -34,9 +34,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // Any rate limit on a save: back to the page with one message saying how
         // long to wait, instead of the bare 429 page (Inertia docs, CSRF
         // Protection, "Handling Mismatches"; decisions.md, 25 Nov). Page loads
-        // keep the 429 page: going back could loop to the same URL.
+        // keep the 429 page (going back could loop to the same URL), and so do
+        // JSON callers, which have no page to go back to.
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
-            if ($response->getStatusCode() !== Response::HTTP_TOO_MANY_REQUESTS || $request->isMethod('GET')) {
+            if ($response->getStatusCode() !== Response::HTTP_TOO_MANY_REQUESTS || $request->isMethod('GET') || $request->expectsJson()) {
                 return $response;
             }
 
