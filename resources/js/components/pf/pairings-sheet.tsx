@@ -77,10 +77,11 @@ export function PairingsSheet({ events }: { events: EventCard[] }): ReactNode {
                                 <When event={event} />
                                 <div className="min-w-0 pl-3 font-sans leading-tight sm:pl-6">
                                     <strong className="block truncate">
-                                        {/* Stretched over the row by its ::after layer; the count and button end stays above it. */}
+                                        {/* Stretched over the row by its ::after layer; the count and button end stays above it.
+                                            The focus ring goes on that layer too: around the name it was clipped by `truncate` (review). */}
                                         <Link
                                             href={event.url}
-                                            className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
+                                            className="underline-offset-4 group-hover:underline after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-red"
                                         >
                                             {event.shopName}
                                         </Link>

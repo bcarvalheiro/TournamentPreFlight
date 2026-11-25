@@ -49,3 +49,27 @@ it('keeps the "Going?" button its own tap', function () {
         ->click('[data-slot="card"] button')
         ->assertPathIs('/login');
 });
+
+/*
+ * Review (M09): the keyboard focus ring outlines the whole row, like its click
+ * area. Around the name it was clipped by the "Up next" row's `truncate` to a
+ * thin bar. The ring is drawn by the link's ::after layer, so its computed
+ * style is read after a keyboard-style focus (no pointer used on the page).
+ */
+it('outlines the whole slip or row when its link has keyboard focus', function (string $row) {
+    $page = visit(route('home'));
+
+    $ring = fn (string $part) => <<<JS
+        (() => {
+            const link = document.querySelector('{$row} a[href*="/events/"]');
+            link.focus();
+            return getComputedStyle(link, '{$part}').outlineStyle;
+        })()
+        JS;
+
+    $page->assertScript($ring('::after'), 'solid')
+        ->assertScript($ring(''), 'none');
+})->with([
+    'slip' => '[data-slot="card"]',
+    'up next row' => '[data-test="up-next-row"]',
+]);

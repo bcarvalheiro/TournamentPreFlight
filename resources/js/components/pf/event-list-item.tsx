@@ -34,10 +34,11 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                 <h3 className="text-lg leading-tight font-bold">
                     {/* Stretched over the slip by its ::after layer (Bootstrap's
                         .stretched-link); the stub stays above it. Hovering the
-                        slip underlines the name. */}
+                        slip underlines the name. The focus ring outlines the
+                        whole slip, like the click area (review). */}
                     <Link
                         href={event.url}
-                        className="underline-offset-4 group-hover:underline after:absolute after:inset-0"
+                        className="underline-offset-4 group-hover:underline after:absolute after:inset-0 focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:-outline-offset-2 focus-visible:after:outline-red"
                     >
                         {event.shopName}
                     </Link>
