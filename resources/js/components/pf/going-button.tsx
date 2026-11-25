@@ -13,7 +13,7 @@ const goingClasses =
     'inline-flex h-10 items-center rounded-md border-[1.5px] border-red bg-red px-2.5 font-sans text-sm font-bold whitespace-nowrap text-white disabled:opacity-60';
 
 /** Once going: outlined, the same red border with no fill (design.md, Event list item). */
-const goingOnClasses = 'bg-transparent text-red';
+const goingOnClasses = 'bg-transparent text-red-text';
 
 /**
  * The quick "I'm going" button (product.md). A player with one trainer taps it
@@ -35,6 +35,10 @@ export function GoingButton({
     const [saving, setSaving] = useState(false);
     const trainers = props.own?.trainers ?? [];
     const goingIds = props.own?.going[event.id] ?? [];
+    const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
+    // Every slip has the same button; screen readers hear which event it is for.
+    // Added after the visible words, so the name still starts with them (WCAG 2.5.3).
+    const forEvent = <span className="sr-only"> to {place}</span>;
 
     if (trainers.length > 1) {
         return (
@@ -55,6 +59,7 @@ export function GoingButton({
                         {goingIds.length > 0
                             ? `Going (${goingIds.length})`
                             : "I'm going"}
+                        {forEvent}
                     </button>
                 }
             />
@@ -69,6 +74,7 @@ export function GoingButton({
                 <input type="hidden" name="return_to" value={url} />
                 <button type="submit" className={cn(goingClasses, className)}>
                     I'm going
+                    {forEvent}
                 </button>
             </Form>
         );
@@ -76,7 +82,6 @@ export function GoingButton({
 
     const trainerId = solo.id;
     const isGoing = goingIds.includes(trainerId);
-    const place = `${event.shopName}, ${formatDay(event.startsAt)}`;
 
     function toggle(): void {
         router.put(
@@ -118,6 +123,7 @@ export function GoingButton({
             className={cn(goingClasses, isGoing && goingOnClasses, className)}
         >
             {isGoing ? 'Going ✓' : "I'm going"}
+            {forEvent}
         </button>
     );
 }

@@ -84,18 +84,36 @@ export default function Home({
             return;
         }
 
+        const trainerId = own.trainers[0].id;
+
         router.put(
             update.url(pendingIntent.event_id),
-            { profiles: { [own.trainers[0].id]: true } },
+            { profiles: { [trainerId]: true } },
             {
                 only: ['events', 'upNext', 'own'],
                 preserveScroll: true,
-                onSuccess: () =>
+                // Only once the answer is really saved: a save sent back (too
+                // many tries) also ends here, with its own toast.
+                onSuccess: (page) => {
+                    const now = page.props.own as OwnAttendance | null;
+
+                    if (
+                        !(now?.going[pendingIntent.event_id] ?? []).includes(
+                            trainerId,
+                        )
+                    ) {
+                        return;
+                    }
+
                     toast.success(
                         intentEvent
                             ? `You're going to ${intentEvent.shopName}, ${formatDay(intentEvent.startsAt)}`
                             : "You're going.",
-                    ),
+                    );
+                },
+                // The event may have closed while they signed in.
+                onError: (errors) =>
+                    toast.error(errors.event ?? 'Could not save. Try again.'),
             },
         );
     }, []);

@@ -39,6 +39,10 @@ function render(own: OwnAttendance | null): string {
 const ana = { id: 7, name: 'Ana' };
 const tiago = { id: 9, name: 'Tiago' };
 
+/** Screen readers hear which event a button is for (review fix, WCAG 2.5.3). */
+const forEvent =
+    '<span class="sr-only"> to Carta Alta, Sat 5 Dec</span></button>';
+
 describe('GoingButton', () => {
     it('gives a guest the pending-intent form (M06)', () => {
         const markup = render(null);
@@ -46,7 +50,7 @@ describe('GoingButton', () => {
         expect(markup).toContain('<form');
         expect(markup).toContain('action="/events/1/going"');
         expect(markup).toContain('method="post"');
-        expect(markup).toContain('I&#x27;m going');
+        expect(markup).toContain(`>I&#x27;m going${forEvent}`);
     });
 
     it('lets a solo player who is not going tap "I\'m going"', () => {
@@ -55,7 +59,7 @@ describe('GoingButton', () => {
         expect(markup).not.toContain('<form');
         expect(markup).toContain('type="button"');
         expect(markup).toContain('aria-pressed="false"');
-        expect(markup).toContain('>I&#x27;m going</button>');
+        expect(markup).toContain(`>I&#x27;m going${forEvent}`);
     });
 
     it('shows a going solo player "Going ✓", pressed and outlined', () => {
@@ -63,7 +67,7 @@ describe('GoingButton', () => {
 
         expect(markup).toContain('aria-pressed="true"');
         expect(markup).toContain('bg-transparent');
-        expect(markup).toContain('>Going ✓</button>');
+        expect(markup).toContain(`>Going ✓${forEvent}`);
     });
 
     it('lets a family with nobody going open the picker from "I\'m going"', () => {
@@ -72,7 +76,7 @@ describe('GoingButton', () => {
         expect(markup).not.toContain('<form');
         expect(markup).toContain('aria-haspopup="dialog"');
         expect(markup).not.toContain('bg-transparent');
-        expect(markup).toContain('>I&#x27;m going</button>');
+        expect(markup).toContain(`>I&#x27;m going${forEvent}`);
     });
 
     it('shows a family with two going "Going (2)", outlined', () => {
@@ -80,6 +84,6 @@ describe('GoingButton', () => {
 
         expect(markup).toContain('aria-haspopup="dialog"');
         expect(markup).toContain('bg-transparent');
-        expect(markup).toContain('>Going (2)</button>');
+        expect(markup).toContain(`>Going (2)${forEvent}`);
     });
 });

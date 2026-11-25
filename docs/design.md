@@ -34,7 +34,7 @@ Fonts (Google Fonts, `display=swap`), loaded through the Laravel Vite plugin's `
 
 Radii: cards 6px, sheets 14px, buttons 9px, chips fully rounded. Focus: 2px red outline, 2px offset, on every interactive element. Respect `prefers-reduced-motion`.
 
-Contrast: red on white is 4.2:1, so use red for large text (counts) and for buttons with white bold text at 14px+ bold; never for small body text. Muted on bg-2 passes AA.
+Contrast: red on white is 4.2:1, so use red for large text (counts), borders, tints and buttons with white bold text at 14px+ bold; never for small text. Small red text (the outlined "Going ✓" button, "You: Ana, Tiago", a picked trainer's "Going ✓") uses **red-text** `#C1121F` (6.2:1 on white, 5.7:1 on the red/5 tint; M08 review). Muted on bg-2 passes AA.
 
 ## Type icons ("balls")
 

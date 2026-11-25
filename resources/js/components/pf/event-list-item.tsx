@@ -51,7 +51,7 @@ export function EventListItem({ event }: { event: EventCard }): ReactNode {
                     <span>{TOURNAMENT_TYPE_LONG_NAMES[event.type]}</span>
                 </p>
                 {goingNames.length > 0 && (
-                    <p className="text-sm font-semibold text-red">
+                    <p className="text-sm font-semibold text-red-text">
                         You: {goingNames.join(', ')}
                     </p>
                 )}

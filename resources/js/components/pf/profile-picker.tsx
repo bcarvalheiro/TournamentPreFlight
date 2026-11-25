@@ -24,7 +24,7 @@ type ProfilePickerProps = {
 
 /** One trainer's row: the whole row is the button, at least 48px tall for thumbs. */
 const rowClasses =
-    'flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-md border-[1.5px] border-line-strong bg-white px-3.5 text-left';
+    'flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-md border-[1.5px] border-line-strong bg-white px-3.5 text-left disabled:cursor-default disabled:opacity-60';
 
 /** Picked: red outline with a light red tint, like a going slip button. */
 const rowPickedClasses = 'border-red bg-red/5';
@@ -79,16 +79,21 @@ export function ProfilePicker({
                 preserveScroll: true,
                 onStart: () => setSaving(true),
                 onFinish: () => setSaving(false),
-                // Only when the server's answers really changed: a save sent back
-                // (too many tries) also ends here, with its own toast.
+                // A save sent back (too many tries) also ends here, with its own
+                // toast: then the server still has the old answers, so the sheet
+                // stays open with the family's picks. It closes once they are saved.
                 onSuccess: (page) => {
                     const own = page.props.own as OwnAttendance | null;
                     const now = own?.going[event.id] ?? [];
-                    const changed =
-                        now.length !== goingIds.length ||
-                        now.some((id) => !goingIds.includes(id));
+                    const sameAs = (ids: number[]) =>
+                        now.length === ids.length &&
+                        now.every((id) => ids.includes(id));
 
-                    if (changed) {
+                    if (!sameAs(checked)) {
+                        return;
+                    }
+
+                    if (!sameAs(goingIds)) {
                         toast.success(`Saved for ${place}`);
                     }
 
@@ -127,6 +132,7 @@ export function ProfilePicker({
                             <button
                                 type="button"
                                 aria-pressed={isPicked}
+                                disabled={saving}
                                 onClick={() => toggle(trainer.id)}
                                 className={cn(
                                     rowClasses,
@@ -141,11 +147,13 @@ export function ProfilePicker({
                                 >
                                     {trainer.name}
                                 </span>
+                                {/* Seen, not read: aria-pressed already tells screen readers. */}
                                 <span
+                                    aria-hidden="true"
                                     className={cn(
                                         'text-sm whitespace-nowrap',
                                         isPicked
-                                            ? 'font-bold text-red'
+                                            ? 'font-bold text-red-text'
                                             : 'text-muted',
                                     )}
                                 >
