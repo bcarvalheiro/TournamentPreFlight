@@ -4,9 +4,8 @@ import type { ReactElement, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { ResponsiveDialog } from '@/components/pf/responsive-dialog';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { formatDay } from '@/lib/time';
+import { cn } from '@/lib/utils';
 import { update } from '@/routes/events/attendance';
 import { create } from '@/routes/profiles';
 import type { EventCard, OwnAttendance } from '@/types';
@@ -21,10 +20,18 @@ type ProfilePickerProps = {
     trigger: ReactElement;
 };
 
+/** One trainer's row: the whole row is the button, at least 48px tall for thumbs. */
+const rowClasses =
+    'flex min-h-12 w-full cursor-pointer items-center justify-between gap-3 rounded-md border-[1.5px] border-line-strong bg-white px-3.5 text-left';
+
+/** Picked: red outline with a light red tint, like a going slip button. */
+const rowPickedClasses = 'border-red bg-red/5';
+
 /**
- * "Who is going?" for a family account (design.md, ProfilePicker; M08): a
- * going checkbox per trainer, then Save sends every choice in one request.
- * The sheet opens with the saved answers each time.
+ * "Who is going?" for a family account (design.md, ProfilePicker; M08): one
+ * big toggle per trainer in the slips' language ("I'm going" / "Going ✓"),
+ * then Save sends every choice in one request. The sheet opens with the saved
+ * answers each time.
  */
 export function ProfilePicker({
     event,
@@ -45,11 +52,11 @@ export function ProfilePicker({
         setOpen(isOpen);
     }
 
-    function toggle(trainerId: number, isChecked: boolean): void {
+    function toggle(trainerId: number): void {
         setChecked((current) =>
-            isChecked
-                ? [...current, trainerId]
-                : current.filter((id) => id !== trainerId),
+            current.includes(trainerId)
+                ? current.filter((id) => id !== trainerId)
+                : [...current, trainerId],
         );
     }
 
@@ -103,33 +110,45 @@ export function ProfilePicker({
                         <Link href={create.url()}>Add a trainer</Link>
                     </Button>
                     <Button onClick={save} disabled={saving}>
-                        Save
+                        Save · {checked.length} going
                     </Button>
                 </>
             }
         >
-            <ul className="divide-y divide-line">
+            <ul className="space-y-2">
                 {trainers.map((trainer) => {
-                    const id = `going-${event.id}-${trainer.id}`;
+                    const isPicked = checked.includes(trainer.id);
 
                     return (
-                        <li
-                            key={trainer.id}
-                            className="flex min-h-10 items-center gap-3 py-1"
-                        >
-                            <Checkbox
-                                id={id}
-                                checked={checked.includes(trainer.id)}
-                                onCheckedChange={(state) =>
-                                    toggle(trainer.id, state === true)
-                                }
-                            />
-                            <Label
-                                htmlFor={id}
-                                className="flex min-h-10 flex-1 items-center text-base"
+                        <li key={trainer.id}>
+                            <button
+                                type="button"
+                                aria-pressed={isPicked}
+                                onClick={() => toggle(trainer.id)}
+                                className={cn(
+                                    rowClasses,
+                                    isPicked && rowPickedClasses,
+                                )}
                             >
-                                {trainer.name}
-                            </Label>
+                                <span
+                                    className={cn(
+                                        'text-base',
+                                        isPicked && 'font-bold',
+                                    )}
+                                >
+                                    {trainer.name}
+                                </span>
+                                <span
+                                    className={cn(
+                                        'text-sm whitespace-nowrap',
+                                        isPicked
+                                            ? 'font-bold text-red'
+                                            : 'text-muted',
+                                    )}
+                                >
+                                    {isPicked ? 'Going ✓' : "I'm going"}
+                                </span>
+                            </button>
                         </li>
                     );
                 })}

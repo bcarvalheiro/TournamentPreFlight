@@ -68,7 +68,7 @@ it('asks a player who taps too often to wait, without leaving the page', functio
 
 /*
  * M08 AC4: a family taps "I'm going" and the picker opens with a checkbox per
- * trainer; Save sends every choice in one request. Opening a sheet and ticking
+ * trainer (a big toggle row); Save sends every choice in one request. Opening a sheet and ticking
  * boxes needs a real browser (the sheet's content is not in static markup).
  */
 it('lets a family pick who is going, per trainer', function () {
@@ -85,17 +85,17 @@ it('lets a family pick who is going, per trainer', function () {
         ->assertSee('Going to Carta Alta?')
         ->click('Ana')
         ->click('Tiago')
-        ->click('Save')
+        ->click('Save · 2 going')
         ->assertSee('Saved for Carta Alta')
         ->assertSeeIn($slip, 'Going (2)')
         ->assertSeeIn($slip, 'You: Ana, Tiago')
         ->assertSeeIn($slip, '2 trainers going');
 
-    // Reopened, the boxes show the saved answers; untick Tiago only.
+    // Reopened, the sheet starts from the saved answers (both picked); untick Tiago only.
     $page->click("{$slip} button")
-        ->assertChecked("#going-{$event->id}-{$tiago->id}")
+        ->assertSee('Save · 2 going')
         ->click('Tiago')
-        ->click('Save')
+        ->click('Save · 1 going')
         ->assertSeeIn($slip, 'Going (1)')
         ->assertSeeIn($slip, 'You: Ana')
         ->assertSeeIn($slip, '1 trainers going');
