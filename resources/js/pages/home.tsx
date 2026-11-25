@@ -5,7 +5,12 @@ import { CoinFlip } from '@/components/pf/coin-flip';
 import { FilterBar } from '@/components/pf/filter-bar';
 import { PairingsSheet } from '@/components/pf/pairings-sheet';
 import PublicLayout from '@/layouts/public-layout';
-import type { EventCard, HomeFilters, ShopFilter } from '@/types';
+import type {
+    EventCard,
+    HomeFilters,
+    OwnAttendance,
+    ShopFilter,
+} from '@/types';
 
 type HomeProps = {
     events: EventCard[];
@@ -13,6 +18,7 @@ type HomeProps = {
     totals: { matched: number; all: number };
     filters: HomeFilters;
     shops: ShopFilter[];
+    own: OwnAttendance | null;
 };
 
 /**

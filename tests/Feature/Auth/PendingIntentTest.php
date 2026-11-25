@@ -113,7 +113,9 @@ it('asks the database nothing for the intent when there is none', function () {
         $profileQueries += str_contains($query->sql, 'player_profiles') && ! str_contains($query->sql, 'count(*)') ? 1 : 0;
     });
 
-    $this->get(route('home'))->assertOk();
+    // Settings → Profile has no reason to load trainers. Home (the `own` prop,
+    // M08) and the Trainers list load them on purpose (decisions.md, 25 Nov).
+    $this->get(route('profile.edit'))->assertOk();
 
     // Without a pending intent neither the player gate nor the prop asks.
     expect($profileQueries)->toBe(0);

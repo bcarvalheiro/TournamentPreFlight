@@ -85,6 +85,27 @@ it('shows no player name, Pokemon Player ID (POP ID) or birth year', function (s
     'another user' => true,
 ]);
 
+/*
+ * M08 AC6: the home page carries one owner-only prop, `own`, so the family's
+ * slips can say "You: Zzleak Name 4711, Zzleak Child 4712". The family sees its
+ * names there, still with no Pokemon Player ID (POP ID) or birth year; the
+ * guest and other-user cases above prove nobody else does.
+ */
+it('shows the family their own trainers\' names on the home page', function () {
+    $this->actingAs(User::query()->where('email', 'zzleak@example.test')->sole());
+
+    $response = $this->get(route('home'))->assertOk();
+
+    expect(collect($response->inertiaProps('own.trainers'))->pluck('name')->all())
+        ->toBe(['Zzleak Name 4711', 'Zzleak Child 4712']);
+
+    $content = (string) $response->getContent();
+    expect($content)->not->toContain('9988776655')->not->toContain('9988776656');
+    expect(json_encode($response->inertiaProps()))->not->toContain('1913');
+    expect(array_keys(Arr::dot($response->inertiaProps())))
+        ->each->not->toMatch('/pop_?id|birth_?year/i');
+});
+
 it('shows no player data on the sign-in pages', function (string $route, string $component, string $viewer) {
     match ($viewer) {
         'guest' => null,
